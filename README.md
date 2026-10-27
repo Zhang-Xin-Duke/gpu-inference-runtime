@@ -2,6 +2,16 @@
 
 **Bounded dynamic batching and event-driven execution for GPU inference.**
 
+
+## Measured behavior at a glance
+
+Independent requests enter a bounded queue, compatible requests share a GPU batch, and each caller receives its own result.
+
+![Application-level deadline completion](docs/gpu-deadline-completion.svg)
+
+**Initial measurement on one Thunder L40:** 25 correctness tests passed; two-slot batching completed all 4,500 steady-traffic requests for each bundled model within the 100 ms deadline. The chart uses 1,500 requests × three seeds at a nominal 1,000 requests/s. These application-level results include host/framework overhead. [Full results and measurement boundaries](#gpu-application-level-results).
+
+
 An inference service receives independent requests, while a GPU benefits from larger batches. Waiting to fill a batch adds latency; padding unrelated sequence lengths wastes work; accepting every request can exhaust staging memory before the GPU catches up. This project makes those decisions explicit in a small, independently runnable execution subsystem.
 
 A C++20 scheduler handles admission, compatible request grouping and queue deadlines. A PyTorch backend packs tensors, runs a model and restores each request's output. The CUDA path uses reusable pinned/device buffers and event dependencies between transfer and compute streams.
@@ -65,6 +75,12 @@ with Runtime(device="cpu", max_batch=64, delay_ms=2) as runtime:
 Change `device="cpu"` to `device="cuda"` to use the CUDA backend. Keep submitted CPU tensors and registered models unchanged until their requests finish. Results are independent CPU tensors; later staging-slot reuse does not overwrite them.
 
 A request can contain multiple samples. `max_batch` limits total samples in one execution, rather than the number of request objects. `Handle.result(timeout)` limits the caller's wait; `submit(timeout_ms=...)` supplies the execution deadline. Cancelling a handle detaches the caller, while already launched work retains its buffers until completion.
+
+## Distributed request routing
+
+A bounded CPU router can send complete inference requests to matching model replicas on separate GPU hosts. Each worker retains its own batching queue and buffer ownership. Model fingerprints are checked before routing, and a failed connection can be retried on another replica while deadline budget remains. [Architecture, failure semantics and examples](docs/DISTRIBUTED.md).
+
+The initial figure above is the completed single-GPU measurement. Larger single-worker sweeps and the two-host experiment are being evaluated separately; their results will be reported with the transport and concurrency conditions.
 
 ## Two model adapters
 
@@ -177,8 +193,6 @@ The CUDA timeline records events against a shared origin. `measured_cross_batch_
 The GPU run used one Thunder Compute **NVIDIA L40 (48 GB class)** instance, six vCPUs, Python 3.12.13, PyTorch 2.12.1+cu130 and one PyTorch CPU thread. Both dense and sequence outputs passed the direct-model comparisons; all **25 tests passed**, including the CUDA tests. [Raw results and SHA-256 checks](results/gpu/) accompany the run.
 
 Each steady/burst configuration used 1,500 requests, three seeds (7, 17, 27), a nominal 1,000 requests/s arrival process and a 100 ms deadline. The table aggregates on-time counts; latency, goodput and generator lag are medians of the three per-run summaries. These are application-level results on a virtualized GPU, including host scheduling and framework overhead.
-
-![Application-level deadline completion](docs/gpu-deadline-completion.svg)
 
 | Traffic / model | Mode | On-time / 4,500 | Goodput (req/s) | P99 (ms) | Generator lag P99 (ms) |
 |---|---|---:|---:|---:|---:|
