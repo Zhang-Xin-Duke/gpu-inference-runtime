@@ -5,9 +5,11 @@ import socket
 import subprocess
 import sys
 import time
+import pytest
 from urllib.request import Request, urlopen
 
 
+@pytest.mark.skipif(sys.platform == 'win32', reason='Windows SIGTERM terminates the process without invoking Python signal handlers')
 def test_http_and_sigterm():
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))

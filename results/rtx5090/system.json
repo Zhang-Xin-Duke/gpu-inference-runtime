@@ -1,0 +1,15 @@
+{
+  "cpu": {
+    "Name": "Intel(R) Core(TM) Ultra 9 285K",
+    "NumberOfCores": 24,
+    "NumberOfLogicalProcessors": 24
+  },
+  "memory": {
+    "TotalPhysicalMemory": 68135153664
+  },
+  "os": {
+    "Caption": "Microsoft Windows 11 Enterprise",
+    "Version": "10.0.26200",
+    "BuildNumber": "26200"
+  }
+}

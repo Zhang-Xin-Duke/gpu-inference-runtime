@@ -1,0 +1,12 @@
+Processing c:\users\xz439\documents\codex\2026-10-27\zhang-xin-duke-gpu-inference-runtime\work\repo
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bounded-gpu-runtime
+  Building wheel for bounded-gpu-runtime (pyproject.toml): started
+  Building wheel for bounded-gpu-runtime (pyproject.toml): finished with status 'done'
+  Created wheel for bounded-gpu-runtime: filename=bounded_gpu_runtime-0.1.0-cp312-cp312-win_amd64.whl size=276933 sha256=a40f514251d0e115870bdd60c6887a243412dbf61ef969b6f8d5d09be3eb6dbf
+  Stored in directory: C:\Users\xz439\AppData\Local\Temp\pip-ephem-wheel-cache-b6qif4ve\wheels\14\11\a4\69044337afa94d2a794d707b316dc9ee16b240fd579338b783
+Successfully built bounded-gpu-runtime
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: python.exe -m pip install --upgrade pip

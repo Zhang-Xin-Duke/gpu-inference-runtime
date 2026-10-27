@@ -19,7 +19,12 @@ from gpu_runtime.runtime import Runtime, ModelSpec, AdmissionError
 def hardware(device):
     info = dict(platform=platform.platform(), python=platform.python_version(),
                 torch=torch.__version__, cuda=torch.version.cuda, device=device,
-                torch_threads=torch.get_num_threads())
+                torch_threads=torch.get_num_threads(),
+                float32_matmul_precision=torch.get_float32_matmul_precision(),
+                matmul_allow_tf32=torch.backends.cuda.matmul.allow_tf32,
+                measurement_clock=dict(name='perf_counter',
+                    implementation=time.get_clock_info('perf_counter').implementation,
+                    resolution_s=time.get_clock_info('perf_counter').resolution))
     if device == "cuda":
         prop = torch.cuda.get_device_properties(0)
         info.update(gpu=prop.name, gpu_bytes=prop.total_memory,
@@ -58,9 +63,9 @@ def run(args, kind, mode):
     if args.burst:
         # Tenfold arrivals in the first half of each 200 ms interval.
         targets = np.array([int(x / .2) * .2 + (x % .2) / 10 for x in targets])
-    begin = time.monotonic()
+    begin = time.perf_counter()
     def done(future, target):
-        stamp = time.monotonic()
+        stamp = time.perf_counter()
         try:
             future.result()
             status = "ok" if (stamp - target) * 1000 <= args.deadline_ms else "late_completion"
@@ -73,9 +78,9 @@ def run(args, kind, mode):
     try:
         for inputs_i, offset in zip(inputs, targets):
             target = begin + float(offset)
-            remaining = target - time.monotonic()
+            remaining = target - time.perf_counter()
             if remaining > 0: time.sleep(remaining)
-            offered = time.monotonic()
+            offered = time.perf_counter()
             lag.append(max(0., (offered - target) * 1000))
             try:
                 remaining_ms = args.deadline_ms - (offered - target) * 1000
@@ -89,7 +94,7 @@ def run(args, kind, mode):
         runtime.shutdown()
     finally:
         runtime.shutdown()
-    elapsed = time.monotonic() - begin
+    elapsed = time.perf_counter() - begin
     stats = runtime.stats()
     timeline = runtime.timelines.copy()
     overlap = sum(max(0., min(a["h2d_end_ms"], b["compute_end_ms"])

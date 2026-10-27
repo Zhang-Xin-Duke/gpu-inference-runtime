@@ -1,0 +1,10 @@
+PowerShell, from repository root, with the selected venv active:
+$env:CMAKE_GENERATOR="Ninja"
+python -m pip wheel . --no-deps --no-build-isolation --wheel-dir dist `
+  "--config-settings=cmake.define.CMAKE_CXX_COMPILER=$PWD/.venv/Lib/site-packages/ziglang/zig.exe" `
+  "--config-settings=cmake.define.CMAKE_CXX_COMPILER_ARG1=c++" `
+  "--config-settings=cmake.define.CMAKE_CXX_FLAGS=-target x86_64-windows-gnu" `
+  "--config-settings=cmake.define.CMAKE_INTERPROCEDURAL_OPTIMIZATION=OFF"
+python -m pip install --force-reinstall --no-deps dist/bounded_gpu_runtime-0.1.0-cp312-cp312-win_amd64.whl
+$env:PYTHONPATH=$null
+python -m pytest -q

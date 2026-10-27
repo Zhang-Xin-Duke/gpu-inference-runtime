@@ -1,0 +1,26 @@
+{
+  "compute-trace.json": {
+    "kernels": 36,
+    "copies": 12,
+    "streams": [
+      13,
+      17,
+      21
+    ],
+    "copied_bytes": 100761600,
+    "copy_kernel_intersection_us": 0.0,
+    "positive_intersections": 0
+  },
+  "trace.json": {
+    "kernels": 96,
+    "copies": 24,
+    "streams": [
+      13,
+      17,
+      21
+    ],
+    "copied_bytes": 12681216,
+    "copy_kernel_intersection_us": 0.0,
+    "positive_intersections": 0
+  }
+}

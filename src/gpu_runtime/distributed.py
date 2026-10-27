@@ -20,6 +20,7 @@ class Node:
     completed: int = 0
     failures: int = 0
     cooldown_until: float = 0.
+    connection_epoch: int = 0
 
 
 class Router:
@@ -65,7 +66,7 @@ class Router:
 
     def _choose(self, excluded, samples):
         with self.lock:
-            now = time.monotonic()
+            now = time.perf_counter()
             candidates = [i for i,n in enumerate(self.nodes) if i not in excluded and n.cooldown_until <= now and n.active < self.per_node_limit]
             if not candidates: raise ConnectionError("no available replicas")
             if self.policy == "round_robin":
@@ -83,7 +84,7 @@ class Router:
         if not inputs or inputs[0].ndim != 2 or inputs[0].shape[0] <= 0:
             raise ValueError("expected tensors with a nonempty sample dimension")
         if not 0 < timeout_ms <= 10000: raise ValueError("timeout_ms must be in (0,10000]")
-        deadline = time.monotonic() + timeout_ms / 1000
+        deadline = time.perf_counter() + timeout_ms / 1000
         with self.lock:
             if self.closed or not self.permits.acquire(blocking=False):
                 self.rejected += 1
@@ -121,7 +122,7 @@ class Router:
         last_error = None
         try:
             for _ in range(2 if self.retry else 1):
-                remaining = deadline-time.monotonic()
+                remaining = deadline-time.perf_counter()
                 if remaining <= 0: raise TimeoutError("router queue deadline exceeded")
                 selected = self._choose(excluded, samples)
                 node = self.nodes[selected]
@@ -129,9 +130,16 @@ class Router:
                 try:
                     cache = getattr(self.local, "connections", None)
                     if cache is None: cache = self.local.connections = {}
-                    conn = cache.get(selected)
+                    with self.lock: epoch = node.connection_epoch
+                    cached = cache.get(selected)
+                    conn = cached[1] if cached is not None else None
+                    if cached is not None and cached[0] != epoch:
+                        conn.close()
+                        with self.lock: self.connections.discard(conn)
+                        conn = None
                     if conn is None:
-                        conn = cache[selected] = self._connection(node, remaining)
+                        conn = self._connection(node, remaining)
+                        cache[selected] = (epoch, conn)
                         with self.lock: self.connections.add(conn)
                     conn.timeout = remaining
                     if conn.sock is not None: conn.sock.settimeout(remaining)
@@ -147,18 +155,22 @@ class Router:
                     result, _ = wire.decode(body)
                     if len(result) != 1 or result[0].shape != (samples, self.metadata[0]["outputs"]):
                         raise ValueError("invalid replica output schema")
-                    if time.monotonic() > deadline: raise TimeoutError("RPC exceeded deadline")
+                    if time.perf_counter() > deadline: raise TimeoutError("RPC exceeded deadline")
                     with self.lock: node.completed += 1
                     return result[0]
                 except (OSError, http.client.HTTPException, TimeoutError) as exc:
                     last_error = exc
-                    conn = getattr(self.local, "connections", {}).pop(selected, None)
-                    if conn is not None:
-                        conn.close()
-                        with self.lock: self.connections.discard(conn)
+                    cached = getattr(self.local, "connections", {}).pop(selected, None)
+                    if cached is not None:
+                        cached[1].close()
+                        with self.lock: self.connections.discard(cached[1])
                     with self.lock:
                         node.failures += 1
-                        node.cooldown_until = time.monotonic() + (min(.05,self.cooldown_s) if isinstance(exc,TimeoutError) else self.cooldown_s)
+                        # A restarted worker invalidates every thread's old
+                        # keep-alive connection. Discard them lazily, without
+                        # interrupting calls already using those sockets.
+                        node.connection_epoch += 1
+                        node.cooldown_until = time.perf_counter() + (min(.05,self.cooldown_s) if isinstance(exc,TimeoutError) else self.cooldown_s)
                 finally:
                     with self.lock:
                         node.outstanding -= samples
@@ -171,7 +183,7 @@ class Router:
             return dict(accepted=self.accepted, rejected=self.rejected, finished=self.finished,
                         active=self.active, nodes=[dict(endpoint=n.url, outstanding=n.outstanding, active=n.active,
                         requests=n.requests, completed=n.completed, failures=n.failures,
-                        cooling_down=n.cooldown_until > time.monotonic()) for n in self.nodes])
+                        cooling_down=n.cooldown_until > time.perf_counter()) for n in self.nodes])
 
     def shutdown(self):
         with self.lock: self.closed = True

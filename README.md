@@ -9,9 +9,33 @@
 
 Independent requests enter a bounded queue, compatible requests share a GPU batch, and each caller receives its own result.
 
-![Application-level deadline completion](docs/gpu-deadline-completion.svg)
+```mermaid
+flowchart LR
+    R[CPU requests] --> A[Bounded admission]
+    A --> B[Compatible batches]
+    B --> G[RTX 5090 model execution]
+    G --> O[Owned per-request CPU results]
+```
 
-**Initial measurement on one Thunder L40:** 25 correctness tests passed; two-slot batching completed all 4,500 steady-traffic requests for each bundled model within the 100 ms deadline. The chart uses 1,500 requests × three seeds at a nominal 1,000 requests/s. These application-level results include host/framework overhead. [Full results and measurement boundaries](#gpu-application-level-results).
+**Measured on one local RTX 5090, Windows WDDM, FP32:**
+
+| Check | Result |
+|---|---|
+| Installed-wheel correctness | **31 passed, 1 skipped**; all three CUDA cases passed; Unix SIGTERM drain test skipped on Windows |
+| Three-seed steady/burst comparison | Two-slot batching completed **18,000 / 18,000** requests within 100 ms across both bundled models |
+| Five-minute soaks | **300,291 / 300,291** requests on time for each model; request reservations released after drain |
+| Highest independent-process load cell | Both pipeline models completed **80,063 / 80,063** requests in 10 s at nominal 8,000 requests/s |
+| Large FP32 compute stress | Approximately 2.15B parameters; observed **99% GPU utilization**, 577.2 W peak, 74°C maximum at stock settings |
+
+![RTX 5090 deadline goodput across offered load](results/rtx5090/load-sweep.svg)
+
+The 91 extended cells include load, batch/slot, model-size, sequence-padding and sustained tests. The highest tested rate is not a calibrated maximum capacity. Local profiler traces contain real kernels/copies on distinct streams but show **zero copy/compute overlap**; higher application goodput does not establish physical overlap. [Full RTX 5090 results, conditions and negative outcomes](docs/RTX5090_EVALUATION.md) · [Raw data and checksums](results/rtx5090/).
+
+![Recorded process failover on one RTX 5090](results/rtx5090/local-process-replicas/process-failover.gif)
+
+Two local worker processes share one physical GPU in this recording. A controlled stop/restart exposed stale HTTP connections across RPC threads; connection invalidation now allows the restarted worker to rejoin. Both before/after recordings and deadline losses are retained. **Real two-GPU scaling remains unverified.**
+
+The earlier Thunder L40 measurement is retained in [historical application-level results](#gpu-application-level-results).
 
 
 An inference service receives independent requests, while a GPU benefits from larger batches. Waiting to fill a batch adds latency; padding unrelated sequence lengths wastes work; accepting every request can exhaust staging memory before the GPU catches up. This project makes those decisions explicit in a small, independently runnable execution subsystem.
@@ -82,7 +106,7 @@ A request can contain multiple samples. `max_batch` limits total samples in one 
 
 A bounded CPU router can send complete inference requests to matching model replicas on separate GPU hosts. Each worker retains its own batching queue and buffer ownership. Model fingerprints are checked before routing, and a failed connection can be retried on another replica while deadline budget remains. [Architecture, failure semantics and examples](docs/DISTRIBUTED.md).
 
-The initial figure above is the completed single-GPU measurement. Larger single-worker sweeps and the two-host experiment are being evaluated separately; their results will be reported with the transport and concurrency conditions.
+The RTX 5090 single-worker sweeps and same-GPU process failover experiment are complete. The separate two-host/two-GPU scaling experiment remains pending; same-card replicas do not establish GPU scaling. [Measured conditions and recovery behavior](docs/RTX5090_EVALUATION.md).
 
 ## Two model adapters
 
@@ -192,6 +216,10 @@ The CUDA timeline records events against a shared origin. `measured_cross_batch_
 
 ### GPU application-level results
 
+The following table is the original Thunder L40 experiment. The newer local workstation evaluation is reported separately in [RTX 5090 results](docs/RTX5090_EVALUATION.md).
+
+![Original L40 deadline completion](docs/gpu-deadline-completion.svg)
+
 The GPU run used one Thunder Compute **NVIDIA L40 (48 GB class)** instance, six vCPUs, Python 3.12.13, PyTorch 2.12.1+cu130 and one PyTorch CPU thread. Both dense and sequence outputs passed the direct-model comparisons; all **25 tests passed**, including the CUDA tests. [Raw results and SHA-256 checks](results/gpu/) accompany the run.
 
 Each steady/burst configuration used 1,500 requests, three seeds (7, 17, 27), a nominal 1,000 requests/s arrival process and a 100 ms deadline. The table aggregates on-time counts; latency, goodput and generator lag are medians of the three per-run summaries. These are application-level results on a virtualized GPU, including host scheduling and framework overhead.
@@ -241,11 +269,13 @@ The deterministic padding test uses four length-5 sequences and a configured max
 
 | Check | Status |
 |---|---|
+| Latest RTX 5090 installed-wheel suite | 31 passed, 1 Windows SIGTERM skip; all 3 CUDA cases passed |
+| RTX 5090 extended evaluation | 91 cells, both five-minute soaks, three-seed large-model stress, real profiler traces and same-GPU process stop/restart completed; [results](docs/RTX5090_EVALUATION.md) |
 | CPU scheduler/runtime/service tests | 22 passed locally; Linux Python 3.11 and 3.12 [CI passed](https://github.com/Zhang-Xin-Duke/gpu-inference-runtime/actions/runs/40509579725) |
 | CUDA scheduler/runtime tests | 25 total tests passed on Thunder L40; no CUDA skips |
 | Wheel build and normal installation | Passed locally |
 | Open-loop GPU benchmark | Steady/burst runs across 3 seeds, policy/padding ablations and larger-model exploratory run completed |
-| Physical CUDA stream overlap | Unestablished; provider profiler limitations documented above |
+| Physical CUDA stream overlap | Not observed: local RTX 5090 traces measured 0 µs copy/kernel intersections; earlier L40 provider limitations also retained |
 | Container image / GPU Kubernetes deployment | Example supplied; deployment unverified |
 | Google Borg deployment | Requires internal access; unverified |
 

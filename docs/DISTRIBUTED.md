@@ -37,6 +37,8 @@ A transport failure triggers a temporary node cooldown. If time remains, one att
 
 Cooldown expires automatically so a restarted replica can receive requests again. The router does not persist requests, model registrations or completed results across its own process restart.
 
+A transport failure invalidates that worker's cached connection generation across RPC threads. Each thread closes an outdated idle connection before its next request, while already active calls retain their socket ownership. This avoids serial cooldown renewals from different threads' stale keep-alive sockets after a worker restart. A cross-thread regression test and a recorded RTX 5090 process-restart experiment cover this behavior.
+
 ## Example
 
 Start the same model service on each GPU host:
@@ -74,3 +76,13 @@ python benchmarks/extended.py --endpoints http://127.0.0.1:19080 http://127.0.0.
 `scripts/extended_matrix.py` runs offered-load, batch-size, slot-count, model/sequence-shape and soak sweeps. `benchmarks/failover.py` records a controlled replica stop/restart using trusted operator command files kept outside the published results. Its telemetry can drive a recorded animation in the README.
 
 Comparisons must state client concurrency, per-replica RPC limits, network transport, offered load, deadline and generator lag. Adding a replica also adds its host CPU capacity. A two-worker throughput increase should not be described as pure GPU kernel scaling without further controls.
+
+`benchmarks/distributed.py` runs matched replica-count/rate/seed sweeps against already-running workers; it never provisions or terminates hosts:
+
+```bash
+python benchmarks/distributed.py --endpoints http://127.0.0.1:19080 http://127.0.0.1:19081 \
+    --replica-counts 1 2 --rates 100 500 1000 --seeds 7 17 27 --duration 30 \
+    --output-dir results/two-hosts
+```
+
+The completed [local process failover recording](RTX5090_EVALUATION.md) uses two workers on **one physical RTX 5090**, loopback binary HTTP, 32 RPC threads, a 16-call limit per replica, 256 pending requests, 300 offered requests/s and a 1,000 ms deadline. Both the pre-fix recovery defect and the repaired run are retained; deadline losses are reported. This validates process failover, not two-GPU scaling or GPU hardware-fault recovery.

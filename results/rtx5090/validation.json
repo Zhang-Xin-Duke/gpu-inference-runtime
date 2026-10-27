@@ -1,0 +1,75 @@
+{
+  "extended_cells": 91,
+  "offered": 2124020,
+  "model_execution_failures": 0,
+  "tests": {
+    "passed": 31,
+    "skipped": 1,
+    "skip_reason": "Windows SIGTERM process-drain semantics"
+  },
+  "wheel_build_install": "passed",
+  "telemetry_peaks": {
+    "utilization_gpu_percent": 99.0,
+    "power_W": 577.23,
+    "temperature_C": 74.0,
+    "memory_used_MiB": 10494.0
+  },
+  "large_models": {
+    "heavy-sync": {
+      "goodput_rps": 517.0666666666667,
+      "p99_ms": 90.49315473896324,
+      "on_time": 24275,
+      "offered": 45077,
+      "rejected": 20794
+    },
+    "heavy-pipeline": {
+      "goodput_rps": 521.5333333333333,
+      "p99_ms": 98.97103061675108,
+      "on_time": 22751,
+      "offered": 45077,
+      "rejected": 22229
+    },
+    "compute-sync": {
+      "goodput_rps": 45.666666666666664,
+      "p99_ms": 118.38394843833444,
+      "on_time": 1752,
+      "offered": 45077,
+      "rejected": 41917
+    },
+    "compute-pipeline": {
+      "goodput_rps": 86.2,
+      "p99_ms": 95.1092150959048,
+      "on_time": 3901,
+      "offered": 45077,
+      "rejected": 41174
+    }
+  },
+  "traces": {
+    "compute-trace.json": {
+      "kernels": 36,
+      "copies": 12,
+      "streams": [
+        13,
+        17,
+        21
+      ],
+      "copied_bytes": 100761600,
+      "copy_kernel_intersection_us": 0.0,
+      "positive_intersections": 0
+    },
+    "trace.json": {
+      "kernels": 96,
+      "copies": 24,
+      "streams": [
+        13,
+        17,
+        21
+      ],
+      "copied_bytes": 12681216,
+      "copy_kernel_intersection_us": 0.0,
+      "positive_intersections": 0
+    }
+  },
+  "two_gpu_scaling": "not performed; only one physical GPU",
+  "physical_overlap": "not observed"
+}

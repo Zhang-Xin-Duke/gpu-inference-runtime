@@ -10,7 +10,8 @@ import multiprocessing as mp
 import os
 from pathlib import Path
 import queue
-import resource
+if os.name != 'nt':
+    import resource
 import threading
 import time
 
@@ -56,6 +57,24 @@ def catalog(args):
 
 
 def rss_mb():
+    if os.name == 'nt':
+        import ctypes
+        from ctypes import wintypes
+        class Counters(ctypes.Structure):
+            _fields_ = [('cb', wintypes.DWORD), ('PageFaultCount', wintypes.DWORD)] + [
+                (name, ctypes.c_size_t) for name in (
+                    'PeakWorkingSetSize', 'WorkingSetSize', 'QuotaPeakPagedPoolUsage',
+                    'QuotaPagedPoolUsage', 'QuotaPeakNonPagedPoolUsage',
+                    'QuotaNonPagedPoolUsage', 'PagefileUsage', 'PeakPagefileUsage')]
+        counters = Counters()
+        counters.cb = ctypes.sizeof(counters)
+        kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+        kernel.GetCurrentProcess.restype = wintypes.HANDLE
+        psapi = ctypes.WinDLL('psapi', use_last_error=True)
+        psapi.GetProcessMemoryInfo.argtypes = [wintypes.HANDLE, ctypes.POINTER(Counters), wintypes.DWORD]
+        if not psapi.GetProcessMemoryInfo(kernel.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
+            raise ctypes.WinError(ctypes.get_last_error())
+        return counters.WorkingSetSize / (1 << 20)
     path=Path('/proc/self/statm')
     if path.exists():return int(path.read_text().split()[1])*os.sysconf('SC_PAGE_SIZE')/(1<<20)
     value=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
@@ -106,7 +125,7 @@ def backend(args, work, control):
         sampled=[]; interval=[Histogram()]
         def observe():
             while not stop.is_set():
-                row=dict(t=time.monotonic()-begin,rss_mb=rss_mb(),backend=runtime.stats())
+                row=dict(t=time.perf_counter()-begin,rss_mb=rss_mb(),backend=runtime.stats())
                 with lock:
                     row.update(outcomes=dict(counts),interval_latency=interval[0].summary())
                     interval[0]=Histogram()
@@ -117,7 +136,7 @@ def backend(args, work, control):
                 stop.wait(args["sample_interval"])
         monitor=threading.Thread(target=observe,daemon=True);monitor.start()
         def done(future,arrival,index):
-            stamp=time.monotonic()
+            stamp=time.perf_counter()
             try:
                 value=future.result()
                 status='ok' if stamp-arrival<=args["deadline_ms"]/1000 else 'late_completion'
@@ -135,24 +154,24 @@ def backend(args, work, control):
             item=work.get(timeout=max(30,args["duration"]+10))
             if item is None:break
             rid,index,arrival,sent=item;received+=1
-            now=time.monotonic()
+            now=time.perf_counter()
             with lock:transport.add((now-sent)*1000)
             remaining=args["deadline_ms"]-(now-arrival)*1000
             if remaining<=0:
                 with lock:counts['transport_expired']+=1
                 continue
-            start=time.monotonic()
+            start=time.perf_counter()
             try:
                 future=submit(inputs[index],remaining)
-                with lock:admission.add((time.monotonic()-start)*1000)
+                with lock:admission.add((time.perf_counter()-start)*1000)
                 future.add_done_callback(lambda f,a=arrival,i=index:done(f,a,i))
             except AdmissionError:
                 with lock:counts['rejected']+=1
             except TimeoutError:
                 with lock:counts['expired_at_admission']+=1
-        drain_start=time.monotonic()
+        drain_start=time.perf_counter()
         runtime.shutdown()
-        drained=time.monotonic()
+        drained=time.perf_counter()
         stop.set();monitor.join(timeout=10)
         after=runtime.stats()
         assert sum(counts.values())==received,(counts,received)
@@ -182,7 +201,7 @@ def execute(args):
     if not parent.poll(180):process.kill();raise TimeoutError('backend startup timeout')
     ready=parent.recv()
     if not ready.get('ready'):raise RuntimeError(ready)
-    begin=time.monotonic()+.1
+    begin=time.perf_counter()+.1
     work.put(('start',begin))
     if args.control_file:
         Path(args.control_file).write_text(json.dumps(dict(begin=begin,wall_time=time.time())))
@@ -194,14 +213,14 @@ def execute(args):
             if target>=args.duration:break
             offset=(int(target)+target%1/10) if args.burst else target
             arrival=begin+offset
-            remaining=arrival-time.monotonic()
+            remaining=arrival-time.perf_counter()
             if remaining>0:time.sleep(remaining)
-            sent=time.monotonic();lag.add((sent-arrival)*1000)
+            sent=time.perf_counter();lag.add((sent-arrival)*1000)
             rid+=1
             if sent-arrival>args.deadline_ms/1000:counts['generator_stale']+=1;continue
             try:work.put_nowait((rid,rid%64,arrival,sent));counts['emitted']+=1
             except queue.Full:counts['ipc_full']+=1
-        remaining=begin+args.duration-time.monotonic()
+        remaining=begin+args.duration-time.perf_counter()
         if remaining>0:time.sleep(remaining)
         work.put(None,timeout=30)
         if not parent.poll(args.deadline_ms/1000+60):raise TimeoutError('backend drain timeout')

@@ -1,0 +1,79 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+__________ test_restart_invalidates_other_rpc_threads_stale_sockets ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002333DA4DCA0>
+
+    def test_restart_invalidates_other_rpc_threads_stale_sockets(monkeypatch):
+        import http.client
+        generation=[0]
+        warming=[True]
+        barrier=threading.Barrier(2)
+        body=wire.encode((torch.ones(1,2),))
+        class Response:
+            status=200
+            def read(self,*_):return body
+        class Connection:
+            sock=None
+            def __init__(self):self.generation=generation[0]
+            def request(self,*_):pass
+            def close(self):pass
+            def getresponse(self):
+                if warming[0]:barrier.wait(timeout=5)
+                if self.generation!=generation[0]:
+                    raise http.client.RemoteDisconnected('worker restarted')
+                return Response()
+        monkeypatch.setattr(Router,'_get',lambda *_:dict(model_version='v1',outputs=2))
+        monkeypatch.setattr(Router,'_connection',staticmethod(lambda *_:Connection()))
+        router=Router(['http://replica.test'],concurrency=2,retry=False,cooldown_s=0)
+        release_a,release_b=threading.Event(),threading.Event()
+        entered_a,entered_b=threading.Event(),threading.Event()
+        def block(entered,release):
+            entered.set()
+            assert release.wait(timeout=10)
+        try:
+            warm=[router.submit(torch.ones(1,8),timeout_ms=5000) for _ in range(2)]
+            for future in warm:future.result(6)
+            warming[0]=False
+            blocked_a=router.pool.submit(block,entered_a,release_a)
+            assert entered_a.wait(5)
+            generation[0]+=1
+            # One thread discovers the restart while the other still caches its
+            # old connection. That second thread must reconnect on its next call.
+            with pytest.raises(http.client.RemoteDisconnected):
+                router.submit(torch.ones(1,8),timeout_ms=5000).result(6)
+            blocked_b=router.pool.submit(block,entered_b,release_b)
+            assert entered_b.wait(5)
+            release_a.set();blocked_a.result(5)
+>           result=router.submit(torch.ones(1,8),timeout_ms=5000).result(6)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_distributed.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+C:\Users\xz439\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\concurrent\futures\_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+C:\Users\xz439\AppData\Roaming\uv\python\cpython-3.12.14-windows-x86_64-none\Lib\concurrent\futures\_base.py:401: in __get_result
+    raise self._exception
+src\gpu_runtime\distributed.py:100: in execute
+    value = self._execute(inputs, deadline)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+router-before-connection-fix.py:166: in _execute
+    ???
+router-before-connection-fix.py:142: in _execute
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_distributed.test_restart_invalidates_other_rpc_threads_stale_sockets.<locals>.Connection object at 0x000002333DA4D6A0>
+
+    def getresponse(self):
+        if warming[0]:barrier.wait(timeout=5)
+        if self.generation!=generation[0]:
+>           raise http.client.RemoteDisconnected('worker restarted')
+E           http.client.RemoteDisconnected: worker restarted
+
+tests\test_distributed.py:112: RemoteDisconnected
+=========================== short test summary info ===========================
+FAILED tests/test_distributed.py::test_restart_invalidates_other_rpc_threads_stale_sockets
+1 failed in 0.05s
+EXPECTED: regression test fails with the pre-fix router; current installed-wheel suite passes.

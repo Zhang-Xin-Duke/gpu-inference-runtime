@@ -1,0 +1,10 @@
+Processing c:\users\xz439\documents\codex\2026-10-27\zhang-xin-duke-gpu-inference-runtime\outputs\wheels\bounded_gpu_runtime-0.1.0-cp312-cp312-win_amd64.whl
+Installing collected packages: bounded-gpu-runtime
+  Attempting uninstall: bounded-gpu-runtime
+    Found existing installation: bounded-gpu-runtime 0.1.0
+    Uninstalling bounded-gpu-runtime-0.1.0:
+      Successfully uninstalled bounded-gpu-runtime-0.1.0
+Successfully installed bounded-gpu-runtime-0.1.0
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: python.exe -m pip install --upgrade pip

@@ -23,3 +23,9 @@
 5. Prepare all remote commands before provisioning. Attempt two single-L40 hosts within the existing USD 20 total budget; do not add payment methods or bypass account limits. Record instance ownership, price and control-plane cleanup deadline.
 6. Run longer saturation, burst, sequence-length and batch-size sweeps; run a sustained soak; save raw results and checksums. Stop or delete all owned instances after artifact retrieval.
 7. Put measured summary plots and a recorded telemetry animation before implementation details in README. Keep original results, disclose generator/network effects, and publish the new code/results after verification.
+
+## RTX 5090 follow-up
+
+Completed locally: the dense/sequence matrix (10-second cells, 300-second soaks), larger three-seed FP32 workloads, genuine CUDA profiler traces, recorded GPU telemetry, one-GPU/two-process stop/restart, and a matched distributed sweep driver validated with CPU replicas. The process experiment exposed stale keep-alive sockets across RPC threads; connection-generation invalidation and a regression test were added. README results now lead with these measurements. Raw results retain negative padding/overlap/failure outcomes and before/after recovery data.
+
+Still pending: a real two-host/two-GPU scaling and failure experiment. The user chose to continue with the one local GPU. Same-card worker processes validate routing/process behavior only. See [complete measurements](../RTX5090_EVALUATION.md).

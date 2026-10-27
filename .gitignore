@@ -5,6 +5,9 @@ __pycache__/
 .pytest_cache/
 *.so
 *.dylib
+*.pyd
+*.pdb
+*.lib
 .DS_Store
 .env
 *.pem

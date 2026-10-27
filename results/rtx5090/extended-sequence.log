@@ -1,0 +1,117 @@
+START load-unbatched-100
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-unbatched-100.json", "offered": 1018, "goodput_rps": 101.8, "statuses": {"ok": 1018}, "latency": {"count": 1018, "mean_ms": 2.835591784367635, "p50_ms": 1.9824771765173608, "p95_ms": 6.042296878398385, "p99_ms": 7.826323188653353}, "generator_lag": {"count": 1018, "mean_ms": 0.29824669599523473, "p50_ms": 0.29636424285755114, "p95_ms": 0.5277952569079107, "p99_ms": 0.6635246782443343}}
+END load-unbatched-100 wall_s 16.2
+START load-unbatched-500
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-unbatched-500.json", "offered": 5031, "goodput_rps": 501.7, "statuses": {"ok": 5017, "expired": 14}, "latency": {"count": 5031, "mean_ms": 25.351853983721192, "p50_ms": 20.14133660489531, "p95_ms": 71.98203687048206, "p99_ms": 92.3120671492164}, "generator_lag": {"count": 5031, "mean_ms": 0.29095990698454804, "p50_ms": 0.2905246964587307, "p95_ms": 0.5225695612949611, "p99_ms": 0.7043448163774058}}
+END load-unbatched-500 wall_s 16.08
+START load-unbatched-1000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-unbatched-1000.json", "offered": 9966, "goodput_rps": 402.0, "statuses": {"ok": 4020, "expired": 5838, "late_completion": 108}, "latency": {"count": 9966, "mean_ms": 94.63595810321786, "p50_ms": 100.96034833214779, "p95_ms": 102.98965133362394, "p99_ms": 104.0195478469602}, "generator_lag": {"count": 9966, "mean_ms": 0.29201622077710304, "p50_ms": 0.2905246964587307, "p95_ms": 0.5277952569079107, "p99_ms": 0.7256871686584576}}
+END load-unbatched-1000 wall_s 15.34
+START load-unbatched-2000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-unbatched-2000.json", "offered": 19853, "goodput_rps": 72.6, "statuses": {"ok": 726, "expired": 18768, "late_completion": 144, "transport_expired": 215}, "latency": {"count": 19638, "mean_ms": 103.31778442401495, "p50_ms": 100.96034833214779, "p95_ms": 104.0195478469602, "p99_ms": 206.67585962012947}, "generator_lag": {"count": 19853, "mean_ms": 0.28195746799455945, "p50_ms": 0.27918852288367657, "p95_ms": 0.5173956052425357, "p99_ms": 0.7329440403450421}}
+END load-unbatched-2000 wall_s 15.69
+START load-unbatched-4000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-unbatched-4000.json", "offered": 39823, "goodput_rps": 13.4, "statuses": {"ok": 134, "expired": 37718, "late_completion": 45, "transport_expired": 1926}, "latency": {"count": 37897, "mean_ms": 109.88435434772009, "p50_ms": 101.96995181546924, "p95_ms": 154.8709323735838, "p99_ms": 333.20821050701306}, "generator_lag": {"count": 39823, "mean_ms": 0.2787328996288319, "p50_ms": 0.2764242800828481, "p95_ms": 0.5122728764777581, "p99_ms": 0.7329440403450421}}
+END load-unbatched-4000 wall_s 15.22
+START load-unbatched-8000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-unbatched-8000.json", "offered": 80063, "goodput_rps": 4.3, "statuses": {"ok": 43, "expired": 72521, "late_completion": 12, "transport_expired": 7487}, "latency": {"count": 72576, "mean_ms": 117.5603388810475, "p50_ms": 101.96995181546924, "p95_ms": 237.56857113205763, "p99_ms": 301.64904616859235}, "generator_lag": {"count": 80063, "mean_ms": 0.27690355570836966, "p50_ms": 0.27368740602262187, "p95_ms": 0.5173956052425357, "p99_ms": 0.7402734807484926}}
+END load-unbatched-8000 wall_s 15.84
+START load-sync-100
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-sync-100.json", "offered": 1018, "goodput_rps": 101.8, "statuses": {"ok": 1018}, "latency": {"count": 1018, "mean_ms": 7.544372631160292, "p50_ms": 6.608371109091, "p95_ms": 15.24367993839947, "p99_ms": 18.974050180292764}, "generator_lag": {"count": 1018, "mean_ms": 0.30084954664788816, "p50_ms": 0.29932788528612664, "p95_ms": 0.5225695612949611, "p99_ms": 0.644010515610811}}
+END load-sync-100 wall_s 16.03
+START load-sync-500
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-sync-500.json", "offered": 5031, "goodput_rps": 503.1, "statuses": {"ok": 5031}, "latency": {"count": 5031, "mean_ms": 6.827004331676974, "p50_ms": 5.692116984286565, "p95_ms": 14.503838414246454, "p99_ms": 18.416026171276904}, "generator_lag": {"count": 5031, "mean_ms": 0.29351832489432383, "p50_ms": 0.2905246964587307, "p95_ms": 0.5277952569079107, "p99_ms": 0.7402734807484926}}
+END load-sync-500 wall_s 15.69
+START load-sync-1000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-sync-1000.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 8.168818160315958, "p50_ms": 7.372750469430401, "p95_ms": 16.34328815816248, "p99_ms": 19.744472703553875}, "generator_lag": {"count": 9966, "mean_ms": 0.2924856095989691, "p50_ms": 0.2934299434233179, "p95_ms": 0.5277952569079107, "p99_ms": 0.7329440403450421}}
+END load-sync-1000 wall_s 15.94
+START load-sync-2000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-sync-2000.json", "offered": 19853, "goodput_rps": 1985.3, "statuses": {"ok": 19853}, "latency": {"count": 19853, "mean_ms": 9.637967721874457, "p50_ms": 8.996156689820673, "p95_ms": 18.416026171276904, "p99_ms": 21.594239012795242}, "generator_lag": {"count": 19853, "mean_ms": 0.2835004826915026, "p50_ms": 0.2819804081125134, "p95_ms": 0.5173956052425357, "p99_ms": 0.7043448163774058}}
+END load-sync-2000 wall_s 15.97
+START load-sync-4000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-sync-4000.json", "offered": 39823, "goodput_rps": 3982.3, "statuses": {"ok": 39823}, "latency": {"count": 39823, "mean_ms": 11.449416726172176, "p50_ms": 10.868337416564811, "p95_ms": 21.810181402923195, "p99_ms": 25.574152954979734}, "generator_lag": {"count": 39823, "mean_ms": 0.27915595979934404, "p50_ms": 0.2764242800828481, "p95_ms": 0.5173956052425357, "p99_ms": 0.7256871686584576}}
+END load-sync-4000 wall_s 17.06
+START load-sync-8000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-sync-8000.json", "offered": 80063, "goodput_rps": 7944.8, "statuses": {"ok": 79448, "transport_expired": 182, "expired": 428, "late_completion": 5}, "latency": {"count": 79881, "mean_ms": 19.34272544545542, "p50_ms": 16.34328815816248, "p95_ms": 46.92508403430362, "p99_ms": 87.83176444452954}, "generator_lag": {"count": 80063, "mean_ms": 0.2772312013704571, "p50_ms": 0.2764242800828481, "p95_ms": 0.5122728764777581, "p99_ms": 0.7256871686584576}}
+END load-sync-8000 wall_s 16.24
+START load-pipeline-100
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-pipeline-100.json", "offered": 1018, "goodput_rps": 101.8, "statuses": {"ok": 1018}, "latency": {"count": 1018, "mean_ms": 7.407328424521165, "p50_ms": 6.608371109091, "p95_ms": 15.550077905161299, "p99_ms": 18.600186432989673}, "generator_lag": {"count": 1018, "mean_ms": 0.29260052670604614, "p50_ms": 0.2934299434233179, "p95_ms": 0.5225695612949611, "p99_ms": 0.6569551269745884}}
+END load-pipeline-100 wall_s 16.45
+START load-pipeline-500
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-pipeline-500.json", "offered": 5031, "goodput_rps": 503.1, "statuses": {"ok": 5031}, "latency": {"count": 5031, "mean_ms": 9.053267518757375, "p50_ms": 8.390877767570121, "p95_ms": 16.838506132642966, "p99_ms": 19.548982874805816}, "generator_lag": {"count": 5031, "mean_ms": 0.2912110886374793, "p50_ms": 0.2905246964587307, "p95_ms": 0.5173956052425357, "p99_ms": 0.6701599250267777}}
+END load-pipeline-500 wall_s 16.91
+START load-pipeline-1000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-pipeline-1000.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 10.11052069743909, "p50_ms": 9.74154859645323, "p95_ms": 18.416026171276904, "p99_ms": 20.546177470653703}, "generator_lag": {"count": 9966, "mean_ms": 0.284730912169507, "p50_ms": 0.2819804081125134, "p95_ms": 0.5173956052425357, "p99_ms": 0.6836301395198159}}
+END load-pipeline-1000 wall_s 16.0
+START load-pipeline-2000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-pipeline-2000.json", "offered": 19853, "goodput_rps": 1985.3, "statuses": {"ok": 19853}, "latency": {"count": 19853, "mean_ms": 8.65809971953049, "p50_ms": 7.826323188653353, "p95_ms": 17.176960105909085, "p99_ms": 20.546177470653703}, "generator_lag": {"count": 19853, "mean_ms": 0.28363112534307877, "p50_ms": 0.27918852288367657, "p95_ms": 0.5173956052425357, "p99_ms": 0.7256871686584576}}
+END load-pipeline-2000 wall_s 16.38
+START load-pipeline-4000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-pipeline-4000.json", "offered": 39823, "goodput_rps": 3982.1, "statuses": {"ok": 39821, "expired": 2}, "latency": {"count": 39823, "mean_ms": 11.520418237611604, "p50_ms": 10.654188233079903, "p95_ms": 21.168747194191983, "p99_ms": 25.574152954979734}, "generator_lag": {"count": 39823, "mean_ms": 0.27726112490100435, "p50_ms": 0.27368740602262187, "p95_ms": 0.5122728764777581, "p99_ms": 0.7185021471865917}}
+END load-pipeline-4000 wall_s 15.28
+START load-pipeline-8000
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\load-pipeline-8000.json", "offered": 80063, "goodput_rps": 8006.3, "statuses": {"ok": 80063}, "latency": {"count": 80063, "mean_ms": 16.605625753703233, "p50_ms": 15.862634471055042, "p95_ms": 29.10577163083559, "p99_ms": 45.0940834201702}, "generator_lag": {"count": 80063, "mean_ms": 0.2760106992954689, "p50_ms": 0.27368740602262187, "p95_ms": 0.5122728764777581, "p99_ms": 0.7185021471865917}}
+END load-pipeline-8000 wall_s 17.11
+START batch-8-slots-1
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-8-slots-1.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 7.804362370127392, "p50_ms": 6.808611362067567, "p95_ms": 16.34328815816248, "p99_ms": 19.548982874805816}, "generator_lag": {"count": 9966, "mean_ms": 0.2876828297155085, "p50_ms": 0.28480021219363855, "p95_ms": 0.5225695612949611, "p99_ms": 0.7113882645411799}}
+END batch-8-slots-1 wall_s 16.17
+START batch-8-slots-2
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-8-slots-2.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 9.351318452150734, "p50_ms": 8.731581052353315, "p95_ms": 17.874413565819022, "p99_ms": 20.34274997094426}, "generator_lag": {"count": 9966, "mean_ms": 0.288668612700722, "p50_ms": 0.28764821431557486, "p95_ms": 0.5173956052425357, "p99_ms": 0.7476762155559775}}
+END batch-8-slots-2 wall_s 17.31
+START batch-8-slots-4
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-8-slots-4.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 8.900081154687612, "p50_ms": 8.307799769871407, "p95_ms": 16.67178825014155, "p99_ms": 19.35542858891665}, "generator_lag": {"count": 9966, "mean_ms": 0.2896699967597922, "p50_ms": 0.28764821431557486, "p95_ms": 0.5225695612949611, "p99_ms": 0.7185021471865917}}
+END batch-8-slots-4 wall_s 16.55
+START batch-16-slots-1
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-16-slots-1.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 8.15656380770553, "p50_ms": 7.2997529400301, "p95_ms": 16.506721039744104, "p99_ms": 20.14133660489531}, "generator_lag": {"count": 9966, "mean_ms": 0.29092258753885986, "p50_ms": 0.28764821431557486, "p95_ms": 0.5277952569079107, "p99_ms": 0.7476762155559775}}
+END batch-16-slots-1 wall_s 16.0
+START batch-16-slots-2
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-16-slots-2.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 9.85971204649321, "p50_ms": 9.36143672601572, "p95_ms": 18.416026171276904, "p99_ms": 21.168747194191983}, "generator_lag": {"count": 9966, "mean_ms": 0.2877972662688956, "p50_ms": 0.28764821431557486, "p95_ms": 0.5173956052425357, "p99_ms": 0.7185021471865917}}
+END batch-16-slots-2 wall_s 16.89
+START batch-16-slots-4
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-16-slots-4.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 10.11300940736884, "p50_ms": 9.455051093275877, "p95_ms": 19.163790682095694, "p99_ms": 22.028283216952428}, "generator_lag": {"count": 9966, "mean_ms": 0.28871855850811423, "p50_ms": 0.28764821431557486, "p95_ms": 0.5225695612949611, "p99_ms": 0.6973711053241641}}
+END batch-16-slots-4 wall_s 17.14
+START batch-32-slots-1
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-32-slots-1.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 8.124834834270345, "p50_ms": 7.155918968758063, "p95_ms": 16.838506132642966, "p99_ms": 20.14133660489531}, "generator_lag": {"count": 9966, "mean_ms": 0.2874198834072787, "p50_ms": 0.28480021219363855, "p95_ms": 0.5173956052425357, "p99_ms": 0.7402734807484926}}
+END batch-32-slots-1 wall_s 16.75
+START batch-32-slots-2
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-32-slots-2.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 4.893554966757964, "p50_ms": 4.6187554445396595, "p95_ms": 8.225544326605354, "p99_ms": 10.760730115410702}, "generator_lag": {"count": 9966, "mean_ms": 0.2882974110943635, "p50_ms": 0.28480021219363855, "p95_ms": 0.5225695612949611, "p99_ms": 0.6973711053241641}}
+END batch-32-slots-2 wall_s 16.78
+START batch-32-slots-4
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-32-slots-4.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 4.963798553560777, "p50_ms": 4.758708353264656, "p95_ms": 7.7488348402508445, "p99_ms": 10.444258634525934}, "generator_lag": {"count": 9966, "mean_ms": 0.29503351241897696, "p50_ms": 0.2905246964587307, "p95_ms": 0.5330732094769898, "p99_ms": 0.7402734807484926}}
+END batch-32-slots-4 wall_s 18.88
+START batch-64-slots-1
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-64-slots-1.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 12.512670666232758, "p50_ms": 8.907085831505619, "p95_ms": 35.16294321677791, "p99_ms": 61.38781154006607}, "generator_lag": {"count": 9966, "mean_ms": 0.82175683923105, "p50_ms": 0.41155808569858543, "p95_ms": 2.542392160557292, "p99_ms": 10.654188233079903}}
+END batch-64-slots-1 wall_s 38.92
+START batch-64-slots-2
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-64-slots-2.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 9.831454465215526, "p50_ms": 9.26874923367893, "p95_ms": 18.416026171276904, "p99_ms": 20.959155637813843}, "generator_lag": {"count": 9966, "mean_ms": 0.2924501504962359, "p50_ms": 0.2905246964587307, "p95_ms": 0.5225695612949611, "p99_ms": 0.7402734807484926}}
+END batch-64-slots-2 wall_s 16.09
+START batch-64-slots-4
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\batch-64-slots-4.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 10.855760283722544, "p50_ms": 10.444258634525934, "p95_ms": 19.744472703553875, "p99_ms": 22.47105170961317}, "generator_lag": {"count": 9966, "mean_ms": 0.28919396822944077, "p50_ms": 0.2905246964587307, "p95_ms": 0.5225695612949611, "p99_ms": 0.6973711053241641}}
+END batch-64-slots-4 wall_s 16.22
+START lengths-short-buckets-True
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\lengths-short-buckets-True.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 7.525909379728947, "p50_ms": 6.945464450445124, "p95_ms": 13.394051437151063, "p99_ms": 16.181473423923247}, "generator_lag": {"count": 9966, "mean_ms": 0.28966438677160766, "p50_ms": 0.2905246964587307, "p95_ms": 0.5225695612949611, "p99_ms": 0.6973711053241641}}
+END lengths-short-buckets-True wall_s 17.25
+START lengths-short-buckets-False
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\lengths-short-buckets-False.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 3.2415645032348723, "p50_ms": 3.2281634164155086, "p95_ms": 5.635759390382738, "p99_ms": 7.520942753865953}, "generator_lag": {"count": 9966, "mean_ms": 0.2967781295872489, "p50_ms": 0.29636424285755114, "p95_ms": 0.5277952569079107, "p99_ms": 0.7113882645411799}}
+END lengths-short-buckets-False wall_s 16.89
+START lengths-mixed-buckets-True
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\lengths-mixed-buckets-True.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 5.192140031983129, "p50_ms": 5.001450304775974, "p95_ms": 8.390877767570121, "p99_ms": 10.444258634525934}, "generator_lag": {"count": 9966, "mean_ms": 0.29532822185008406, "p50_ms": 0.2934299434233179, "p95_ms": 0.5330732094769898, "p99_ms": 0.7402734807484926}}
+END lengths-mixed-buckets-True wall_s 16.95
+START lengths-mixed-buckets-False
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\lengths-mixed-buckets-False.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 4.233661991273974, "p50_ms": 3.7852754844127543, "p95_ms": 7.826323188653353, "p99_ms": 14.503838414246454}, "generator_lag": {"count": 9966, "mean_ms": 0.47032216587998105, "p50_ms": 0.36523690430481937, "p95_ms": 1.1469187114505621, "p99_ms": 3.4267605159580294}}
+END lengths-mixed-buckets-False wall_s 21.06
+START lengths-bimodal-buckets-True
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\lengths-bimodal-buckets-True.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 4.979890190858759, "p50_ms": 4.5277477154589345, "p95_ms": 7.983632284745286, "p99_ms": 10.03672726047436}, "generator_lag": {"count": 9966, "mean_ms": 0.29177207928718835, "p50_ms": 0.2934299434233179, "p95_ms": 0.5225695612949611, "p99_ms": 0.7113882645411799}}
+END lengths-bimodal-buckets-True wall_s 33.66
+START lengths-bimodal-buckets-False
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\lengths-bimodal-buckets-False.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 3.6535269189608575, "p50_ms": 3.359239796057278, "p95_ms": 5.864593821027432, "p99_ms": 7.446477974124705}, "generator_lag": {"count": 9966, "mean_ms": 0.29315377030178646, "p50_ms": 0.2934299434233179, "p95_ms": 0.5277952569079107, "p99_ms": 0.7043448163774058}}
+END lengths-bimodal-buckets-False wall_s 15.95
+START lengths-long-buckets-True
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\lengths-long-buckets-True.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 2.969599342976737, "p50_ms": 3.010966302035813, "p95_ms": 4.951930994827697, "p99_ms": 6.478160091256739}, "generator_lag": {"count": 9966, "mean_ms": 0.2936049921971417, "p50_ms": 0.2934299434233179, "p95_ms": 0.5277952569079107, "p99_ms": 0.7043448163774058}}
+END lengths-long-buckets-True wall_s 16.56
+START lengths-long-buckets-False
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\lengths-long-buckets-False.json", "offered": 9966, "goodput_rps": 996.6, "statuses": {"ok": 9966}, "latency": {"count": 9966, "mean_ms": 3.795360686875209, "p50_ms": 3.7106906032866918, "p95_ms": 6.225384516110734, "p99_ms": 7.372750469430401}, "generator_lag": {"count": 9966, "mean_ms": 0.29586440952239246, "p50_ms": 0.29932788528612664, "p95_ms": 0.5330732094769898, "p99_ms": 0.690466440915014}}
+END lengths-long-buckets-False wall_s 22.11
+START soak
+{"output": "C:\\Users\\xz439\\Documents\\Codex\\2026-10-27\\zhang-xin-duke-gpu-inference-runtime\\outputs\\rtx5090\\sequence\\soak.json", "offered": 300291, "goodput_rps": 1000.97, "statuses": {"ok": 300291}, "latency": {"count": 300291, "mean_ms": 9.445892966486, "p50_ms": 7.983632284745286, "p95_ms": 18.974050180292764, "p99_ms": 39.23018272254902}, "generator_lag": {"count": 300291, "mean_ms": 0.6715284960159322, "p50_ms": 0.3023211641389879, "p95_ms": 0.7185021471865917, "p99_ms": 13.937903635645661}}
+END soak wall_s 305.69

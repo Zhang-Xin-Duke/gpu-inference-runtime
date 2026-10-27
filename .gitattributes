@@ -1,2 +1,2 @@
-# Preserve raw benchmark artifacts byte-for-byte for their SHA-256 checks.
-results/gpu/* -whitespace
+# Preserve benchmark artifact bytes so SHA-256 checks survive Windows checkouts.
+results/rtx5090/** -text

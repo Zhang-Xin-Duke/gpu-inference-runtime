@@ -26,14 +26,14 @@ def main():
     plt.rcParams.update({'font.family':'DejaVu Sans','font.size':10,
                          'axes.spines.top':False,'axes.spines.right':False})
     colors=['#3267aa','#168575']
-    fig=plt.figure(figsize=(10,6.5),facecolor='#f7f9fb')
+    fig=plt.figure(figsize=(10,7.1),facecolor='#f7f9fb')
     gs=fig.add_gridspec(3,2,height_ratios=[.85,1,1],hspace=.5,wspace=.28,
-                        left=.08,right=.96,bottom=.12,top=.86)
+                        left=.08,right=.96,bottom=.17,top=.86)
     cards=[fig.add_subplot(gs[0,i]) for i in range(2)]
     throughput=fig.add_subplot(gs[1,:]);latency=fig.add_subplot(gs[2,0]);queue=fig.add_subplot(gs[2,1])
     def draw(frame):
         end=frame+1;row=rows[frame]
-        fig.suptitle('Recorded distributed inference run',x=.08,ha='left',weight='bold',fontsize=16)
+        fig.suptitle(data.get('title','Recorded distributed inference run'),x=.08,ha='left',weight='bold',fontsize=16)
         for i,ax in enumerate(cards):
             ax.clear();ax.set_axis_off();n=row['backend']['nodes'][i]
             baseline=data['before']['nodes'][i]
@@ -55,7 +55,8 @@ def main():
         latency.set_ylim(0,max(10,float(p99.max())*1.1));latency.set_ylabel('Window P99 latency (ms)')
         for i,color in enumerate(colors):queue.plot(t[:end],inflight[:end,i],label=f'Worker {i+1}',color=color,lw=2)
         queue.set_ylim(0,max(4,float(inflight.max())*1.1));queue.set_ylabel('Outstanding samples');queue.legend(frameon=False,fontsize=8)
-    fig.text(.08,.035,'Playback of measured telemetry. Dashed lines: worker stop / restart request.\nIncludes router, network and host overhead; RPC activity is not GPU utilization.',fontsize=9,color='#536477')
+    caption=data.get('topology_caption','Includes router, network and host overhead; RPC activity is not GPU utilization.')
+    fig.text(.08,.035,'Playback of measured telemetry. Dashed lines: worker stop / restart request.\n'+caption,fontsize=9,color='#536477')
     frames=list(range(0,len(rows),max(1,len(rows)//60)))
     animation=FuncAnimation(fig,draw,frames=frames,interval=120,repeat=True)
     args.output.parent.mkdir(parents=True,exist_ok=True)

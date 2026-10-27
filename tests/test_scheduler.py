@@ -67,10 +67,15 @@ def test_gil_is_released_and_close_drains():
 
 def test_deadline_policy_flushes_before_age_policy():
     q = scheduler(delay_ms=500)
-    q.offer("v1", 1, 10, 25)
-    start = time.monotonic()
+    # Seed a known service estimate so the test does not depend on a 10 ms
+    # cold-start estimate exceeding the operating system's wake-up jitter.
+    warm = q.offer("v1", 4, 10, 1000)
+    assert q.take().ids == [warm]
+    q.finish([warm], 200)
+    q.offer("v1", 1, 10, 250)
+    start = time.perf_counter()
     assert q.take().ids
-    assert time.monotonic() - start < .2
+    assert time.perf_counter() - start < .2
 
 
 @pytest.mark.parametrize("samples,bytes_", [(0, 1), (5, 1), (1, 401)])

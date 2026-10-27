@@ -154,7 +154,7 @@ class Runtime:
                 rid = self.native.offer(f"{version}:{bucket}", n, reservation, timeout_ms)
             except RuntimeError as exc:
                 raise AdmissionError(str(exc)) from exc
-            now = time.monotonic()
+            now = time.perf_counter()
             self.records[rid] = Record(inputs, future, spec, n, bucket, now, now + timeout_ms / 1000)
             return Handle(self, rid, future)
 
@@ -212,7 +212,7 @@ class Runtime:
                         self.metrics["deadline_misses"] += 1
                 if batch.stopped: break
                 if not batch.ids: continue
-                start = time.monotonic()
+                start = time.perf_counter()
                 slot = None
                 try:
                     with self.lock: records = [self.records[rid] for rid in batch.ids]
@@ -227,7 +227,7 @@ class Runtime:
                         if spec.kind == "sequence": slot.host[1][pos:end].copy_(record.tensors[1])
                         offsets.append((pos, end))
                         pos = end
-                    packed = time.monotonic()
+                    packed = time.perf_counter()
                     with torch.inference_mode():
                         if self.device.type == "cuda":
                             with torch.cuda.device(self.device):
@@ -256,13 +256,13 @@ class Runtime:
                             if output.shape != (pos, spec.outputs) or output.dtype != torch.float32:
                                 raise ValueError("model output must be float32 [samples, outputs]")
                             slot.output[:pos].copy_(output)
-                    self.pending.put((batch, records, slot, offsets, start, packed, None, (time.monotonic() - packed) * 1000))
+                    self.pending.put((batch, records, slot, offsets, start, packed, None, (time.perf_counter() - packed) * 1000))
                 except Exception as exc:
                     # A partially launched batch may still own CUDA buffers.
                     if self.device.type == "cuda":
                         try: torch.cuda.synchronize(self.device)
                         except Exception as sync_error: self._poison(sync_error)
-                    self.pending.put((batch, None, slot, None, start, time.monotonic(), exc, 0.))
+                    self.pending.put((batch, None, slot, None, start, time.perf_counter(), exc, 0.))
         finally:
             self.pending.put(None)
 
@@ -292,7 +292,7 @@ class Runtime:
                     if self.device.type == "cuda":
                         try: torch.cuda.synchronize(self.device)
                         except Exception as sync_error: self._poison(sync_error)
-            completed = time.monotonic()
+            completed = time.perf_counter()
             with self.lock:
                 for i, rid in enumerate(batch.ids):
                     record = self.records.pop(rid)

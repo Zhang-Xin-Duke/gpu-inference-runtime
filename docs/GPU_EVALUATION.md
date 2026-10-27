@@ -1,5 +1,15 @@
 # GPU evaluation procedure
 
+## Completed local RTX 5090 evaluation
+
+The local Windows WDDM run completed the dense/sequence matrices, both five-minute soaks, three-seed large FP32 workloads and a same-card two-process stop/restart experiment. See [results and limitations](RTX5090_EVALUATION.md) and [raw artifacts](../results/rtx5090/). The local traces contain real stream/kernel/copy metadata but show zero measured copy/compute overlap. Two-host/two-GPU scaling remains pending.
+
+The actual matrix used 10-second cells and 300-second soaks. Install CUDA-enabled PyTorch using the official selector, then build the C++20 extension for the local Python; do not reuse another machine's binary. `scripts/build_windows_zig.py` supplies a project-local compiler fallback when MSVC is unavailable. Normal CMake wheel builds can select Ninja and Zig explicitly. All three CUDA cases executed; the Unix SIGTERM drain test is skipped on Windows. Full wheel commands and validation logs accompany the results.
+
+Measurements use high-resolution monotonic `perf_counter`, since this Python build's Windows `monotonic()` implementation has 15.625 ms resolution. Record the selected clock and FP32/TF32 settings with hardware/software metadata. A deadline-flush unit test now seeds a known service estimate instead of depending on OS wake-up jitter being smaller than the 10 ms cold-start estimate.
+
+`scripts/compute_saturation.py` exercises a roughly 2.15B-parameter FP32 MLP without changing precision or driver power limits. It deliberately overloads admission; report rejections and expirations alongside goodput rather than calling the offered rate sustainable capacity.
+
 ## Prepare before starting a paid instance
 
 1. Run CPU tests and build the package locally.
