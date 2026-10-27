@@ -1,0 +1,194 @@
+[
+  {
+    "traffic": "steady",
+    "kind": "dense",
+    "mode": "unbatched",
+    "repetitions": 3,
+    "on_time": 37,
+    "offered": 4500,
+    "median_goodput_rps": 7.697804188040808,
+    "median_p99_ms": 108.55913546867669,
+    "median_generator_lag_p99_ms": 6.206105202436447,
+    "rates": [
+      0.8,
+      0.8,
+      0.8666666666666667
+    ]
+  },
+  {
+    "traffic": "steady",
+    "kind": "dense",
+    "mode": "sync",
+    "repetitions": 3,
+    "on_time": 4446,
+    "offered": 4500,
+    "median_goodput_rps": 997.6202331110384,
+    "median_p99_ms": 99.28986590355635,
+    "median_generator_lag_p99_ms": 74.45698775816709,
+    "rates": [
+      97.33333333333333,
+      99.06666666666666,
+      100.0
+    ]
+  },
+  {
+    "traffic": "steady",
+    "kind": "dense",
+    "mode": "pipeline",
+    "repetitions": 3,
+    "on_time": 4500,
+    "offered": 4500,
+    "median_goodput_rps": 1022.0549411981781,
+    "median_p99_ms": 27.8687200974673,
+    "median_generator_lag_p99_ms": 6.02759804110974,
+    "rates": [
+      100.0,
+      100.0,
+      100.0
+    ]
+  },
+  {
+    "traffic": "steady",
+    "kind": "sequence",
+    "mode": "unbatched",
+    "repetitions": 3,
+    "on_time": 54,
+    "offered": 4500,
+    "median_goodput_rps": 11.584329952021035,
+    "median_p99_ms": 106.85922958888113,
+    "median_generator_lag_p99_ms": 2.7882943814620376,
+    "rates": [
+      1.2,
+      1.0666666666666667,
+      1.3333333333333333
+    ]
+  },
+  {
+    "traffic": "steady",
+    "kind": "sequence",
+    "mode": "sync",
+    "repetitions": 3,
+    "on_time": 4305,
+    "offered": 4500,
+    "median_goodput_rps": 958.413862811626,
+    "median_p99_ms": 127.2158466791734,
+    "median_generator_lag_p99_ms": 81.31897701416165,
+    "rates": [
+      95.0,
+      94.8,
+      97.2
+    ]
+  },
+  {
+    "traffic": "steady",
+    "kind": "sequence",
+    "mode": "pipeline",
+    "repetitions": 3,
+    "on_time": 4500,
+    "offered": 4500,
+    "median_goodput_rps": 992.4865969522382,
+    "median_p99_ms": 82.18101732898504,
+    "median_generator_lag_p99_ms": 6.772852917201817,
+    "rates": [
+      100.0,
+      100.0,
+      100.0
+    ]
+  },
+  {
+    "traffic": "burst",
+    "kind": "dense",
+    "mode": "unbatched",
+    "repetitions": 3,
+    "on_time": 251,
+    "offered": 4500,
+    "median_goodput_rps": 54.486480596513054,
+    "median_p99_ms": 106.8793921964243,
+    "median_generator_lag_p99_ms": 6.031370349228382,
+    "rates": [
+      5.933333333333334,
+      5.333333333333333,
+      5.466666666666667
+    ]
+  },
+  {
+    "traffic": "burst",
+    "kind": "dense",
+    "mode": "sync",
+    "repetitions": 3,
+    "on_time": 4268,
+    "offered": 4500,
+    "median_goodput_rps": 1033.9512503398637,
+    "median_p99_ms": 99.67830706387758,
+    "median_generator_lag_p99_ms": 71.54022319242358,
+    "rates": [
+      100.0,
+      99.13333333333334,
+      85.4
+    ]
+  },
+  {
+    "traffic": "burst",
+    "kind": "dense",
+    "mode": "pipeline",
+    "repetitions": 3,
+    "on_time": 4500,
+    "offered": 4500,
+    "median_goodput_rps": 1049.8602668610406,
+    "median_p99_ms": 41.39261031989008,
+    "median_generator_lag_p99_ms": 6.700671017169952,
+    "rates": [
+      100.0,
+      100.0,
+      100.0
+    ]
+  },
+  {
+    "traffic": "burst",
+    "kind": "sequence",
+    "mode": "unbatched",
+    "repetitions": 3,
+    "on_time": 406,
+    "offered": 4500,
+    "median_goodput_rps": 86.0061567013731,
+    "median_p99_ms": 105.8070611488074,
+    "median_generator_lag_p99_ms": 8.445810419507325,
+    "rates": [
+      8.666666666666666,
+      8.133333333333333,
+      10.266666666666667
+    ]
+  },
+  {
+    "traffic": "burst",
+    "kind": "sequence",
+    "mode": "sync",
+    "repetitions": 3,
+    "on_time": 4096,
+    "offered": 4500,
+    "median_goodput_rps": 955.353808059697,
+    "median_p99_ms": 103.61627160105854,
+    "median_generator_lag_p99_ms": 72.8764328872785,
+    "rates": [
+      93.53333333333333,
+      92.8,
+      86.73333333333333
+    ]
+  },
+  {
+    "traffic": "burst",
+    "kind": "sequence",
+    "mode": "pipeline",
+    "repetitions": 3,
+    "on_time": 4466,
+    "offered": 4500,
+    "median_goodput_rps": 1012.0361176309804,
+    "median_p99_ms": 99.9824872566387,
+    "median_generator_lag_p99_ms": 26.72722636256367,
+    "rates": [
+      99.93333333333334,
+      99.0,
+      98.8
+    ]
+  }
+]

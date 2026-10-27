@@ -1,0 +1,47 @@
+{
+  "source_revision": "57cbe4f43f864b583973b7bc6161b8f961014547",
+  "local": {
+    "platform": "macOS arm64",
+    "python": "3.12.12",
+    "tests_passed": 22,
+    "cuda_tests_skipped": 3,
+    "wheel_build": "passed",
+    "normal_install": "passed"
+  },
+  "ci": {
+    "url": "https://github.com/Zhang-Xin-Duke/gpu-inference-runtime/actions/runs/40509579725",
+    "status": "success",
+    "platform": "ubuntu-latest",
+    "python": [
+      "3.11",
+      "3.12"
+    ],
+    "command": "python -m pytest -m 'not cuda' -q"
+  },
+  "gpu": {
+    "status": "25 tests passed; no skips",
+    "hardware": {
+      "platform": "Linux-6.17.0-35-generic-x86_64-with-glibc2.35",
+      "python": "3.12.13",
+      "torch": "2.12.1+cu130",
+      "cuda": "13.0",
+      "device": "cuda",
+      "torch_threads": 1,
+      "gpu": "NVIDIA L40",
+      "gpu_bytes": 47695921152,
+      "capability": [
+        8,
+        9
+      ],
+      "nvidia_smi": "610.43.02"
+    },
+    "matrix": "3 steady seeds, 3 burst seeds, age policy, no buckets, large dense",
+    "artifact_sha256_checks": "passed",
+    "overlap": "not established; provider lists GPU profilers as incompatible",
+    "provider_compatibility": "https://www.thundercompute.com/docs/compatibility",
+    "cleanup": "both temporary instances deleted; CLI instance list empty"
+  },
+  "cluster_deployment": {
+    "status": "example only; unverified"
+  }
+}

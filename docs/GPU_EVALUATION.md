@@ -27,6 +27,8 @@ The checked-in `scripts/gpu_matrix.sh` runs the prepared matrix within a wall-cl
 bash scripts/gpu_matrix.sh
 ```
 
+On Thunder Compute, skip GPU-profiler interpretation: the provider lists GPU profilers as incompatible. The application benchmark remains useful, but verify physical stream overlap on a standard CUDA environment. The saved Thunder trace is diagnostic only.
+
 The first pass uses small runs to identify load-generator or model limits. Increase offered load only while recording generator lag, rejection and expiry. A throughput increase under a saturated workload is different from a latency change below saturation. Use multiple seeds and repetitions before drawing a stable comparative conclusion.
 
 ## Trace

@@ -1,0 +1,2 @@
+# Preserve raw benchmark artifacts byte-for-byte for their SHA-256 checks.
+results/gpu/* -whitespace

@@ -170,9 +170,41 @@ The configurations isolate execution choices:
 
 On CPU, `sync` and `pipeline` both execute one batch at a time. CPU runs cannot demonstrate transfer/compute overlap. `--policy age` disables the deadline-based early flush; `--no-buckets` pads sequences to the registered maximum for an ablation. `--samples` selects samples per request (the unbatched baseline still executes one request at a time); `--features`, `--hidden`, and `--embedding` scale model work. `--burst` compresses each 200 ms arrival interval into its first 20 ms.
 
-The CUDA timeline records events against a shared origin. `measured_cross_batch_h2d_compute_overlap_ms` sums intersections between one batch's H2D interval and another batch's compute interval. A positive value provides event-level evidence of overlap; a speedup still requires throughput and latency comparisons. See [GPU evaluation procedure](docs/GPU_EVALUATION.md) for the prepared test matrix and trace instructions.
+The CUDA timeline records events against a shared origin. `measured_cross_batch_h2d_compute_overlap_ms` sums intersections between one batch's H2D interval and another batch's compute interval. On a platform with supported event/profiler semantics, a positive value provides event-level evidence of overlap; a speedup still requires throughput and latency comparisons. See [GPU evaluation procedure](docs/GPU_EVALUATION.md) for the prepared test matrix and trace instructions.
 
-### Local smoke results
+### GPU application-level results
+
+The GPU run used one Thunder Compute **NVIDIA L40 (48 GB class)** instance, six vCPUs, Python 3.12.13, PyTorch 2.12.1+cu130 and one PyTorch CPU thread. Both dense and sequence outputs passed the direct-model comparisons; all **25 tests passed**, including the CUDA tests. [Raw results and SHA-256 checks](results/gpu/) accompany the run.
+
+Each steady/burst configuration used 1,500 requests, three seeds (7, 17, 27), a nominal 1,000 requests/s arrival process and a 100 ms deadline. The table aggregates on-time counts; latency, goodput and generator lag are medians of the three per-run summaries. These are application-level results on a virtualized GPU, including host scheduling and framework overhead.
+
+![Application-level deadline completion](docs/gpu-deadline-completion.svg)
+
+| Traffic / model | Mode | On-time / 4,500 | Goodput (req/s) | P99 (ms) | Generator lag P99 (ms) |
+|---|---|---:|---:|---:|---:|
+| steady / dense | unbatched | 37 | 7.7 | 108.56 | 6.21 |
+| steady / dense | sync | 4,446 | 997.6 | 99.29 | 74.46 |
+| steady / dense | pipeline | 4,500 | 1022.1 | 27.87 | 6.03 |
+| steady / sequence | unbatched | 54 | 11.6 | 106.86 | 2.79 |
+| steady / sequence | sync | 4,305 | 958.4 | 127.22 | 81.32 |
+| steady / sequence | pipeline | 4,500 | 992.5 | 82.18 | 6.77 |
+| burst / dense | unbatched | 251 | 54.5 | 106.88 | 6.03 |
+| burst / dense | sync | 4,268 | 1034.0 | 99.68 | 71.54 |
+| burst / dense | pipeline | 4,500 | 1049.9 | 41.39 | 6.70 |
+| burst / sequence | unbatched | 406 | 86.0 | 105.81 | 8.45 |
+| burst / sequence | sync | 4,096 | 955.4 | 103.62 | 72.88 |
+| burst / sequence | pipeline | 4,466 | 1012.0 | 99.98 | 26.73 |
+
+Batching substantially increased the number of requests meeting this deadline compared with executing one request at a time. Two in-flight slots completed all 4,500 steady-traffic requests for each model; burst sequence traffic completed 4,466 / 4,500. The shared-process generator stalled more in several one-slot runs, so these comparisons include host-side scheduling effects and do not isolate a CUDA-overlap benefit.
+
+**Workload-dependent outcomes:** the single-run sequence ablation reduced padded token positions from 384,000 to 125,728 with buckets, while observed P99 increased from 33.47 to 79.36 ms. Reducing padding did not guarantee a latency improvement in this workload. In the larger dense exploratory run (4 samples/request, 4,096 features, hidden width 2,048, nominal 2,000 requests/s), two slots produced 431.5 deadline-goodput requests/s versus 525.3 with one slot; its generator lag P99 reached 123.25 ms. That run cannot establish the runtime's maximum sustainable throughput.
+
+**Profiling boundary:** Thunder [documents GPU virtualization](https://www.thundercompute.com/docs/legacy/prototyping-and-production-modes) and lists [GPU profilers as incompatible](https://www.thundercompute.com/docs/compatibility). The exported trace contains generic kernel names, stream ID 0 and zero-byte copy metadata. The event-based overlap counter reported 0 ms. This run does **not** establish physical transfer/compute overlap; validate that separately on a standard CUDA environment. The repository retains the trace as a diagnostic artifact.
+
+<details>
+<summary>Local CPU smoke results</summary>
+
+
 
 The checked-in [raw CPU smoke run](results/cpu-smoke.json) records 300 requests per model/mode, a nominal 500 requests/s arrival process, a 100 ms deadline and one PyTorch CPU thread. This is a functional and instrumentation check; it does not measure maximum sustainable throughput or GPU performance. Arrival randomness and generator scheduling affect this short run.
 
@@ -187,16 +219,26 @@ The checked-in [raw CPU smoke run](results/cpu-smoke.json) records 300 requests 
 
 The deterministic padding test uses four length-5 sequences and a configured maximum length of 128. Without buckets it prepares 512 token positions; bucket 8 prepares 32, with the same 20 useful tokens and matching outputs.
 
+</details>
+
 ### Validation status
 
 | Check | Status |
 |---|---|
-| CPU scheduler/runtime/service tests | 22 passed on macOS arm64 |
-| CUDA-specific tests | 3 prepared; GPU execution pending |
+| CPU scheduler/runtime/service tests | 22 passed locally; Linux Python 3.11 and 3.12 [CI passed](https://github.com/Zhang-Xin-Duke/gpu-inference-runtime/actions/runs/40509579725) |
+| CUDA scheduler/runtime tests | 25 total tests passed on Thunder L40; no CUDA skips |
 | Wheel build and normal installation | Passed locally |
-| Open-loop CPU smoke benchmark | Both models and all three modes passed correctness checks |
+| Open-loop GPU benchmark | Steady/burst runs across 3 seeds, policy/padding ablations and larger-model exploratory run completed |
+| Physical CUDA stream overlap | Unestablished; provider profiler limitations documented above |
 | Container image / GPU Kubernetes deployment | Example supplied; deployment unverified |
 | Google Borg deployment | Requires internal access; unverified |
+
+To regenerate the result summary and chart from saved runs:
+
+```bash
+python -m pip install matplotlib
+python benchmarks/summarize.py --root results/gpu --plot docs/gpu-deadline-completion.svg
+```
 
 ## Repository map
 
