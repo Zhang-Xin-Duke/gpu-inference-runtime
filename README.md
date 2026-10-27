@@ -1,5 +1,7 @@
 # GPU Inference Runtime
 
+[Workstation handoff / continuation notes](docs/HANDOFF_2026-10-27.md)
+
 **Bounded dynamic batching and event-driven execution for GPU inference.**
 
 
