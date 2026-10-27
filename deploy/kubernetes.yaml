@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gpu-inference-runtime
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: gpu-inference-runtime}
+  template:
+    metadata:
+      labels: {app: gpu-inference-runtime}
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: runtime
+          # Build and push this image before applying; requires an NVIDIA device plugin.
+          image: gpu-inference-runtime:local
+          imagePullPolicy: IfNotPresent
+          ports: [{containerPort: 8080}]
+          resources:
+            requests: {cpu: "2", memory: "4Gi", nvidia.com/gpu: 1}
+            limits: {cpu: "2", memory: "4Gi", nvidia.com/gpu: 1}
+          startupProbe:
+            httpGet: {path: /readyz, port: 8080}
+            failureThreshold: 60
+            periodSeconds: 5
+          readinessProbe:
+            httpGet: {path: /readyz, port: 8080}
+            periodSeconds: 2
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gpu-inference-runtime
+spec:
+  selector: {app: gpu-inference-runtime}
+  ports: [{port: 8080, targetPort: 8080}]

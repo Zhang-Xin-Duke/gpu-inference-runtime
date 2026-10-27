@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.20)
+project(bounded_gpu_runtime LANGUAGES CXX)
+find_package(Python COMPONENTS Interpreter Development.Module REQUIRED)
+find_package(pybind11 CONFIG REQUIRED)
+pybind11_add_module(_scheduler cpp/scheduler.cpp)
+target_compile_features(_scheduler PRIVATE cxx_std_20)
+target_compile_options(_scheduler PRIVATE -Wall -Wextra -Wpedantic)
+install(TARGETS _scheduler DESTINATION gpu_runtime)
