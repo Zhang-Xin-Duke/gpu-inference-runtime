@@ -11,7 +11,7 @@ Two-slot batching completed all 18,000 requests in the three-seed steady/burst c
 - A wheel was built with the normal scikit-build/CMake backend and installed successfully using project-local Zig 0.13.0 as the C++20 compiler. MSVC was unavailable. The direct extension fallback is reproducible with `scripts/build_windows_zig.py`.
 - Timing uses monotonic, high-resolution `perf_counter` (QueryPerformanceCounter on this Python build). Its `monotonic()` clock used GetTickCount64 with 15.625 ms resolution, unsuitable for these latency measurements. POSIX memory telemetry gained a native Windows working-set implementation; MSVC warning flags are selected separately from GCC/Clang flags.
 - FP32 model/input/output contract; `float32_matmul_precision=highest`, TF32 disabled. Precision and clock metadata accompany later cells. No reduced-precision speedup is claimed.
-- Original inference-code checkout: `2874673`; the docs-only handoff commit `aa23bb5` was merged during evaluation. This commit contains the Windows portability/timing changes used for measurement. Raw configurations, environment, source reference and SHA-256 checks accompany the results.
+- Runtime baseline: `2874673`, with the Windows portability/timing changes included in this repository. Raw configurations, environment, source reference and SHA-256 checks accompany the results.
 
 ## Three-seed steady and burst comparison
 
@@ -36,7 +36,7 @@ Two slots improved observed latency in these runs, but the one-slot shared-proce
 
 ## Independent-process sweeps
 
-The prepared dense (40 cells) and sequence (39 cells) matrices cover 100–8,000 requests/s, three execution modes, batch limits 8/16/32/64, one/two/four slots, model/sample sizes, four sequence-length distributions with and without buckets, and a 300 s soak per model. Load/model/length cells and batch/slot cells use 10 s windows, seed 7; this is shorter than the handoff's illustrative 15 s setting. These cells are exploratory, not repeated confidence estimates.
+The dense (40 cells) and sequence (39 cells) matrices cover 100–8,000 requests/s, three execution modes, batch limits 8/16/32/64, one/two/four slots, model/sample sizes, four sequence-length distributions with and without buckets, and a 300 s soak per model. Load/model/length cells and batch/slot cells use 10 s windows, seed 7. These cells are exploratory, not repeated confidence estimates.
 
 At the highest tested nominal rate, both pipeline models completed 80,063 / 80,063 requests in 10 s (8,006.3 req/s). Dense/sequence P99 were 17.01/45.09 ms. This establishes behavior at the tested load, not maximum sustainable throughput. Under unbatched overload, on-time goodput collapsed while requests expired; those negative outcomes remain in the data.
 

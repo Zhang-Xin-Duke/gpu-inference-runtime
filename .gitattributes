@@ -1,2 +1,4 @@
 # Preserve benchmark artifact bytes so SHA-256 checks survive Windows checkouts.
 results/rtx5090/** -text
+docs/demo/** -text
+results/demo*.json -text

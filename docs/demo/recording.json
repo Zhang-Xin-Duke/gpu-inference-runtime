@@ -1,0 +1,142 @@
+{
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "torch": "2.12.1+cu130",
+  "seed": 7,
+  "max_requests": 4,
+  "max_batch": 4,
+  "inputs": [
+    {
+      "label": "A",
+      "shape": [
+        1,
+        256
+      ]
+    },
+    {
+      "label": "B",
+      "shape": [
+        1,
+        256
+      ]
+    },
+    {
+      "label": "C",
+      "shape": [
+        1,
+        256
+      ]
+    },
+    {
+      "label": "D",
+      "shape": [
+        1,
+        256
+      ]
+    }
+  ],
+  "forward_shapes": [
+    [
+      4,
+      256
+    ]
+  ],
+  "fifth_request_rejected": true,
+  "outputs": [
+    {
+      "label": "A",
+      "shape": [
+        1,
+        32
+      ],
+      "device": "cpu",
+      "first_three_values": [
+        0.023104725405573845,
+        -0.13914987444877625,
+        0.03499472141265869
+      ]
+    },
+    {
+      "label": "B",
+      "shape": [
+        1,
+        32
+      ],
+      "device": "cpu",
+      "first_three_values": [
+        0.031474120914936066,
+        -0.04360802099108696,
+        0.2011023312807083
+      ]
+    },
+    {
+      "label": "C",
+      "shape": [
+        1,
+        32
+      ],
+      "device": "cpu",
+      "first_three_values": [
+        0.23478740453720093,
+        -0.20968304574489594,
+        -0.0002481117844581604
+      ]
+    },
+    {
+      "label": "D",
+      "shape": [
+        1,
+        32
+      ],
+      "device": "cpu",
+      "first_three_values": [
+        0.2594835162162781,
+        -0.10732404887676239,
+        0.016073573380708694
+      ]
+    }
+  ],
+  "correctness": "direct-model parity passed (rtol=1e-4, atol=1e-5)",
+  "stats": {
+    "peak_reserved_bytes": 8704,
+    "active_batches": 0,
+    "active_requests": 0,
+    "expired": 0,
+    "queued": 0,
+    "reserved_bytes": 0,
+    "rejected": 1,
+    "accepted": 4,
+    "completed": 4,
+    "failed": 0,
+    "cancelled": 0,
+    "deadline_misses": 0,
+    "batches": 1,
+    "samples": 4,
+    "padded_tokens": 0,
+    "useful_tokens": 0,
+    "pack_ms": 3.450099997280631,
+    "h2d_ms": 0.21782399713993073,
+    "compute_ms": 137.98326110839844,
+    "d2h_ms": 0.06217600032687187,
+    "staging_bytes": 8704,
+    "peak_staging_bytes": 8704,
+    "backend_failed": false,
+    "ready": true
+  },
+  "timeline": [
+    {
+      "start": 36957.8629328,
+      "packed": 36957.8663829,
+      "end": 36958.0066076,
+      "samples": 4,
+      "h2d_ms": 0.21782399713993073,
+      "compute_ms": 137.98326110839844,
+      "d2h_ms": 0.06217600032687187,
+      "h2d_start_ms": 6.513440132141113,
+      "h2d_end_ms": 6.731264114379883,
+      "compute_start_ms": 7.219871997833252,
+      "compute_end_ms": 145.20314025878906
+    }
+  ],
+  "playback": "Explanatory stages from this recorded run; animation timing is schematic, not a performance trace."
+}

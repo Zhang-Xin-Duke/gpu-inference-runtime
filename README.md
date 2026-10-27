@@ -1,21 +1,31 @@
 # GPU Inference Runtime
 
-[Workstation handoff / continuation notes](docs/HANDOFF_2026-10-27.md)
+**Independent requests in. GPU batches out. Individual results back.**
 
-**Bounded dynamic batching and event-driven execution for GPU inference.**
+A C++20 / PyTorch runtime for services with many independent inference callers. It combines compatible requests into GPU batches, bounds accepted work, and returns a separate CPU tensor to each caller.
 
+![Demo: independent CPU requests become one GPU batch and return individual results](docs/demo/runtime-demo.gif)
+
+**[Watch/download the terminal walkthrough (MP4)](https://github.com/Zhang-Xin-Duke/gpu-inference-runtime/raw/refs/heads/main/docs/demo/terminal-walkthrough.mp4)** — real CUDA commands showing batching, overload rejection, sequence buckets, HTTP inference and a short load test. [Recording and replay instructions](docs/demo/README.md).
+
+**The demo in one sentence:** four `[1, 256]` inputs become one `[4, 256]` GPU forward, then four `[1, 32]` CPU results; a fifth request is rejected because the admission limit is four.
+
+1. **Admit:** reserve request and byte capacity before packing tensors.
+2. **Batch:** group compatible model versions and shapes; flush on size, age or deadline.
+3. **Complete:** copy results back, restore each caller's rows, then recycle staging buffers.
+
+The animation illustrates a [real recorded RTX 5090 run](docs/demo/recording.json), slowed into explanatory stages. Its timing is schematic. Outputs passed comparison with a direct model forward.
+
+After [installation](#quick-start), run the same example:
+
+```bash
+python examples/quick_demo.py --device cuda
+# cuda: 4 requests -> [[4, 256]] model forward -> 4 CPU results; fifth rejected; parity passed
+```
+
+Use `--device cpu` to explore the same request lifecycle without a GPU. [Example source](examples/quick_demo.py) · [Architecture](docs/DESIGN.md) · [Quick start](#quick-start).
 
 ## Measured behavior at a glance
-
-Independent requests enter a bounded queue, compatible requests share a GPU batch, and each caller receives its own result.
-
-```mermaid
-flowchart LR
-    R[CPU requests] --> A[Bounded admission]
-    A --> B[Compatible batches]
-    B --> G[RTX 5090 model execution]
-    G --> O[Owned per-request CPU results]
-```
 
 **Measured on one local RTX 5090, Windows WDDM, FP32:**
 

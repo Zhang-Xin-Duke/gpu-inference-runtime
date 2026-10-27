@@ -1,24 +1,10 @@
-# GPU evaluation procedure
+# GPU evaluation
 
-## Completed local RTX 5090 evaluation
+Evaluate correctness first, then compare latency and deadline goodput under matched inputs and offered load. The bundled models exercise real inference operations with random weights; these benchmarks measure runtime behavior rather than prediction quality.
 
-The local Windows WDDM run completed the dense/sequence matrices, both five-minute soaks, three-seed large FP32 workloads and a same-card two-process stop/restart experiment. See [results and limitations](RTX5090_EVALUATION.md) and [raw artifacts](../results/rtx5090/). The local traces contain real stream/kernel/copy metadata but show zero measured copy/compute overlap. Two-host/two-GPU scaling remains pending.
+## Setup and correctness
 
-The actual matrix used 10-second cells and 300-second soaks. Install CUDA-enabled PyTorch using the official selector, then build the C++20 extension for the local Python; do not reuse another machine's binary. `scripts/build_windows_zig.py` supplies a project-local compiler fallback when MSVC is unavailable. Normal CMake wheel builds can select Ninja and Zig explicitly. All three CUDA cases executed; the Unix SIGTERM drain test is skipped on Windows. Full wheel commands and validation logs accompany the results.
-
-Measurements use high-resolution monotonic `perf_counter`, since this Python build's Windows `monotonic()` implementation has 15.625 ms resolution. Record the selected clock and FP32/TF32 settings with hardware/software metadata. A deadline-flush unit test now seeds a known service estimate instead of depending on OS wake-up jitter being smaller than the 10 ms cold-start estimate.
-
-`scripts/compute_saturation.py` exercises a roughly 2.15B-parameter FP32 MLP without changing precision or driver power limits. It deliberately overloads admission; report rejections and expirations alongside goodput rather than calling the offered rate sustainable capacity.
-
-## Prepare before starting a paid instance
-
-1. Run CPU tests and build the package locally.
-2. Prepare a source archive containing only this repository, excluding `.venv`, `.git`, build outputs and credentials.
-3. Confirm the instance quote and remaining budget. Use one GPU and the included CPU/disk allocation.
-4. Prepare remote setup, correctness, benchmark and artifact download commands. Keep package installation time inside the rental budget.
-5. Set an external cleanup deadline. A guest OS shutdown alone may not stop provider billing; confirm deletion or stop in the provider control plane.
-
-## First GPU checks
+Use Python 3.11+, a C++20 compiler and CUDA-enabled PyTorch appropriate for the GPU and driver. Follow PyTorch's [installation selector](https://pytorch.org/get-started/locally/). Build the extension for the selected Python environment.
 
 ```bash
 nvidia-smi
@@ -27,24 +13,45 @@ python -m pip install '.[test]'
 python -m pytest -q
 ```
 
-All CUDA-marked tests must execute rather than skip. They compare dense and variable-length model outputs, reuse slots and switch sequence buckets. If dependencies or correctness checks fail, stop performance runs until the cause is understood.
+All CUDA-marked tests must execute on a GPU host. They compare dense/variable-length outputs, reuse staging slots and switch sequence buckets. Resolve correctness failures before measuring performance. On Windows, the Unix SIGTERM drain test is skipped; `scripts/build_windows_zig.py` supplies a local compiler fallback when MSVC is unavailable.
 
-## Measurements
-
-The checked-in `scripts/gpu_matrix.sh` runs the prepared matrix within a wall-clock timeout: steady traffic for both models, burst traffic, deadline-policy ablation and sequence-padding ablation. It saves raw JSON, software/device information, pytest output and a profiler trace under `results/gpu/`.
+## Start with the demo and a smoke test
 
 ```bash
-bash scripts/gpu_matrix.sh
+python examples/quick_demo.py --device cuda
+python benchmarks/extended.py --device cuda --duration 10 --rps 1000 \
+    --output results/smoke.json
 ```
 
-On Thunder Compute, skip GPU-profiler interpretation: the provider lists GPU profilers as incompatible. The application benchmark remains useful, but verify physical stream overlap on a standard CUDA environment. The saved Thunder trace is diagnostic only.
+Inspect generator lag, transport delay, admission time, output checks and terminal accounting. The extended harness uses a separate arrival-generator process, a bounded descriptor queue and fixed-memory latency histograms. Timing uses monotonic, high-resolution `perf_counter`; hardware metadata records the selected clock and FP32/TF32 settings.
 
-The first pass uses small runs to identify load-generator or model limits. Increase offered load only while recording generator lag, rejection and expiry. A throughput increase under a saturated workload is different from a latency change below saturation. Use multiple seeds and repetitions before drawing a stable comparative conclusion.
+## Workload matrix
 
-## Trace
+```bash
+python scripts/extended_matrix.py --device cuda --kind dense \
+    --output-dir results/experiment/dense --cell-seconds 10 --soak-seconds 300
+python scripts/extended_matrix.py --device cuda --kind sequence \
+    --output-dir results/experiment/sequence --cell-seconds 10 --soak-seconds 300
+```
 
-`benchmarks/profile_cuda.py` captures CPU launch activity and CUDA kernels/copies using PyTorch Profiler. Open the exported Chrome trace in a compatible local trace viewer. The runtime's event timeline complements the profiler; queued stream operations alone do not establish overlap.
+These matrices vary offered load, execution mode, batch limit, in-flight slots, model/sample size and sequence-length distribution. Sequence runs include bucketed/unbucketed padding. Both models include a five-minute soak with resource observations.
 
-## Cleanup
+`scripts/compute_saturation.py --output-dir results/experiment` adds three-seed workloads using an approximately 2.15B-parameter FP32 MLP. It targets a 32 GB GPU and deliberately overloads admission. Report rejection and expiration alongside goodput; the offered rate is not a sustainable-capacity estimate.
 
-Download results, verify the files and their checksums locally, then stop or delete only the temporary instance created for this evaluation. Confirm no running instance remains and record billed usage separately from the original price estimate.
+The smaller `scripts/gpu_matrix.sh` runs the original steady/burst, policy and padding comparisons. Use multiple seeds and repetitions before making stable comparative claims. Preserve unfavorable outcomes and distinguish saturated throughput from latency below saturation.
+
+## CUDA trace
+
+```bash
+python benchmarks/profile_cuda.py --output results/experiment/trace.json
+```
+
+Open the Chrome trace in a compatible viewer. Check real kernel names, stream IDs and copy sizes. Separate streams and queued operations alone do not prove physical overlap; inspect copy/kernel time intersections. The runtime's CUDA-event timeline complements the profiler.
+
+The local [RTX 5090 evaluation](RTX5090_EVALUATION.md) contains genuine CUDA trace metadata but measured zero copy/compute overlap. The earlier Thunder L40 provider lists GPU profilers as incompatible, so its trace remains diagnostic only. Neither result establishes verified physical overlap.
+
+## Reproduction and comparisons
+
+Save raw JSON, hardware/software, configuration, seed, source revision, test output and checksums. Record generator lag, rejection, expiry and drain duration alongside goodput and completion latency. Report actual GPU count and transport conditions when testing replicas; two processes sharing one card do not measure two-GPU scaling.
+
+[RTX 5090 raw data](../results/rtx5090/) includes both five-minute soaks, larger workloads, recorded telemetry and same-GPU process failure/recovery. It also contains wheel build commands and validation logs. [Distributed evaluation](DISTRIBUTED.md) describes replica-count sweeps and controlled stop/restart tests.
