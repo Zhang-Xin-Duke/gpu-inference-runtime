@@ -2,4 +2,4 @@
 results/rtx5090/** -text
 docs/demo/** -text
 results/demo*.json -text
-results/three-l40-2026-10-28/** -text
+results/three-l40-2026-10-28/** -text -whitespace
