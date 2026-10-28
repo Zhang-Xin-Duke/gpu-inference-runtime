@@ -1,5 +1,9 @@
 # Multi-GPU compute and recovery evaluation
 
+This report preserves the earlier short compute and three-replica recovery runs.
+The [extended L40 stress evaluation](STRESS_EVALUATION.md) contains the current
+load matrix, connection-lifetime repair, sustained overload and stability data.
+
 On October 28, 2026, a compute-heavy workload increased deadline goodput from
 **244.1 to 519.85 requests/s** when moving from one to two L40 devices. A separate
 three-replica experiment verified progress on healthy workers during a worker

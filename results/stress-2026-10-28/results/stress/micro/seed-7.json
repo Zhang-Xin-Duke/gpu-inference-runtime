@@ -1,0 +1,3633 @@
+{
+  "gpu": "NVIDIA L40",
+  "torch": "2.12.1+cu130",
+  "cuda": "13.0",
+  "cpu_threads": 1,
+  "iterations": 20,
+  "rounds": 3,
+  "suite": "extended",
+  "seed": 7,
+  "timing_scope": "stream intervals include GPU idle time caused by host submission; wall times synchronize completion",
+  "sources": {
+    "feature_pack.py": "394eb7f921844466cda6dffb2583a5feb62c5ba890d31af2f50f5798936f4436",
+    "wire.py": "7743d9181455dd05725020edbc66fdd03beea2052dc86f14e0d29508ae3bd951",
+    "distributed.py": "63c473caac2f6c67d93de71cd3ca977c00697d149fab8353aa99cd353a2c2828",
+    "models.py": "6c53e0fe8a8a0a41906ad9e71df8aa451acea46dd289d2c9f67ef563f1f0c282",
+    "runtime.py": "d00f9cd7375b9a7ae63f90ff408e358deb74361777b95c78d6323632ca3055c8",
+    "service.py": "183ea8cb22fba89821339409d391aa81fec67bc28f2cde9e8fa41c783962b09c",
+    "__init__.py": "4b9fb52ba60295e1b5c08fd7657ee0dfcc2e1bc732bdfa8214d97ef7e81fc477",
+    "cuda/feature_pack.cu": "d7dd755f7fde6dc119b9c82fb3caaed5917b08d028cb76b5be398010aec9f95d",
+    "cuda/feature_pack.cpp": "a5f9fa2b1452e8c6f16c35616b2ed2bfc70124519cdd0295670b1b74b55ca4a5"
+  },
+  "cells": [
+    {
+      "name": "small",
+      "requests": 4,
+      "samples": 16,
+      "widths": [
+        16,
+        32
+      ],
+      "shared": [
+        true,
+        false
+      ],
+      "rows": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "segments": 8,
+      "expanded_payload_bytes": 3072,
+      "compact_payload_bytes": 2304,
+      "descriptor_bytes": 384,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 0.15971632674336433,
+          "median_stream_interval_ms": 0.14653600454330445,
+          "rounds": [
+            {
+              "wall_ms": 0.1674499362707138,
+              "stream_interval_ms": 0.15185920000076295
+            },
+            {
+              "wall_ms": 0.15971632674336433,
+              "stream_interval_ms": 0.14653600454330445
+            },
+            {
+              "wall_ms": 0.1579965464770794,
+              "stream_interval_ms": 0.14525439739227294
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.03431439399719238,
+          "median_stream_interval_ms": 0.01935359984636307,
+          "rounds": [
+            {
+              "wall_ms": 0.03595035523176193,
+              "stream_interval_ms": 0.01935359984636307
+            },
+            {
+              "wall_ms": 0.03431439399719238,
+              "stream_interval_ms": 0.019763199985027312
+            },
+            {
+              "wall_ms": 0.03300001844763756,
+              "stream_interval_ms": 0.01894560009241104
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 0.06257286295294762,
+          "median_stream_interval_ms": 0.05939199924468994,
+          "rounds": [
+            {
+              "wall_ms": 0.06284434348344803,
+              "stream_interval_ms": 0.060211199522018435
+            },
+            {
+              "wall_ms": 0.06257286295294762,
+              "stream_interval_ms": 0.05934079885482788
+            },
+            {
+              "wall_ms": 0.06225826218724251,
+              "stream_interval_ms": 0.05939199924468994
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 0.19513927400112152,
+          "median_stream_interval_ms": 0.18273119926452636,
+          "rounds": [
+            {
+              "wall_ms": 0.2001567743718624,
+              "stream_interval_ms": 0.187391996383667
+            },
+            {
+              "wall_ms": 0.19513927400112152,
+              "stream_interval_ms": 0.18273119926452636
+            },
+            {
+              "wall_ms": 0.19437633454799652,
+              "stream_interval_ms": 0.17976160049438478
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.01648640036582947,
+          "rounds_ms": [
+            0.01664000004529953,
+            0.01648640036582947,
+            0.016025599837303162
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.014903999865055084,
+          "rounds_ms": [
+            0.01509920060634613,
+            0.014694400131702423,
+            0.014903999865055084
+          ]
+        }
+      }
+    },
+    {
+      "name": "many_features",
+      "requests": 32,
+      "samples": 512,
+      "widths": [
+        16,
+        32,
+        64,
+        32,
+        16,
+        64,
+        32,
+        16
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 557056,
+      "compact_payload_bytes": 311296,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.402521997690201,
+          "median_stream_interval_ms": 4.395008087158203,
+          "rounds": [
+            {
+              "wall_ms": 4.393001087009907,
+              "stream_interval_ms": 4.381235122680664
+            },
+            {
+              "wall_ms": 4.40594544634223,
+              "stream_interval_ms": 4.397568130493164
+            },
+            {
+              "wall_ms": 4.402521997690201,
+              "stream_interval_ms": 4.395008087158203
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.020356755703687668,
+          "median_stream_interval_ms": 0.01228799968957901,
+          "rounds": [
+            {
+              "wall_ms": 0.019701384007930756,
+              "stream_interval_ms": 0.01157120019197464
+            },
+            {
+              "wall_ms": 0.026162900030612946,
+              "stream_interval_ms": 0.015940800309181213
+            },
+            {
+              "wall_ms": 0.020356755703687668,
+              "stream_interval_ms": 0.01228799968957901
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 1.3597013428807259,
+          "median_stream_interval_ms": 1.385472011566162,
+          "rounds": [
+            {
+              "wall_ms": 1.375839952379465,
+              "stream_interval_ms": 1.40185604095459
+            },
+            {
+              "wall_ms": 1.3135140761733055,
+              "stream_interval_ms": 1.3344703674316407
+            },
+            {
+              "wall_ms": 1.3597013428807259,
+              "stream_interval_ms": 1.385472011566162
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 1.8495331518352032,
+          "median_stream_interval_ms": 1.8412031173706054,
+          "rounds": [
+            {
+              "wall_ms": 1.8495331518352032,
+              "stream_interval_ms": 1.8412031173706054
+            },
+            {
+              "wall_ms": 1.8511837348341942,
+              "stream_interval_ms": 1.841971206665039
+            },
+            {
+              "wall_ms": 1.7498389817774296,
+              "stream_interval_ms": 1.7416191101074219
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.28993759155273435,
+          "rounds_ms": [
+            0.2899456024169922,
+            0.28993759155273435,
+            0.28984320163726807
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.008046399801969528,
+          "rounds_ms": [
+            0.00942080020904541,
+            0.008046399801969528,
+            0.006963200122117996
+          ]
+        }
+      }
+    },
+    {
+      "name": "wide_features",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        256,
+        256,
+        128,
+        128,
+        256,
+        256
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 192,
+      "expanded_payload_bytes": 10485760,
+      "compact_payload_bytes": 5324800,
+      "descriptor_bytes": 9216,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 3.1256593763828278,
+          "median_stream_interval_ms": 3.1153663635253905,
+          "rounds": [
+            {
+              "wall_ms": 2.909761108458042,
+              "stream_interval_ms": 2.898944091796875
+            },
+            {
+              "wall_ms": 3.1256593763828278,
+              "stream_interval_ms": 3.1153663635253905
+            },
+            {
+              "wall_ms": 3.4085904248058796,
+              "stream_interval_ms": 3.4005504608154298
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.025639403611421585,
+          "median_stream_interval_ms": 0.018116800487041472,
+          "rounds": [
+            {
+              "wall_ms": 0.024970993399620056,
+              "stream_interval_ms": 0.018116800487041472
+            },
+            {
+              "wall_ms": 0.03133844584226608,
+              "stream_interval_ms": 0.020177599787712098
+            },
+            {
+              "wall_ms": 0.025639403611421585,
+              "stream_interval_ms": 0.017561599612236023
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 4.191258829087019,
+          "median_stream_interval_ms": 4.546142578125,
+          "rounds": [
+            {
+              "wall_ms": 4.110086616128683,
+              "stream_interval_ms": 4.546142578125
+            },
+            {
+              "wall_ms": 4.191258829087019,
+              "stream_interval_ms": 4.864510345458984
+            },
+            {
+              "wall_ms": 4.199977871030569,
+              "stream_interval_ms": 4.505368041992187
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 3.0294807627797127,
+          "median_stream_interval_ms": 3.0170480728149416,
+          "rounds": [
+            {
+              "wall_ms": 3.0294807627797127,
+              "stream_interval_ms": 3.0170480728149416
+            },
+            {
+              "wall_ms": 2.9007771983742714,
+              "stream_interval_ms": 2.8907455444335937
+            },
+            {
+              "wall_ms": 3.0560776591300964,
+              "stream_interval_ms": 3.0455007553100586
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.24135680198669435,
+          "rounds_ms": [
+            0.24151039123535156,
+            0.24135680198669435,
+            0.24134399890899658
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.016025599837303162,
+          "rounds_ms": [
+            0.016025599837303162,
+            0.01592479944229126,
+            0.01674239933490753
+          ]
+        }
+      }
+    },
+    {
+      "name": "uneven_requests",
+      "requests": 48,
+      "samples": 649,
+      "widths": [
+        32,
+        64,
+        128,
+        32,
+        64,
+        128
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "segments": 288,
+      "expanded_payload_bytes": 1163008,
+      "compact_payload_bytes": 624512,
+      "descriptor_bytes": 13824,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 5.099342856556177,
+          "median_stream_interval_ms": 5.090971374511719,
+          "rounds": [
+            {
+              "wall_ms": 5.099342856556177,
+              "stream_interval_ms": 5.090971374511719
+            },
+            {
+              "wall_ms": 4.9506597220897675,
+              "stream_interval_ms": 4.9393665313720705
+            },
+            {
+              "wall_ms": 5.237931199371815,
+              "stream_interval_ms": 5.230335998535156
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.019973888993263245,
+          "median_stream_interval_ms": 0.012697599828243256,
+          "rounds": [
+            {
+              "wall_ms": 0.019973888993263245,
+              "stream_interval_ms": 0.012697599828243256
+            },
+            {
+              "wall_ms": 0.03000739961862564,
+              "stream_interval_ms": 0.01743839979171753
+            },
+            {
+              "wall_ms": 0.01973900943994522,
+              "stream_interval_ms": 0.01233920007944107
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 2.0796949975192547,
+          "median_stream_interval_ms": 2.097683143615723,
+          "rounds": [
+            {
+              "wall_ms": 2.0796949975192547,
+              "stream_interval_ms": 2.097683143615723
+            },
+            {
+              "wall_ms": 1.6725377179682255,
+              "stream_interval_ms": 1.7067279815673828
+            },
+            {
+              "wall_ms": 2.0983168855309486,
+              "stream_interval_ms": 2.1190895080566405
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 2.409624308347702,
+          "median_stream_interval_ms": 2.3982080459594726,
+          "rounds": [
+            {
+              "wall_ms": 2.4520811624825,
+              "stream_interval_ms": 2.4407968521118164
+            },
+            {
+              "wall_ms": 2.409624308347702,
+              "stream_interval_ms": 2.3982080459594726
+            },
+            {
+              "wall_ms": 2.399497851729393,
+              "stream_interval_ms": 2.390287971496582
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.32430078983306887,
+          "rounds_ms": [
+            0.32430078983306887,
+            0.3251712083816528,
+            0.3233232021331787
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.012441600114107132,
+          "rounds_ms": [
+            0.012441600114107132,
+            0.012185599654912949,
+            0.012492799758911132
+          ]
+        }
+      }
+    },
+    {
+      "name": "requests_1",
+      "requests": 1,
+      "samples": 16,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        16
+      ],
+      "segments": 8,
+      "expanded_payload_bytes": 32768,
+      "compact_payload_bytes": 17408,
+      "descriptor_bytes": 384,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 0.15108902007341385,
+          "median_stream_interval_ms": 0.13931519985198976,
+          "rounds": [
+            {
+              "wall_ms": 0.1574285328388214,
+              "stream_interval_ms": 0.1452944040298462
+            },
+            {
+              "wall_ms": 0.1497494988143444,
+              "stream_interval_ms": 0.13880319595336915
+            },
+            {
+              "wall_ms": 0.15108902007341385,
+              "stream_interval_ms": 0.13931519985198976
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.025745481252670288,
+          "median_stream_interval_ms": 0.013465599715709686,
+          "rounds": [
+            {
+              "wall_ms": 0.025928765535354614,
+              "stream_interval_ms": 0.013465599715709686
+            },
+            {
+              "wall_ms": 0.025745481252670288,
+              "stream_interval_ms": 0.013107199966907502
+            },
+            {
+              "wall_ms": 0.02510892227292061,
+              "stream_interval_ms": 0.013670399785041809
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 0.07283920422196388,
+          "median_stream_interval_ms": 0.08894079923629761,
+          "rounds": [
+            {
+              "wall_ms": 0.07283920422196388,
+              "stream_interval_ms": 0.08894079923629761
+            },
+            {
+              "wall_ms": 0.07323231548070908,
+              "stream_interval_ms": 0.08657919764518737
+            },
+            {
+              "wall_ms": 0.06838776171207428,
+              "stream_interval_ms": 0.09000959992408752
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 0.19132783636450768,
+          "median_stream_interval_ms": 0.1796064019203186,
+          "rounds": [
+            {
+              "wall_ms": 0.19439440220594406,
+              "stream_interval_ms": 0.18222880363464355
+            },
+            {
+              "wall_ms": 0.19132783636450768,
+              "stream_interval_ms": 0.1796064019203186
+            },
+            {
+              "wall_ms": 0.18973443657159805,
+              "stream_interval_ms": 0.17894400358200074
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.015718400478363037,
+          "rounds_ms": [
+            0.01530880033969879,
+            0.015718400478363037,
+            0.01581760048866272
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.011310400068759918,
+          "rounds_ms": [
+            0.01223360002040863,
+            0.011310400068759918,
+            0.011161600053310395
+          ]
+        }
+      }
+    },
+    {
+      "name": "requests_4",
+      "requests": 4,
+      "samples": 64,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "segments": 32,
+      "expanded_payload_bytes": 131072,
+      "compact_payload_bytes": 69632,
+      "descriptor_bytes": 1536,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 0.5726365372538567,
+          "median_stream_interval_ms": 0.5627359867095947,
+          "rounds": [
+            {
+              "wall_ms": 0.5775206722319126,
+              "stream_interval_ms": 0.5665791988372803
+            },
+            {
+              "wall_ms": 0.5726365372538567,
+              "stream_interval_ms": 0.5627359867095947
+            },
+            {
+              "wall_ms": 0.5726350471377373,
+              "stream_interval_ms": 0.5623295783996582
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.021248403936624527,
+          "median_stream_interval_ms": 0.010956799983978272,
+          "rounds": [
+            {
+              "wall_ms": 0.021248403936624527,
+              "stream_interval_ms": 0.010956799983978272
+            },
+            {
+              "wall_ms": 0.023610331118106842,
+              "stream_interval_ms": 0.011222399771213531
+            },
+            {
+              "wall_ms": 0.0185488723218441,
+              "stream_interval_ms": 0.01090560033917427
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 0.24632923305034637,
+          "median_stream_interval_ms": 0.2513808012008667,
+          "rounds": [
+            {
+              "wall_ms": 0.2479356713593006,
+              "stream_interval_ms": 0.25276639461517336
+            },
+            {
+              "wall_ms": 0.24632923305034637,
+              "stream_interval_ms": 0.2513808012008667
+            },
+            {
+              "wall_ms": 0.23928917944431305,
+              "stream_interval_ms": 0.2438175916671753
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 0.3794112242758274,
+          "median_stream_interval_ms": 0.36715519428253174,
+          "rounds": [
+            {
+              "wall_ms": 0.38418471813201904,
+              "stream_interval_ms": 0.37229280471801757
+            },
+            {
+              "wall_ms": 0.3794112242758274,
+              "stream_interval_ms": 0.36715519428253174
+            },
+            {
+              "wall_ms": 0.3734867088496685,
+              "stream_interval_ms": 0.36584959030151365
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.03967519998550415,
+          "rounds_ms": [
+            0.03967519998550415,
+            0.039628800749778745,
+            0.03973119854927063
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.009625600278377533,
+          "rounds_ms": [
+            0.010087999701499938,
+            0.008243200182914735,
+            0.009625600278377533
+          ]
+        }
+      }
+    },
+    {
+      "name": "requests_16",
+      "requests": 16,
+      "samples": 256,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "segments": 128,
+      "expanded_payload_bytes": 524288,
+      "compact_payload_bytes": 278528,
+      "descriptor_bytes": 6144,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 2.0551634952425957,
+          "median_stream_interval_ms": 2.0474880218505858,
+          "rounds": [
+            {
+              "wall_ms": 2.2474680095911026,
+              "stream_interval_ms": 2.2377471923828125
+            },
+            {
+              "wall_ms": 2.024988643825054,
+              "stream_interval_ms": 2.013030433654785
+            },
+            {
+              "wall_ms": 2.0551634952425957,
+              "stream_interval_ms": 2.0474880218505858
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.020212028175592422,
+          "median_stream_interval_ms": 0.012544000148773193,
+          "rounds": [
+            {
+              "wall_ms": 0.020212028175592422,
+              "stream_interval_ms": 0.012544000148773193
+            },
+            {
+              "wall_ms": 0.02691587433218956,
+              "stream_interval_ms": 0.015015999972820281
+            },
+            {
+              "wall_ms": 0.01989593729376793,
+              "stream_interval_ms": 0.012347199767827988
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 0.87227001786232,
+          "median_stream_interval_ms": 0.8984767913818359,
+          "rounds": [
+            {
+              "wall_ms": 0.8811895735561848,
+              "stream_interval_ms": 0.8995887756347656
+            },
+            {
+              "wall_ms": 0.87227001786232,
+              "stream_interval_ms": 0.8984767913818359
+            },
+            {
+              "wall_ms": 0.7777733728289604,
+              "stream_interval_ms": 0.810108757019043
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 1.1162301525473595,
+          "median_stream_interval_ms": 1.1074640274047851,
+          "rounds": [
+            {
+              "wall_ms": 1.1326856911182404,
+              "stream_interval_ms": 1.124888038635254
+            },
+            {
+              "wall_ms": 1.1162301525473595,
+              "stream_interval_ms": 1.1074640274047851
+            },
+            {
+              "wall_ms": 0.9665322490036488,
+              "stream_interval_ms": 0.958403205871582
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.14766080379486085,
+          "rounds_ms": [
+            0.14766080379486085,
+            0.1481727957725525,
+            0.14765440225601195
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.009216000139713288,
+          "rounds_ms": [
+            0.009984000027179718,
+            0.007987199723720551,
+            0.009216000139713288
+          ]
+        }
+      }
+    },
+    {
+      "name": "requests_64",
+      "requests": 64,
+      "samples": 1024,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "segments": 512,
+      "expanded_payload_bytes": 2097152,
+      "compact_payload_bytes": 1114112,
+      "descriptor_bytes": 24576,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 8.561160042881966,
+          "median_stream_interval_ms": 8.549313354492188,
+          "rounds": [
+            {
+              "wall_ms": 8.1492873840034,
+              "stream_interval_ms": 8.139981079101563
+            },
+            {
+              "wall_ms": 8.561160042881966,
+              "stream_interval_ms": 8.549313354492188
+            },
+            {
+              "wall_ms": 8.792413771152496,
+              "stream_interval_ms": 8.784486389160156
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.02025635913014412,
+          "median_stream_interval_ms": 0.012031999975442886,
+          "rounds": [
+            {
+              "wall_ms": 0.018774904310703278,
+              "stream_interval_ms": 0.011315199732780456
+            },
+            {
+              "wall_ms": 0.032981764525175095,
+              "stream_interval_ms": 0.019182400405406953
+            },
+            {
+              "wall_ms": 0.02025635913014412,
+              "stream_interval_ms": 0.012031999975442886
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 3.1626208685338497,
+          "median_stream_interval_ms": 3.1950687408447265,
+          "rounds": [
+            {
+              "wall_ms": 3.1626208685338497,
+              "stream_interval_ms": 3.1950687408447265
+            },
+            {
+              "wall_ms": 2.942982502281666,
+              "stream_interval_ms": 3.005196762084961
+            },
+            {
+              "wall_ms": 3.719723876565695,
+              "stream_interval_ms": 3.7404224395751955
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 3.955360595136881,
+          "median_stream_interval_ms": 3.9435855865478517,
+          "rounds": [
+            {
+              "wall_ms": 3.6425805650651455,
+              "stream_interval_ms": 3.632107162475586
+            },
+            {
+              "wall_ms": 3.955360595136881,
+              "stream_interval_ms": 3.9435855865478517
+            },
+            {
+              "wall_ms": 4.083659127354622,
+              "stream_interval_ms": 4.072379302978516
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.5809663772583008,
+          "rounds_ms": [
+            0.5808640003204346,
+            0.5814271926879883,
+            0.5809663772583008
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.013670399785041809,
+          "rounds_ms": [
+            0.01356479972600937,
+            0.013670399785041809,
+            0.014182400703430176
+          ]
+        }
+      }
+    },
+    {
+      "name": "requests_128",
+      "requests": 128,
+      "samples": 2048,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "segments": 1024,
+      "expanded_payload_bytes": 4194304,
+      "compact_payload_bytes": 2228224,
+      "descriptor_bytes": 49152,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 16.19939524680376,
+          "median_stream_interval_ms": 16.190310668945312,
+          "rounds": [
+            {
+              "wall_ms": 16.174820251762867,
+              "stream_interval_ms": 16.162098693847657
+            },
+            {
+              "wall_ms": 16.312922444194555,
+              "stream_interval_ms": 16.299929809570312
+            },
+            {
+              "wall_ms": 16.19939524680376,
+              "stream_interval_ms": 16.190310668945312
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.021346937865018845,
+          "median_stream_interval_ms": 0.0130048006772995,
+          "rounds": [
+            {
+              "wall_ms": 0.021346937865018845,
+              "stream_interval_ms": 0.0130048006772995
+            },
+            {
+              "wall_ms": 0.03440584987401962,
+              "stream_interval_ms": 0.017657600343227386
+            },
+            {
+              "wall_ms": 0.021322723478078842,
+              "stream_interval_ms": 0.012492799758911132
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 7.802628725767136,
+          "median_stream_interval_ms": 7.89355697631836,
+          "rounds": [
+            {
+              "wall_ms": 7.802628725767136,
+              "stream_interval_ms": 7.89355697631836
+            },
+            {
+              "wall_ms": 8.855149615556002,
+              "stream_interval_ms": 8.902995300292968
+            },
+            {
+              "wall_ms": 6.10650647431612,
+              "stream_interval_ms": 6.193180847167969
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 8.025508373975754,
+          "median_stream_interval_ms": 8.009556579589844,
+          "rounds": [
+            {
+              "wall_ms": 8.025508373975754,
+              "stream_interval_ms": 8.009556579589844
+            },
+            {
+              "wall_ms": 8.555839117616415,
+              "stream_interval_ms": 8.540937805175782
+            },
+            {
+              "wall_ms": 8.015039004385471,
+              "stream_interval_ms": 8.000606536865234
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 1.1580927848815918,
+          "rounds_ms": [
+            1.1568639755249024,
+            1.1580927848815918,
+            1.1591679573059082
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.013568000495433807,
+          "rounds_ms": [
+            0.013363200426101684,
+            0.013568000495433807,
+            0.014379200339317322
+          ]
+        }
+      }
+    },
+    {
+      "name": "samples_1",
+      "requests": 32,
+      "samples": 32,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 65536,
+      "compact_payload_bytes": 65536,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 3.4728472121059895,
+          "median_stream_interval_ms": 3.4696704864501955,
+          "rounds": [
+            {
+              "wall_ms": 3.540253546088934,
+              "stream_interval_ms": 3.5368961334228515
+            },
+            {
+              "wall_ms": 3.4728472121059895,
+              "stream_interval_ms": 3.4696704864501955
+            },
+            {
+              "wall_ms": 3.4113753587007523,
+              "stream_interval_ms": 3.4100208282470703
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.02095140516757965,
+          "median_stream_interval_ms": 0.012646399438381195,
+          "rounds": [
+            {
+              "wall_ms": 0.020037870854139328,
+              "stream_interval_ms": 0.012595200538635254
+            },
+            {
+              "wall_ms": 0.0272383913397789,
+              "stream_interval_ms": 0.014131200313568116
+            },
+            {
+              "wall_ms": 0.02095140516757965,
+              "stream_interval_ms": 0.012646399438381195
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 1.1725296266376972,
+          "median_stream_interval_ms": 1.175648021697998,
+          "rounds": [
+            {
+              "wall_ms": 1.1749406345188618,
+              "stream_interval_ms": 1.1782095909118653
+            },
+            {
+              "wall_ms": 1.14981010556221,
+              "stream_interval_ms": 1.153433609008789
+            },
+            {
+              "wall_ms": 1.1725296266376972,
+              "stream_interval_ms": 1.175648021697998
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 1.7948639579117298,
+          "median_stream_interval_ms": 1.785036849975586,
+          "rounds": [
+            {
+              "wall_ms": 1.8213503994047642,
+              "stream_interval_ms": 1.8104320526123048
+            },
+            {
+              "wall_ms": 1.7948639579117298,
+              "stream_interval_ms": 1.781857681274414
+            },
+            {
+              "wall_ms": 1.7943679355084896,
+              "stream_interval_ms": 1.785036849975586
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.2772480010986328,
+          "rounds_ms": [
+            0.2768383979797363,
+            0.2772480010986328,
+            0.27755520343780515
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.011929599940776825,
+          "rounds_ms": [
+            0.011321599781513213,
+            0.02109439969062805,
+            0.011929599940776825
+          ]
+        }
+      }
+    },
+    {
+      "name": "samples_4",
+      "requests": 32,
+      "samples": 128,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 262144,
+      "compact_payload_bytes": 163840,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.025626368820667,
+          "median_stream_interval_ms": 4.017715072631836,
+          "rounds": [
+            {
+              "wall_ms": 4.3613603338599205,
+              "stream_interval_ms": 4.351641464233398
+            },
+            {
+              "wall_ms": 3.9347736164927483,
+              "stream_interval_ms": 3.9249408721923826
+            },
+            {
+              "wall_ms": 4.025626368820667,
+              "stream_interval_ms": 4.017715072631836
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.02003489062190056,
+          "median_stream_interval_ms": 0.011827199906110763,
+          "rounds": [
+            {
+              "wall_ms": 0.02003489062190056,
+              "stream_interval_ms": 0.011827199906110763
+            },
+            {
+              "wall_ms": 0.03172876313328743,
+              "stream_interval_ms": 0.01855199933052063
+            },
+            {
+              "wall_ms": 0.018533971160650253,
+              "stream_interval_ms": 0.011212799698114395
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 1.3127260841429234,
+          "median_stream_interval_ms": 1.3237039566040039,
+          "rounds": [
+            {
+              "wall_ms": 1.3288290239870548,
+              "stream_interval_ms": 1.3419008255004883
+            },
+            {
+              "wall_ms": 1.2531178072094917,
+              "stream_interval_ms": 1.2666687965393066
+            },
+            {
+              "wall_ms": 1.3127260841429234,
+              "stream_interval_ms": 1.3237039566040039
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 1.8296628259122372,
+          "median_stream_interval_ms": 1.8194944381713867,
+          "rounds": [
+            {
+              "wall_ms": 1.8296628259122372,
+              "stream_interval_ms": 1.8194944381713867
+            },
+            {
+              "wall_ms": 1.855987310409546,
+              "stream_interval_ms": 1.8441728591918944
+            },
+            {
+              "wall_ms": 1.707968208938837,
+              "stream_interval_ms": 1.6988784790039062
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.28538880348205564,
+          "rounds_ms": [
+            0.28533759117126467,
+            0.28538880348205564,
+            0.28549120426177976
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.0130048006772995,
+          "rounds_ms": [
+            0.0130048006772995,
+            0.013823999464511872,
+            0.012601600587368011
+          ]
+        }
+      }
+    },
+    {
+      "name": "samples_16",
+      "requests": 32,
+      "samples": 512,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16,
+        16
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 1048576,
+      "compact_payload_bytes": 557056,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.096225183457136,
+          "median_stream_interval_ms": 4.088422393798828,
+          "rounds": [
+            {
+              "wall_ms": 3.92564432695508,
+              "stream_interval_ms": 3.917668914794922
+            },
+            {
+              "wall_ms": 4.107376281172037,
+              "stream_interval_ms": 4.099687957763672
+            },
+            {
+              "wall_ms": 4.096225183457136,
+              "stream_interval_ms": 4.088422393798828
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.020670052617788315,
+          "median_stream_interval_ms": 0.011827199906110763,
+          "rounds": [
+            {
+              "wall_ms": 0.020670052617788315,
+              "stream_interval_ms": 0.011622399836778641
+            },
+            {
+              "wall_ms": 0.02335682511329651,
+              "stream_interval_ms": 0.013363200426101684
+            },
+            {
+              "wall_ms": 0.019850023090839386,
+              "stream_interval_ms": 0.011827199906110763
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 1.6207200475037098,
+          "median_stream_interval_ms": 1.6401327133178711,
+          "rounds": [
+            {
+              "wall_ms": 1.6207200475037098,
+              "stream_interval_ms": 1.6401327133178711
+            },
+            {
+              "wall_ms": 1.908915489912033,
+              "stream_interval_ms": 1.9344736099243165
+            },
+            {
+              "wall_ms": 1.5496887266635895,
+              "stream_interval_ms": 1.5873824119567872
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 2.002454362809658,
+          "median_stream_interval_ms": 1.993881607055664,
+          "rounds": [
+            {
+              "wall_ms": 2.002454362809658,
+              "stream_interval_ms": 1.9939104080200196
+            },
+            {
+              "wall_ms": 2.0028676837682724,
+              "stream_interval_ms": 1.993881607055664
+            },
+            {
+              "wall_ms": 1.9279719330370426,
+              "stream_interval_ms": 1.918934440612793
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.29240319728851316,
+          "rounds_ms": [
+            0.2924544095993042,
+            0.2924000024795532,
+            0.29240319728851316
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.008761599659919739,
+          "rounds_ms": [
+            0.010078399628400802,
+            0.008038400113582611,
+            0.008761599659919739
+          ]
+        }
+      }
+    },
+    {
+      "name": "samples_64",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 4194304,
+      "compact_payload_bytes": 2129920,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.2937880381941795,
+          "median_stream_interval_ms": 4.284518432617188,
+          "rounds": [
+            {
+              "wall_ms": 3.86050958186388,
+              "stream_interval_ms": 3.850190353393555
+            },
+            {
+              "wall_ms": 4.2937880381941795,
+              "stream_interval_ms": 4.284518432617188
+            },
+            {
+              "wall_ms": 4.381420277059078,
+              "stream_interval_ms": 4.371868896484375
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.02087438479065895,
+          "median_stream_interval_ms": 0.013515199720859527,
+          "rounds": [
+            {
+              "wall_ms": 0.020276382565498352,
+              "stream_interval_ms": 0.013371199369430542
+            },
+            {
+              "wall_ms": 0.027678348124027252,
+              "stream_interval_ms": 0.01793760061264038
+            },
+            {
+              "wall_ms": 0.02087438479065895,
+              "stream_interval_ms": 0.013515199720859527
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 2.816817071288824,
+          "median_stream_interval_ms": 2.8568464279174806,
+          "rounds": [
+            {
+              "wall_ms": 2.816817071288824,
+              "stream_interval_ms": 2.8568464279174806
+            },
+            {
+              "wall_ms": 2.352371532469988,
+              "stream_interval_ms": 2.391200065612793
+            },
+            {
+              "wall_ms": 4.728244990110397,
+              "stream_interval_ms": 4.772846221923828
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 2.4144889786839485,
+          "median_stream_interval_ms": 2.404351997375488,
+          "rounds": [
+            {
+              "wall_ms": 2.312242705374956,
+              "stream_interval_ms": 2.3032079696655274
+            },
+            {
+              "wall_ms": 2.4144889786839485,
+              "stream_interval_ms": 2.404351997375488
+            },
+            {
+              "wall_ms": 2.538831904530525,
+              "stream_interval_ms": 2.52750244140625
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.29624319076538086,
+          "rounds_ms": [
+            0.29624319076538086,
+            0.29608960151672364,
+            0.29670400619506837
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.016076800227165223,
+          "rounds_ms": [
+            0.016383999586105348,
+            0.016076800227165223,
+            0.016076800227165223
+          ]
+        }
+      }
+    },
+    {
+      "name": "samples_128",
+      "requests": 32,
+      "samples": 4096,
+      "widths": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 8388608,
+      "compact_payload_bytes": 4227072,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.050082340836525,
+          "median_stream_interval_ms": 4.04131851196289,
+          "rounds": [
+            {
+              "wall_ms": 3.937158826738596,
+              "stream_interval_ms": 3.923814392089844
+            },
+            {
+              "wall_ms": 4.050082340836525,
+              "stream_interval_ms": 4.04131851196289
+            },
+            {
+              "wall_ms": 4.095134232193232,
+              "stream_interval_ms": 4.087551879882812
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.02606203779578209,
+          "median_stream_interval_ms": 0.018278400599956512,
+          "rounds": [
+            {
+              "wall_ms": 0.02606203779578209,
+              "stream_interval_ms": 0.01807360053062439
+            },
+            {
+              "wall_ms": 0.033391453325748444,
+              "stream_interval_ms": 0.02189600020647049
+            },
+            {
+              "wall_ms": 0.026008393615484238,
+              "stream_interval_ms": 0.018278400599956512
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 3.656615689396858,
+          "median_stream_interval_ms": 3.8813743591308594,
+          "rounds": [
+            {
+              "wall_ms": 3.656615689396858,
+              "stream_interval_ms": 3.8813743591308594
+            },
+            {
+              "wall_ms": 3.5401335917413235,
+              "stream_interval_ms": 3.70635986328125
+            },
+            {
+              "wall_ms": 3.8298415951430798,
+              "stream_interval_ms": 3.9721454620361327
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 3.9220361970365047,
+          "median_stream_interval_ms": 3.909795379638672,
+          "rounds": [
+            {
+              "wall_ms": 3.8727523759007454,
+              "stream_interval_ms": 3.860190582275391
+            },
+            {
+              "wall_ms": 4.372586775571108,
+              "stream_interval_ms": 4.362496185302734
+            },
+            {
+              "wall_ms": 3.9220361970365047,
+              "stream_interval_ms": 3.909795379638672
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.2990592002868652,
+          "rounds_ms": [
+            0.2993664026260376,
+            0.2990592002868652,
+            0.29905760288238525
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.017715199291706084,
+          "rounds_ms": [
+            0.017766399681568144,
+            0.017715199291706084,
+            0.017203199863433837
+          ]
+        }
+      }
+    },
+    {
+      "name": "width_32",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32,
+        32
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 2097152,
+      "compact_payload_bytes": 1064960,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.4572824612259865,
+          "median_stream_interval_ms": 4.433561706542969,
+          "rounds": [
+            {
+              "wall_ms": 4.4572824612259865,
+              "stream_interval_ms": 4.433561706542969
+            },
+            {
+              "wall_ms": 4.414012189954519,
+              "stream_interval_ms": 4.405803298950195
+            },
+            {
+              "wall_ms": 4.464475996792316,
+              "stream_interval_ms": 4.456755065917969
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.01991651952266693,
+          "median_stream_interval_ms": 0.011264000087976456,
+          "rounds": [
+            {
+              "wall_ms": 0.01991651952266693,
+              "stream_interval_ms": 0.011166399717330933
+            },
+            {
+              "wall_ms": 0.02996642142534256,
+              "stream_interval_ms": 0.01964319944381714
+            },
+            {
+              "wall_ms": 0.018861982971429825,
+              "stream_interval_ms": 0.011264000087976456
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 2.6608726009726524,
+          "median_stream_interval_ms": 2.6810287475585937,
+          "rounds": [
+            {
+              "wall_ms": 2.6608726009726524,
+              "stream_interval_ms": 2.6810287475585937
+            },
+            {
+              "wall_ms": 2.7090873569250107,
+              "stream_interval_ms": 2.728913688659668
+            },
+            {
+              "wall_ms": 2.030694205313921,
+              "stream_interval_ms": 2.0527631759643556
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 2.4666392244398594,
+          "median_stream_interval_ms": 2.456867218017578,
+          "rounds": [
+            {
+              "wall_ms": 2.4666392244398594,
+              "stream_interval_ms": 2.456867218017578
+            },
+            {
+              "wall_ms": 2.4859600700438023,
+              "stream_interval_ms": 2.4743423461914062
+            },
+            {
+              "wall_ms": 2.1052278578281403,
+              "stream_interval_ms": 2.096348762512207
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.2958847999572754,
+          "rounds_ms": [
+            0.2942975997924805,
+            0.2958847999572754,
+            0.2959872007369995
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.011673600226640702,
+          "rounds_ms": [
+            0.012902399897575379,
+            0.011264000087976456,
+            0.011673600226640702
+          ]
+        }
+      }
+    },
+    {
+      "name": "width_128",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128,
+        128
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 8388608,
+      "compact_payload_bytes": 4259840,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.183884430676699,
+          "median_stream_interval_ms": 4.174950408935547,
+          "rounds": [
+            {
+              "wall_ms": 4.324204381555319,
+              "stream_interval_ms": 4.313036727905273
+            },
+            {
+              "wall_ms": 4.183884430676699,
+              "stream_interval_ms": 4.174950408935547
+            },
+            {
+              "wall_ms": 4.178082570433617,
+              "stream_interval_ms": 4.170604705810547
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.026290398091077805,
+          "median_stream_interval_ms": 0.01894879937171936,
+          "rounds": [
+            {
+              "wall_ms": 0.026224832981824875,
+              "stream_interval_ms": 0.017715199291706084
+            },
+            {
+              "wall_ms": 0.02954890951514244,
+              "stream_interval_ms": 0.020027199387550355
+            },
+            {
+              "wall_ms": 0.026290398091077805,
+              "stream_interval_ms": 0.01894879937171936
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 3.84408300742507,
+          "median_stream_interval_ms": 4.028779220581055,
+          "rounds": [
+            {
+              "wall_ms": 3.84408300742507,
+              "stream_interval_ms": 4.028779220581055
+            },
+            {
+              "wall_ms": 3.4210790880024433,
+              "stream_interval_ms": 3.815011215209961
+            },
+            {
+              "wall_ms": 5.357018485665321,
+              "stream_interval_ms": 7.7508094787597654
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 3.4904551692306995,
+          "median_stream_interval_ms": 3.4813953399658204,
+          "rounds": [
+            {
+              "wall_ms": 2.9076318256556988,
+              "stream_interval_ms": 2.8974544525146486
+            },
+            {
+              "wall_ms": 3.4904551692306995,
+              "stream_interval_ms": 3.4813953399658204
+            },
+            {
+              "wall_ms": 3.8593879900872707,
+              "stream_interval_ms": 3.8486000061035157
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.29951040744781493,
+          "rounds_ms": [
+            0.2997648000717163,
+            0.29951040744781493,
+            0.2993664026260376
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.01648640036582947,
+          "rounds_ms": [
+            0.01648640036582947,
+            0.016076800227165223,
+            0.017558400332927705
+          ]
+        }
+      }
+    },
+    {
+      "name": "width_256",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 16777216,
+      "compact_payload_bytes": 8519680,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.187146387994289,
+          "median_stream_interval_ms": 4.178841781616211,
+          "rounds": [
+            {
+              "wall_ms": 4.419674631208181,
+              "stream_interval_ms": 4.408526229858398
+            },
+            {
+              "wall_ms": 4.159141052514315,
+              "stream_interval_ms": 4.150016021728516
+            },
+            {
+              "wall_ms": 4.187146387994289,
+              "stream_interval_ms": 4.178841781616211
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.031135883182287216,
+          "median_stream_interval_ms": 0.022431999444961548,
+          "rounds": [
+            {
+              "wall_ms": 0.031135883182287216,
+              "stream_interval_ms": 0.022431999444961548
+            },
+            {
+              "wall_ms": 0.03249533474445343,
+              "stream_interval_ms": 0.023073600232601167
+            },
+            {
+              "wall_ms": 0.02935081720352173,
+              "stream_interval_ms": 0.021238400042057036
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 7.31813395395875,
+          "median_stream_interval_ms": 8.614644622802734,
+          "rounds": [
+            {
+              "wall_ms": 7.678838167339563,
+              "stream_interval_ms": 8.614644622802734
+            },
+            {
+              "wall_ms": 7.31813395395875,
+              "stream_interval_ms": 8.472503662109375
+            },
+            {
+              "wall_ms": 6.652254611253738,
+              "stream_interval_ms": 8.775312042236328
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 4.667740780860186,
+          "median_stream_interval_ms": 4.657696151733399,
+          "rounds": [
+            {
+              "wall_ms": 4.667740780860186,
+              "stream_interval_ms": 4.657696151733399
+            },
+            {
+              "wall_ms": 4.5424568466842175,
+              "stream_interval_ms": 4.532889556884766
+            },
+            {
+              "wall_ms": 4.764733463525772,
+              "stream_interval_ms": 4.755595016479492
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.33085439205169676,
+          "rounds_ms": [
+            0.33085439205169676,
+            0.33070080280303954,
+            0.3310512065887451
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.020691199600696562,
+          "rounds_ms": [
+            0.020787200331687926,
+            0.01955839991569519,
+            0.020691199600696562
+          ]
+        }
+      }
+    },
+    {
+      "name": "width_512",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        512,
+        512,
+        512,
+        512,
+        512,
+        512,
+        512,
+        512
+      ],
+      "shared": [
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 33554432,
+      "compact_payload_bytes": 17039360,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.0746184065938,
+          "median_stream_interval_ms": 4.0670734405517575,
+          "rounds": [
+            {
+              "wall_ms": 4.0592554025352,
+              "stream_interval_ms": 4.050334548950195
+            },
+            {
+              "wall_ms": 4.0746184065938,
+              "stream_interval_ms": 4.0670734405517575
+            },
+            {
+              "wall_ms": 4.137961100786924,
+              "stream_interval_ms": 4.1290241241455075
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.03982437774538994,
+          "median_stream_interval_ms": 0.031385600566864014,
+          "rounds": [
+            {
+              "wall_ms": 0.03982437774538994,
+              "stream_interval_ms": 0.031385600566864014
+            },
+            {
+              "wall_ms": 0.04144888371229172,
+              "stream_interval_ms": 0.032462400197982785
+            },
+            {
+              "wall_ms": 0.03817388787865639,
+              "stream_interval_ms": 0.029491201043128967
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 14.427394140511751,
+          "median_stream_interval_ms": 17.94401397705078,
+          "rounds": [
+            {
+              "wall_ms": 12.639747560024261,
+              "stream_interval_ms": 15.959944152832032
+            },
+            {
+              "wall_ms": 14.427394140511751,
+              "stream_interval_ms": 17.94401397705078
+            },
+            {
+              "wall_ms": 14.64299587532878,
+              "stream_interval_ms": 18.09337615966797
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 9.074811544269323,
+          "median_stream_interval_ms": 9.061857604980469,
+          "rounds": [
+            {
+              "wall_ms": 9.074811544269323,
+              "stream_interval_ms": 9.061857604980469
+            },
+            {
+              "wall_ms": 9.375474136322737,
+              "stream_interval_ms": 9.364019012451172
+            },
+            {
+              "wall_ms": 8.801207039505243,
+              "stream_interval_ms": 8.786681365966796
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.3556351900100708,
+          "rounds_ms": [
+            0.3556351900100708,
+            0.3555840015411377,
+            0.35599360466003416
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.02800000011920929,
+          "rounds_ms": [
+            0.027904000878334046,
+            0.02800000011920929,
+            0.028825598955154418
+          ]
+        }
+      }
+    },
+    {
+      "name": "shared_0_of_8",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "shared": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 16777216,
+      "compact_payload_bytes": 16777216,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.0714263916015625,
+          "median_stream_interval_ms": 4.060467147827149,
+          "rounds": [
+            {
+              "wall_ms": 4.071725904941559,
+              "stream_interval_ms": 4.060467147827149
+            },
+            {
+              "wall_ms": 3.9631152525544167,
+              "stream_interval_ms": 3.955302429199219
+            },
+            {
+              "wall_ms": 4.0714263916015625,
+              "stream_interval_ms": 4.0625152587890625
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.031446944922208786,
+          "median_stream_interval_ms": 0.021964800357818604,
+          "rounds": [
+            {
+              "wall_ms": 0.030799396336078644,
+              "stream_interval_ms": 0.02170879989862442
+            },
+            {
+              "wall_ms": 0.03619985654950142,
+              "stream_interval_ms": 0.02539840042591095
+            },
+            {
+              "wall_ms": 0.031446944922208786,
+              "stream_interval_ms": 0.021964800357818604
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 7.276481669396162,
+          "median_stream_interval_ms": 8.52903060913086,
+          "rounds": [
+            {
+              "wall_ms": 6.892987992614508,
+              "stream_interval_ms": 8.495531463623047
+            },
+            {
+              "wall_ms": 7.331586070358753,
+              "stream_interval_ms": 9.299577331542968
+            },
+            {
+              "wall_ms": 7.276481669396162,
+              "stream_interval_ms": 8.52903060913086
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 9.256659541279078,
+          "median_stream_interval_ms": 9.245696258544921,
+          "rounds": [
+            {
+              "wall_ms": 9.280378837138414,
+              "stream_interval_ms": 9.267339324951172
+            },
+            {
+              "wall_ms": 9.256659541279078,
+              "stream_interval_ms": 9.245696258544921
+            },
+            {
+              "wall_ms": 9.229371603578329,
+              "stream_interval_ms": 9.217459106445313
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.32511999607086184,
+          "rounds_ms": [
+            0.32522239685058596,
+            0.3251152038574219,
+            0.32511999607086184
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.021904000639915468,
+          "rounds_ms": [
+            0.02176000028848648,
+            0.021904000639915468,
+            0.022177599370479584
+          ]
+        }
+      }
+    },
+    {
+      "name": "shared_2_of_8",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "shared": [
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 16777216,
+      "compact_payload_bytes": 12648448,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.13783760741353,
+          "median_stream_interval_ms": 4.127897644042969,
+          "rounds": [
+            {
+              "wall_ms": 3.942765388637781,
+              "stream_interval_ms": 3.932939147949219
+            },
+            {
+              "wall_ms": 4.221295937895775,
+              "stream_interval_ms": 4.212675094604492
+            },
+            {
+              "wall_ms": 4.13783760741353,
+              "stream_interval_ms": 4.127897644042969
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.030832365155220032,
+          "median_stream_interval_ms": 0.022111999988555908,
+          "rounds": [
+            {
+              "wall_ms": 0.029216427356004715,
+              "stream_interval_ms": 0.021247999370098115
+            },
+            {
+              "wall_ms": 0.03185998648405075,
+              "stream_interval_ms": 0.022524799406528472
+            },
+            {
+              "wall_ms": 0.030832365155220032,
+              "stream_interval_ms": 0.022111999988555908
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 6.825058255344629,
+          "median_stream_interval_ms": 9.229513549804688,
+          "rounds": [
+            {
+              "wall_ms": 7.099184766411781,
+              "stream_interval_ms": 9.229513549804688
+            },
+            {
+              "wall_ms": 6.623918749392033,
+              "stream_interval_ms": 8.544355010986328
+            },
+            {
+              "wall_ms": 6.825058255344629,
+              "stream_interval_ms": 9.260785675048828
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 6.849831063300371,
+          "median_stream_interval_ms": 6.838807678222656,
+          "rounds": [
+            {
+              "wall_ms": 6.973216217011213,
+              "stream_interval_ms": 6.962764739990234
+            },
+            {
+              "wall_ms": 6.222193222492933,
+              "stream_interval_ms": 6.212257766723633
+            },
+            {
+              "wall_ms": 6.849831063300371,
+              "stream_interval_ms": 6.838807678222656
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.3285455942153931,
+          "rounds_ms": [
+            0.32814080715179444,
+            0.32931840419769287,
+            0.3285455942153931
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.020319999754428865,
+          "rounds_ms": [
+            0.020319999754428865,
+            0.019912000000476836,
+            0.020431999862194062
+          ]
+        }
+      }
+    },
+    {
+      "name": "shared_4_of_8",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "shared": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 16777216,
+      "compact_payload_bytes": 8519680,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.530692473053932,
+          "median_stream_interval_ms": 4.521212768554688,
+          "rounds": [
+            {
+              "wall_ms": 4.406269267201424,
+              "stream_interval_ms": 4.38579216003418
+            },
+            {
+              "wall_ms": 4.602269642055035,
+              "stream_interval_ms": 4.5919231414794925
+            },
+            {
+              "wall_ms": 4.530692473053932,
+              "stream_interval_ms": 4.521212768554688
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.030302349478006363,
+          "median_stream_interval_ms": 0.021401600539684297,
+          "rounds": [
+            {
+              "wall_ms": 0.029820948839187622,
+              "stream_interval_ms": 0.02104319930076599
+            },
+            {
+              "wall_ms": 0.036618392914533615,
+              "stream_interval_ms": 0.026748800277709962
+            },
+            {
+              "wall_ms": 0.030302349478006363,
+              "stream_interval_ms": 0.021401600539684297
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 6.915121339261532,
+          "median_stream_interval_ms": 8.840715026855468,
+          "rounds": [
+            {
+              "wall_ms": 6.915121339261532,
+              "stream_interval_ms": 8.660977935791015
+            },
+            {
+              "wall_ms": 6.505244690924883,
+              "stream_interval_ms": 8.960391998291016
+            },
+            {
+              "wall_ms": 7.059657014906406,
+              "stream_interval_ms": 8.840715026855468
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 4.213625937700272,
+          "median_stream_interval_ms": 4.2006591796875,
+          "rounds": [
+            {
+              "wall_ms": 4.213625937700272,
+              "stream_interval_ms": 4.2006591796875
+            },
+            {
+              "wall_ms": 4.295794107019901,
+              "stream_interval_ms": 4.284774398803711
+            },
+            {
+              "wall_ms": 4.121809173375368,
+              "stream_interval_ms": 4.109715270996094
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.3303936004638672,
+          "rounds_ms": [
+            0.33069920539855957,
+            0.3303936004638672,
+            0.3303936004638672
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.021971200406551362,
+          "rounds_ms": [
+            0.021971200406551362,
+            0.021350400149822236,
+            0.02467840015888214
+          ]
+        }
+      }
+    },
+    {
+      "name": "shared_6_of_8",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "shared": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 16777216,
+      "compact_payload_bytes": 4390912,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.157400596886873,
+          "median_stream_interval_ms": 4.149303817749024,
+          "rounds": [
+            {
+              "wall_ms": 3.838755562901497,
+              "stream_interval_ms": 3.819670486450195
+            },
+            {
+              "wall_ms": 4.157400596886873,
+              "stream_interval_ms": 4.149303817749024
+            },
+            {
+              "wall_ms": 4.1577075608074665,
+              "stream_interval_ms": 4.149657440185547
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.029958412051200867,
+          "median_stream_interval_ms": 0.02181120067834854,
+          "rounds": [
+            {
+              "wall_ms": 0.028994958847761154,
+              "stream_interval_ms": 0.02181120067834854
+            },
+            {
+              "wall_ms": 0.034928787499666214,
+              "stream_interval_ms": 0.02404160052537918
+            },
+            {
+              "wall_ms": 0.029958412051200867,
+              "stream_interval_ms": 0.02176000028848648
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 6.956693809479475,
+          "median_stream_interval_ms": 8.767400360107422,
+          "rounds": [
+            {
+              "wall_ms": 6.860987097024918,
+              "stream_interval_ms": 8.612142181396484
+            },
+            {
+              "wall_ms": 7.632080093026161,
+              "stream_interval_ms": 9.275798034667968
+            },
+            {
+              "wall_ms": 6.956693809479475,
+              "stream_interval_ms": 8.767400360107422
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 3.01833339035511,
+          "median_stream_interval_ms": 3.0063039779663088,
+          "rounds": [
+            {
+              "wall_ms": 2.951638214290142,
+              "stream_interval_ms": 2.9395376205444337
+            },
+            {
+              "wall_ms": 3.01833339035511,
+              "stream_interval_ms": 3.0063039779663088
+            },
+            {
+              "wall_ms": 3.1916648149490356,
+              "stream_interval_ms": 3.1796703338623047
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.33351519107818606,
+          "rounds_ms": [
+            0.3377664089202881,
+            0.3333631992340088,
+            0.33351519107818606
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.021191999316215515,
+          "rounds_ms": [
+            0.01996160000562668,
+            0.021191999316215515,
+            0.021503999829292297
+          ]
+        }
+      }
+    },
+    {
+      "name": "shared_7_of_8",
+      "requests": 32,
+      "samples": 2048,
+      "widths": [
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "shared": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "rows": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "segments": 256,
+      "expanded_payload_bytes": 16777216,
+      "compact_payload_bytes": 2326528,
+      "descriptor_bytes": 12288,
+      "parity": true,
+      "measurements": {
+        "many_device_copies": {
+          "median_wall_ms": 4.149976093322039,
+          "median_stream_interval_ms": 4.141772842407226,
+          "rounds": [
+            {
+              "wall_ms": 4.155153688043356,
+              "stream_interval_ms": 4.143257522583008
+            },
+            {
+              "wall_ms": 4.130561277270317,
+              "stream_interval_ms": 4.121753692626953
+            },
+            {
+              "wall_ms": 4.149976093322039,
+              "stream_interval_ms": 4.141772842407226
+            }
+          ]
+        },
+        "fused_device": {
+          "median_wall_ms": 0.030414387583732605,
+          "median_stream_interval_ms": 0.022015999257564544,
+          "rounds": [
+            {
+              "wall_ms": 0.02933647483587265,
+              "stream_interval_ms": 0.021196800470352172
+            },
+            {
+              "wall_ms": 0.03619631752371788,
+              "stream_interval_ms": 0.024963200092315674
+            },
+            {
+              "wall_ms": 0.030414387583732605,
+              "stream_interval_ms": 0.022015999257564544
+            }
+          ]
+        },
+        "cpu_expand_upload": {
+          "median_wall_ms": 7.253659330308437,
+          "median_stream_interval_ms": 9.146812438964844,
+          "rounds": [
+            {
+              "wall_ms": 7.576256804168224,
+              "stream_interval_ms": 8.74118423461914
+            },
+            {
+              "wall_ms": 6.412404589354992,
+              "stream_interval_ms": 9.406775665283202
+            },
+            {
+              "wall_ms": 7.253659330308437,
+              "stream_interval_ms": 9.146812438964844
+            }
+          ]
+        },
+        "compact_upload_fused": {
+          "median_wall_ms": 2.362426742911339,
+          "median_stream_interval_ms": 2.3510576248168946,
+          "rounds": [
+            {
+              "wall_ms": 2.290993742644787,
+              "stream_interval_ms": 2.2797983169555662
+            },
+            {
+              "wall_ms": 3.4699013456702232,
+              "stream_interval_ms": 3.460095977783203
+            },
+            {
+              "wall_ms": 2.362426742911339,
+              "stream_interval_ms": 2.3510576248168946
+            }
+          ]
+        }
+      },
+      "captured_device_paths": {
+        "many_device_copies": {
+          "median_ms": 0.33561599254608154,
+          "rounds_ms": [
+            0.33556480407714845,
+            0.33561599254608154,
+            0.33561599254608154
+          ]
+        },
+        "fused_device": {
+          "median_ms": 0.020787200331687926,
+          "rounds_ms": [
+            0.020275199413299562,
+            0.020787200331687926,
+            0.02176000028848648
+          ]
+        }
+      }
+    }
+  ]
+}

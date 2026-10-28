@@ -1,0 +1,61 @@
+{
+  "torch": "2.12.1+cu130",
+  "cuda": "13.0",
+  "cpu_count": 12,
+  "gpu_count": 2,
+  "config": {
+    "output_dir": "/home/ubuntu/stress-eval/results/stress",
+    "cell_seconds": 20.0,
+    "soak_seconds": 300.0,
+    "seeds": [
+      7,
+      17
+    ],
+    "skip_micro": false,
+    "phase_seconds": [
+      30,
+      30,
+      60
+    ],
+    "device": "cuda",
+    "hidden": 32768,
+    "feature_rates": [
+      150,
+      450,
+      900,
+      1800
+    ],
+    "replica_rates": [
+      200,
+      400,
+      600,
+      1000
+    ]
+  },
+  "sources": {
+    "src/gpu_runtime/feature_pack.py": "394eb7f921844466cda6dffb2583a5feb62c5ba890d31af2f50f5798936f4436",
+    "src/gpu_runtime/wire.py": "7743d9181455dd05725020edbc66fdd03beea2052dc86f14e0d29508ae3bd951",
+    "src/gpu_runtime/distributed.py": "63c473caac2f6c67d93de71cd3ca977c00697d149fab8353aa99cd353a2c2828",
+    "src/gpu_runtime/models.py": "6c53e0fe8a8a0a41906ad9e71df8aa451acea46dd289d2c9f67ef563f1f0c282",
+    "src/gpu_runtime/runtime.py": "d00f9cd7375b9a7ae63f90ff408e358deb74361777b95c78d6323632ca3055c8",
+    "src/gpu_runtime/service.py": "183ea8cb22fba89821339409d391aa81fec67bc28f2cde9e8fa41c783962b09c",
+    "src/gpu_runtime/__init__.py": "4b9fb52ba60295e1b5c08fd7657ee0dfcc2e1bc732bdfa8214d97ef7e81fc477",
+    "src/gpu_runtime/cuda/feature_pack.cu": "d7dd755f7fde6dc119b9c82fb3caaed5917b08d028cb76b5be398010aec9f95d",
+    "src/gpu_runtime/cuda/feature_pack.cpp": "a5f9fa2b1452e8c6f16c35616b2ed2bfc70124519cdd0295670b1b74b55ca4a5",
+    "cpp/scheduler.cpp": "36aae62c267a188f1a33148c35efdda1b4cd9e91627934e9c211aea251509207",
+    "benchmarks/summarize_replicas.py": "201a7ca017e67375cf5f31ca01b03c8aa9875e983b7bb60764b36df957f9855e",
+    "benchmarks/failover.py": "a3bac48d6fe0026b0f6ae7c93317a590a4dec7bd6939bce8cb4b3afb1b7097ba",
+    "benchmarks/run.py": "4be7c0f99880765b66a0fd3f3fe15d991855124ade7183e4f35820f61a010d07",
+    "benchmarks/stress_suite.py": "c7c6c73f8a836cf014502bb5d535bd55652cb4281e2f1f9e2a309ac9e2ec358b",
+    "benchmarks/distributed.py": "77b817131fb53c93f29a1cb93f59fd32498e9512958b2461a24c512b610da2cf",
+    "benchmarks/summarize.py": "fa7ee7c5f6478063eb6ae58e7a3049fd8c36b4d6713287d876fa397bf2b2816e",
+    "benchmarks/summarize_5090.py": "c3b6b8b05877fff5d4255d537bc240187f6ed41e7e59d3249ead717372bbd6e9",
+    "benchmarks/render_distributed.py": "2bf2d4b1cb87380c11b5bb1a27bec6f3c04bcefa2d8f5c4a836e9081997b8c7e",
+    "benchmarks/feature_pack.py": "7109791673e122905dc85f438639ab71142b31bbb69073ce5eab2f6882e84f34",
+    "benchmarks/profile_cuda.py": "16d67ff2dcc596bb77c057c127423f6e82aee7434a0b0b7140bc4ba84e091f15",
+    "benchmarks/animate_telemetry.py": "6c75868462eba9918ca390b3594f2e620c08c72980d2faa55769db39f6835e38",
+    "benchmarks/compute_replicas.py": "a30c4f071a514422d9a0533ebb5462c347f4f635e2c5a45433f923b329f10174",
+    "benchmarks/extended.py": "08438b76a33c3f06f5f79f3d8c23a72341fde17683aad5ac1089ba6590e2c93d",
+    "benchmarks/feature_inference.py": "2de159557b664a90b3f50097518107967df1f10f9865088bcf0dded4eb909682"
+  }
+}

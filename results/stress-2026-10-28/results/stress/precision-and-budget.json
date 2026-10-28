@@ -1,0 +1,6 @@
+{
+  "default_dtype": "torch.float32",
+  "matmul_precision": "highest",
+  "cuda_matmul_tf32": false,
+  "cudnn_tf32": true
+}

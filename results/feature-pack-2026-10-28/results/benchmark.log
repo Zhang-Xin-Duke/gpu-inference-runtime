@@ -1,0 +1,4 @@
+small {"many_device_copies": 0.1439, "fused_device": 0.0257, "cpu_expand_upload": 0.0583, "compact_upload_fused": 0.1856}
+many_features {"many_device_copies": 4.0889, "fused_device": 0.0157, "cpu_expand_upload": 1.488, "compact_upload_fused": 1.9023}
+wide_features {"many_device_copies": 3.1063, "fused_device": 0.0231, "cpu_expand_upload": 4.4321, "compact_upload_fused": 2.8928}
+uneven_requests {"many_device_copies": 4.6779, "fused_device": 0.0164, "cpu_expand_upload": 2.0192, "compact_upload_fused": 2.2165}

@@ -1,0 +1,5 @@
+cmake
+libcudadevrt.a
+libcudart.so.13
+libcudart_static.a
+libnvvm.so.4

@@ -87,7 +87,11 @@ python benchmarks/extended.py --endpoints http://127.0.0.1:19080 http://127.0.0.
 
 `scripts/extended_matrix.py` runs offered-load, batch-size, slot-count, model/sequence-shape and soak sweeps. `benchmarks/failover.py` records a controlled replica stop/restart using trusted operator command files kept outside the published results. Its telemetry can drive a recorded animation in the README.
 
-Comparisons must state client concurrency, per-replica RPC limits, network transport, offered load, deadline and generator lag. Adding a replica also adds its host CPU capacity. A two-worker throughput increase should not be described as pure GPU kernel scaling without further controls.
+Comparisons must state client concurrency, per-replica RPC limits, network
+transport, offered load, deadline and generator lag. Record whether host CPU
+allocation also changes; the current same-host comparison keeps that allocation
+fixed. A two-worker throughput increase should not be described as pure GPU
+kernel scaling without further controls.
 
 `benchmarks/distributed.py` runs matched replica-count/rate/seed sweeps against already-running workers; it never provisions or terminates hosts:
 

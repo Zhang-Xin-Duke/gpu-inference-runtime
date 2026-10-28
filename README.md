@@ -31,23 +31,33 @@ Use `--device cpu` to explore the same request lifecycle without a GPU. [Example
 
 ## L40 evaluation
 
-![One versus two L40 devices on a compute-heavy workload](results/three-l40-2026-10-28/fixed/host-0/results/compute/replica-sweep.svg)
+![Load, overload recovery, memory and replica scaling](results/stress-2026-10-28/results/stress/stress-overview.svg)
 
-A **1.08B-parameter float32 MLP** runs on one or two L40 devices, with the generator and CPU router on the same host over local HTTP. Both configurations receive identical inputs at nominal 1,000 requests/s with a 1,000 ms deadline. Throughput and P99 are medians of two 10-second runs with different seeds; request counts aggregate both runs.
+**61 load runs · 945,716 offered requests · 30 minutes of arrival windows.**
+The dual-L40 evaluation covers packing layouts, open-loop load, continuous
+normal/overload/recovery phases, five-minute stability, batch-size sensitivity
+and one/two-GPU replicas. GPU-host regression: **44 tests passed**.
 
-| Measurement | One GPU | Two GPUs |
-|---|---:|---:|
-| Deadline goodput | 244.10 req/s | 519.85 req/s |
-| Admitted-request P99 | 1,005.51 ms | 542.58 ms |
-| On-time requests / offered, both seeds | 4,882 / 20,244 | 10,397 / 20,244 |
+A **1.08B-parameter float32 MLP** runs with 32 samples/request and a 1,000 ms
+deadline. Both replica counts use the same host and arrival seeds; values below
+are medians of two 20-second runs. The CPU router uses local binary HTTP.
 
-Two replicas deliver **2.13× deadline goodput** in this overloaded workload. Rejected, expired and failed requests remain in the [full results](docs/MULTI_GPU_EVALUATION.md).
+| Offered requests/s | One-GPU deadline goodput | Two-GPU deadline goodput | Two-GPU P99 |
+|---:|---:|---:|---:|
+| 400 | 213.05/s | 405.83/s | 76.8 ms |
+| 1,000 | 204.25/s | 480.13/s | 587.8 ms |
 
-![Three L40 replicas: recorded worker stop and restart](results/three-l40-2026-10-28/fixed/three-replica-recovery.gif)
+At 400 requests/s, two replicas finish **16,233 / 16,233** offered requests on
+time. At 1,000/s, they deliver **2.35× deadline goodput**, including the effects
+of overload, deadlines and RPC concurrency. A separate five-minute feature-model
+run completes **45,295 / 45,295** requests on time with **63.25 ms P99** and stable
+reserved CUDA memory.
 
-In the same deployment, a three-replica stop/restart test spans two hosts. Healthy peers complete **2,335 requests** while one worker is stopped; that worker is observed completing requests again about **23.2 seconds** after restart. The 75-second run records **6,818 / 7,485** on-time requests and **667 failures**. Connections peak at **35** and return to zero after drain.
-
-[Conditions, failure analysis and reproduction](docs/MULTI_GPU_EVALUATION.md) · [Raw data and checksums](results/three-l40-2026-10-28/)
+The study also reproduces and repairs an idle-connection failure that cooled
+healthy replicas. Fused GPU packing improves wide/shared input layouts; the
+compute-heavy inference workload retains an advantage with CPU packing. The
+[full report](docs/STRESS_EVALUATION.md) includes both outcomes, rejection and
+failure counts, conditions, source hashes and reproduction commands.
 
 ## Architecture
 
@@ -81,6 +91,7 @@ flowchart LR
 | Sequence shape buckets | Rounds sequence lengths into power-of-two buckets | Reduces padding compared with padding every sequence to the configured maximum; more buckets can fragment batches |
 | Reusable staging slots | Reuses capped host/device buffers across batches | Avoids per-request staging allocations; full-batch capacity consumes space even for a small batch |
 | CUDA event pipeline | Separates H2D, compute and D2H streams with explicit dependencies | Allows another batch to make progress while an earlier batch executes; actual overlap depends on hardware and workload |
+| Fused feature packing | Upload shared feature rows once; one CUDA kernel expands and assembles model input | Reduces repeated transfer for wide/shared layouts; descriptors and GPU work can outweigh savings for small inputs |
 | Native metadata scan | Builds all group readiness estimates in one queue scan | Avoids rescanning the queue separately for each compatibility group |
 
 ## Quick start

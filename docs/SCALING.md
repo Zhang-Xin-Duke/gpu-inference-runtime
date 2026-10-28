@@ -23,6 +23,12 @@ each accepted request has one end-to-end deadline. A transport failure can cause
 one attempt on another replica within the remaining budget. This can duplicate
 execution if the first server received the original request.
 
+Connections also have a lifetime policy: idle sockets retire before the bundled
+server's keep-alive timeout, and a reused socket closed by its peer does not
+automatically cool down the whole GPU worker. Low-load replica tests exposed
+that distinction: old idle sockets could otherwise turn a healthy worker into
+an unavailable routing target. New-connection failures still receive cooldown.
+
 One current limit is explicit in `distributed.py`: actual RPC threads are
 `min(requested_concurrency, 32, replica_count * 16)`. With default limits, two
 replicas can already consume the 32-thread router budget. Adding a third GPU
@@ -31,13 +37,15 @@ with CPU and network load before increasing the cap.
 
 ## What the existing L40 results establish
 
-The matched same-host one/two-GPU comparison increases on-time request goodput
-from 244.10 to 519.85 requests/s for the recorded 1.08B-parameter float32 MLP
-workload. Both GPU count and actual RPC concurrency increase. The 2.13x result
-includes deadline and overload effects; it is not pure compute scaling or a
-universal capacity ratio. See [full conditions](MULTI_GPU_EVALUATION.md).
+The extended same-host one/two-GPU comparison increases on-time request goodput
+from 204.25 to 480.13 requests/s at nominal 1,000 offered requests/s for the
+recorded 1.08B-parameter float32 MLP. Each configuration uses two 20-second
+arrival seeds. Both GPU count and actual RPC concurrency increase. The 2.35x
+result includes deadline and overload effects; it is not pure compute scaling
+or a universal capacity ratio. At nominal 400/s, both two-GPU seeds complete
+all offered requests. See the [extended conditions and failures](STRESS_EVALUATION.md).
 
-The three-replica cross-host recording establishes progress on remaining
+The earlier [three-replica cross-host recording](MULTI_GPU_EVALUATION.md) establishes progress on remaining
 workers during a process restart, with recorded failures. It does not measure a
 three-GPU compute speedup. Local GPU scaling and cross-host scaling need separate
 matched comparisons because they stress different paths.

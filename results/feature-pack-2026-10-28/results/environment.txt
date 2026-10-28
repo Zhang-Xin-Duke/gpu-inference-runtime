@@ -1,0 +1,15 @@
+name, driver_version, memory.total [MiB]
+NVIDIA L40, 610.43.02, 46068 MiB
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Wed_Aug_20_01:58:59_PM_PDT_2025
+Cuda compilation tools, release 13.0, V13.0.88
+Build cuda_13.0.r13.0/compiler.36424714_0
+cuda-toolkit              13.0.2
+nvidia-cuda-cccl          13.0.85
+nvidia-cuda-crt           13.0.88
+nvidia-cuda-cupti         13.0.85
+nvidia-cuda-nvcc          13.0.88
+nvidia-cuda-nvrtc         13.0.88
+nvidia-cuda-runtime       13.0.96
+nvidia-nvvm               13.0.88

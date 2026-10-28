@@ -1,0 +1,24 @@
+Processing /home/ubuntu/feature-pack-eval
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: bounded-gpu-runtime
+  Building wheel for bounded-gpu-runtime (pyproject.toml): started
+  Building wheel for bounded-gpu-runtime (pyproject.toml): finished with status 'done'
+  Created wheel for bounded-gpu-runtime: filename=bounded_gpu_runtime-0.1.0-cp312-cp312-linux_x86_64.whl size=132327 sha256=348b9e205570349786b7a0370d60f8fd3eafaced35d061c288ff6e8a5592c94a
+  Stored in directory: /home/ubuntu/.cache/pip/wheels/b7/14/a4/ef71fa91149dc59d9060c621d50eca315a8a3e8aab0347c737
+Successfully built bounded-gpu-runtime
+Installing collected packages: bounded-gpu-runtime
+  Attempting uninstall: bounded-gpu-runtime
+    Found existing installation: bounded-gpu-runtime 0.1.0
+    Uninstalling bounded-gpu-runtime-0.1.0:
+      Successfully uninstalled bounded-gpu-runtime-0.1.0
+Successfully installed bounded-gpu-runtime-0.1.0
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip

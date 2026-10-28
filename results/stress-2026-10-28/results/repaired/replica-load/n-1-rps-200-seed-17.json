@@ -1,0 +1,991 @@
+{
+  "config": {
+    "device": "cpu",
+    "endpoints": [
+      "http://127.0.0.1:19380"
+    ],
+    "duration": 20.0,
+    "rps": 200.0,
+    "deadline_ms": 1000.0,
+    "kind": "dense",
+    "feature_widths": [
+      64,
+      64,
+      64,
+      64
+    ],
+    "shared_features": [
+      1,
+      0,
+      1,
+      0
+    ],
+    "feature_packing": "cuda",
+    "phases": null,
+    "mode": "pipeline",
+    "max_batch": 128,
+    "slots": 2,
+    "delay_ms": 2,
+    "max_requests": 256,
+    "ipc_capacity": 4096,
+    "features": 256,
+    "hidden": 32768,
+    "embedding": 64,
+    "samples": 32,
+    "lengths": "mixed",
+    "no_buckets": false,
+    "policy": "deadline",
+    "burst": false,
+    "routing": "least_work",
+    "no_retry": false,
+    "rpc_concurrency": 32,
+    "sample_interval": 1,
+    "seed": 17,
+    "model_seed": 7,
+    "threads": 1,
+    "control_file": "/home/ubuntu/stress-eval/results/repaired/current-cell.json",
+    "output": "/home/ubuntu/stress-eval/results/repaired/replica-load/n-1-rps-200-seed-17.json"
+  },
+  "ready": {
+    "ready": true,
+    "hardware": {
+      "platform": "Linux-6.17.0-35-generic-x86_64-with-glibc2.35",
+      "python": "3.12.13",
+      "torch": "2.12.1+cu130",
+      "cuda": "13.0",
+      "device": "cpu",
+      "torch_threads": 1,
+      "float32_matmul_precision": "highest",
+      "matmul_allow_tf32": false,
+      "measurement_clock": {
+        "name": "perf_counter",
+        "implementation": "clock_gettime(CLOCK_MONOTONIC)",
+        "resolution_s": 1e-09
+      }
+    },
+    "metadata": [
+      {
+        "model_version": "dense-v1",
+        "fingerprint": "d7f789254c77cd64cf816c97d6cdc7e1bc9989e9c9f239b9384e3f81c3cdc078",
+        "kind": "dense",
+        "width": 256,
+        "outputs": 32,
+        "max_length": 256,
+        "vocabulary": 4096
+      }
+    ],
+    "replicas": [
+      {
+        "device": "cuda",
+        "torch": "2.12.1+cu130",
+        "cuda": "13.0",
+        "gpu": "NVIDIA L40"
+      }
+    ]
+  },
+  "offered": 4143,
+  "phase_offered": [
+    4143
+  ],
+  "producer": {
+    "emitted": 4143
+  },
+  "generator_lag": {
+    "count": 4143,
+    "mean_ms": 0.07075500691854922,
+    "p50_ms": 0.07072093257852285,
+    "p95_ms": 0.07969011698375501,
+    "p99_ms": 0.0972370870258662
+  },
+  "received": 4143,
+  "statuses": {
+    "ok": 4143
+  },
+  "latency": {
+    "count": 4143,
+    "mean_ms": 59.79713054399487,
+    "p50_ms": 57.257520162378654,
+    "p95_ms": 96.06030724686386,
+    "p99_ms": 112.63826490248177
+  },
+  "transport_delay": {
+    "count": 4143,
+    "mean_ms": 0.17084906225241298,
+    "p50_ms": 0.09919155247508611,
+    "p95_ms": 0.5173956052425357,
+    "p99_ms": 1.4708452512481398
+  },
+  "admission_time": {
+    "count": 4143,
+    "mean_ms": 0.04046851008835548,
+    "p50_ms": 0.03740934092365077,
+    "p95_ms": 0.05405935838037751,
+    "p99_ms": 0.07890110592450993
+  },
+  "goodput_rps": 207.15,
+  "drain_s": 0.03067753091454506,
+  "before": {
+    "accepted": 20,
+    "rejected": 0,
+    "finished": 20,
+    "active": 0,
+    "open_connections": 1,
+    "attempt_errors": {},
+    "routing_unavailable": 0,
+    "nodes": [
+      {
+        "endpoint": "http://127.0.0.1:19380",
+        "outstanding": 0,
+        "active": 0,
+        "requests": 20,
+        "completed": 20,
+        "failures": 0,
+        "stale_connections": 0,
+        "retired_idle_connections": 0,
+        "idle_connections": 1,
+        "cooling_down": false
+      }
+    ]
+  },
+  "after": {
+    "accepted": 4163,
+    "rejected": 0,
+    "finished": 4163,
+    "active": 0,
+    "open_connections": 0,
+    "attempt_errors": {},
+    "routing_unavailable": 0,
+    "nodes": [
+      {
+        "endpoint": "http://127.0.0.1:19380",
+        "outstanding": 0,
+        "active": 0,
+        "requests": 4163,
+        "completed": 4163,
+        "failures": 0,
+        "stale_connections": 0,
+        "retired_idle_connections": 0,
+        "idle_connections": 0,
+        "cooling_down": false
+      }
+    ]
+  },
+  "observations": [
+    {
+      "t": -0.09840122424066067,
+      "rss_mb": 553.08203125,
+      "process_cpu_s": 5.894342678,
+      "backend": {
+        "accepted": 20,
+        "rejected": 0,
+        "finished": 20,
+        "active": 0,
+        "open_connections": 1,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 0,
+            "active": 0,
+            "requests": 20,
+            "completed": 20,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 1,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {},
+      "interval_latency": {
+        "count": 0,
+        "mean_ms": null,
+        "p50_ms": null,
+        "p95_ms": null,
+        "p99_ms": null
+      }
+    },
+    {
+      "t": 0.9028181359171867,
+      "rss_mb": 555.015625,
+      "process_cpu_s": 6.107567088,
+      "backend": {
+        "accepted": 209,
+        "rejected": 0,
+        "finished": 202,
+        "active": 7,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 224,
+            "active": 7,
+            "requests": 209,
+            "completed": 202,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 9,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 182
+      },
+      "interval_latency": {
+        "count": 182,
+        "mean_ms": 47.0932660890477,
+        "p50_ms": 46.460479241884784,
+        "p95_ms": 67.13894540369331,
+        "p99_ms": 76.41038261932086
+      }
+    },
+    {
+      "t": 1.9036139082163572,
+      "rss_mb": 555.05859375,
+      "process_cpu_s": 6.324411065,
+      "backend": {
+        "accepted": 414,
+        "rejected": 0,
+        "finished": 400,
+        "active": 14,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 448,
+            "active": 14,
+            "requests": 414,
+            "completed": 400,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 2,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 380
+      },
+      "interval_latency": {
+        "count": 198,
+        "mean_ms": 49.37801868513678,
+        "p50_ms": 49.31873492184017,
+        "p95_ms": 70.56370637239688,
+        "p99_ms": 76.41038261932086
+      }
+    },
+    {
+      "t": 2.9043268356472254,
+      "rss_mb": 555.109375,
+      "process_cpu_s": 6.564597216,
+      "backend": {
+        "accepted": 629,
+        "rejected": 0,
+        "finished": 612,
+        "active": 17,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 512,
+            "active": 16,
+            "requests": 628,
+            "completed": 612,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 0,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 592
+      },
+      "interval_latency": {
+        "count": 212,
+        "mean_ms": 73.48666265431159,
+        "p50_ms": 71.26934343612085,
+        "p95_ms": 116.05131696729188,
+        "p99_ms": 130.76952873852346
+      }
+    },
+    {
+      "t": 3.9050689470022917,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 6.799346349,
+      "backend": {
+        "accepted": 830,
+        "rejected": 0,
+        "finished": 813,
+        "active": 17,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 512,
+            "active": 16,
+            "requests": 829,
+            "completed": 813,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 0,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 793
+      },
+      "interval_latency": {
+        "count": 201,
+        "mean_ms": 60.47861155734133,
+        "p50_ms": 59.58240508362709,
+        "p95_ms": 92.3120671492164,
+        "p99_ms": 105.05974332542979
+      }
+    },
+    {
+      "t": 4.905625706538558,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 7.048204463,
+      "backend": {
+        "accepted": 1048,
+        "rejected": 0,
+        "finished": 1033,
+        "active": 15,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 480,
+            "active": 15,
+            "requests": 1048,
+            "completed": 1033,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 1,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 1013
+      },
+      "interval_latency": {
+        "count": 220,
+        "mean_ms": 71.3116802783175,
+        "p50_ms": 71.26934343612085,
+        "p95_ms": 106.11034075868409,
+        "p99_ms": 114.90229402702165
+      }
+    },
+    {
+      "t": 5.906186254695058,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 7.287166337,
+      "backend": {
+        "accepted": 1250,
+        "rejected": 0,
+        "finished": 1246,
+        "active": 4,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 128,
+            "active": 4,
+            "requests": 1250,
+            "completed": 1246,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 12,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 1226
+      },
+      "interval_latency": {
+        "count": 213,
+        "mean_ms": 57.30433034505083,
+        "p50_ms": 55.57358496437318,
+        "p95_ms": 86.10113169741156,
+        "p99_ms": 96.06030724686386
+      }
+    },
+    {
+      "t": 6.906960256397724,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 7.545688256,
+      "backend": {
+        "accepted": 1484,
+        "rejected": 0,
+        "finished": 1463,
+        "active": 21,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 512,
+            "active": 16,
+            "requests": 1479,
+            "completed": 1463,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 0,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 1443
+      },
+      "interval_latency": {
+        "count": 217,
+        "mean_ms": 73.51367876860678,
+        "p50_ms": 74.16316456969453,
+        "p95_ms": 102.98965133362394,
+        "p99_ms": 113.76464755150658
+      }
+    },
+    {
+      "t": 7.908230176195502,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 7.774967635,
+      "backend": {
+        "accepted": 1676,
+        "rejected": 0,
+        "finished": 1671,
+        "active": 5,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 160,
+            "active": 5,
+            "requests": 1676,
+            "completed": 1671,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 11,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 1651
+      },
+      "interval_latency": {
+        "count": 208,
+        "mean_ms": 73.2658647466451,
+        "p50_ms": 63.88040285371702,
+        "p95_ms": 117.21183013696479,
+        "p99_ms": 128.19285240517934
+      }
+    },
+    {
+      "t": 8.909942591562867,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 8.007713626,
+      "backend": {
+        "accepted": 1881,
+        "rejected": 0,
+        "finished": 1866,
+        "active": 15,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 480,
+            "active": 15,
+            "requests": 1881,
+            "completed": 1866,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 1,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 1846
+      },
+      "interval_latency": {
+        "count": 195,
+        "mean_ms": 51.055909311160065,
+        "p50_ms": 48.83043061568333,
+        "p95_ms": 69.86505581425433,
+        "p99_ms": 77.9462313099692
+      }
+    },
+    {
+      "t": 9.910444723442197,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 8.25087007,
+      "backend": {
+        "accepted": 2093,
+        "rejected": 0,
+        "finished": 2075,
+        "active": 18,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 512,
+            "active": 16,
+            "requests": 2091,
+            "completed": 2075,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 0,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 2055
+      },
+      "interval_latency": {
+        "count": 209,
+        "mean_ms": 55.57128487591538,
+        "p50_ms": 53.93917405144048,
+        "p95_ms": 83.56891015092829,
+        "p99_ms": 90.49315473896324
+      }
+    },
+    {
+      "t": 10.910961352288723,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 8.471544823,
+      "backend": {
+        "accepted": 2287,
+        "rejected": 0,
+        "finished": 2273,
+        "active": 14,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 448,
+            "active": 14,
+            "requests": 2287,
+            "completed": 2273,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 2,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 2253
+      },
+      "interval_latency": {
+        "count": 198,
+        "mean_ms": 54.35902503027459,
+        "p50_ms": 53.405122823208394,
+        "p95_ms": 77.9462313099692,
+        "p99_ms": 81.92227247419693
+      }
+    },
+    {
+      "t": 11.911749891936779,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 8.710003908,
+      "backend": {
+        "accepted": 2495,
+        "rejected": 0,
+        "finished": 2483,
+        "active": 12,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 384,
+            "active": 12,
+            "requests": 2495,
+            "completed": 2483,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 4,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 2463
+      },
+      "interval_latency": {
+        "count": 210,
+        "mean_ms": 57.58738336818559,
+        "p50_ms": 56.690614022157085,
+        "p95_ms": 79.51295055929958,
+        "p99_ms": 90.49315473896324
+      }
+    },
+    {
+      "t": 12.912532966583967,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 8.919106379,
+      "backend": {
+        "accepted": 2697,
+        "rejected": 0,
+        "finished": 2685,
+        "active": 12,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 384,
+            "active": 12,
+            "requests": 2697,
+            "completed": 2685,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 4,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 2665
+      },
+      "interval_latency": {
+        "count": 202,
+        "mean_ms": 61.9766403008068,
+        "p50_ms": 59.58240508362709,
+        "p95_ms": 96.06030724686386,
+        "p99_ms": 106.11034075868409
+      }
+    },
+    {
+      "t": 13.9134610760957,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 9.153180952,
+      "backend": {
+        "accepted": 2910,
+        "rejected": 0,
+        "finished": 2890,
+        "active": 20,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 512,
+            "active": 16,
+            "requests": 2906,
+            "completed": 2890,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 0,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 2870
+      },
+      "interval_latency": {
+        "count": 205,
+        "mean_ms": 58.33882316038376,
+        "p50_ms": 54.478565791954885,
+        "p95_ms": 92.3120671492164,
+        "p99_ms": 99.96074092291859
+      }
+    },
+    {
+      "t": 14.914011774584651,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 9.396175268,
+      "backend": {
+        "accepted": 3114,
+        "rejected": 0,
+        "finished": 3104,
+        "active": 10,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 320,
+            "active": 10,
+            "requests": 3114,
+            "completed": 3104,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 6,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 3084
+      },
+      "interval_latency": {
+        "count": 214,
+        "mean_ms": 68.5852627208996,
+        "p50_ms": 67.13894540369331,
+        "p95_ms": 99.96074092291859,
+        "p99_ms": 109.32559019401299
+      }
+    },
+    {
+      "t": 15.914828322827816,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 9.613049979,
+      "backend": {
+        "accepted": 3307,
+        "rejected": 0,
+        "finished": 3293,
+        "active": 14,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 448,
+            "active": 14,
+            "requests": 3307,
+            "completed": 3293,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 2,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 3273
+      },
+      "interval_latency": {
+        "count": 189,
+        "mean_ms": 51.98853321018673,
+        "p50_ms": 51.83448606107186,
+        "p95_ms": 74.90479621539149,
+        "p99_ms": 83.56891015092829
+      }
+    },
+    {
+      "t": 16.91620877198875,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 9.866665048,
+      "backend": {
+        "accepted": 3526,
+        "rejected": 0,
+        "finished": 3511,
+        "active": 15,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 480,
+            "active": 15,
+            "requests": 3526,
+            "completed": 3511,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 1,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 3491
+      },
+      "interval_latency": {
+        "count": 218,
+        "mean_ms": 53.217068126578944,
+        "p50_ms": 52.352830921682575,
+        "p95_ms": 80.30808006489258,
+        "p99_ms": 96.06030724686386
+      }
+    },
+    {
+      "t": 17.919156815856695,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 10.083751196,
+      "backend": {
+        "accepted": 3728,
+        "rejected": 0,
+        "finished": 3718,
+        "active": 10,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 320,
+            "active": 10,
+            "requests": 3728,
+            "completed": 3718,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 6,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 3698
+      },
+      "interval_latency": {
+        "count": 207,
+        "mean_ms": 55.42430281639099,
+        "p50_ms": 55.02335144987443,
+        "p95_ms": 80.30808006489258,
+        "p99_ms": 92.3120671492164
+      }
+    },
+    {
+      "t": 18.92005761153996,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 10.313344997,
+      "backend": {
+        "accepted": 3946,
+        "rejected": 0,
+        "finished": 3927,
+        "active": 19,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 512,
+            "active": 16,
+            "requests": 3943,
+            "completed": 3927,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 0,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 3907
+      },
+      "interval_latency": {
+        "count": 209,
+        "mean_ms": 62.765796708932335,
+        "p50_ms": 61.38781154006607,
+        "p95_ms": 86.96214301438569,
+        "p99_ms": 101.96995181546924
+      }
+    },
+    {
+      "t": 19.920905148610473,
+      "rss_mb": 555.12109375,
+      "process_cpu_s": 10.544098278,
+      "backend": {
+        "accepted": 4147,
+        "rejected": 0,
+        "finished": 4140,
+        "active": 7,
+        "open_connections": 16,
+        "attempt_errors": {},
+        "routing_unavailable": 0,
+        "nodes": [
+          {
+            "endpoint": "http://127.0.0.1:19380",
+            "outstanding": 224,
+            "active": 7,
+            "requests": 4147,
+            "completed": 4140,
+            "failures": 0,
+            "stale_connections": 0,
+            "retired_idle_connections": 0,
+            "idle_connections": 9,
+            "cooling_down": false
+          }
+        ]
+      },
+      "outcomes": {
+        "ok": 4120
+      },
+      "interval_latency": {
+        "count": 213,
+        "mean_ms": 56.59492196681354,
+        "p50_ms": 56.129320814016914,
+        "p95_ms": 82.74149519893889,
+        "p99_ms": 94.16753969891565
+      }
+    }
+  ],
+  "correctness": "direct/replica parity and sampled outputs passed",
+  "accounting": "all emitted requests terminal; reservations released",
+  "sampled_output_checks": 32,
+  "phases": [
+    {
+      "duration_s": 20.0,
+      "nominal_rps": 200.0,
+      "statuses": {
+        "ok": 4143
+      },
+      "latency": {
+        "count": 4143,
+        "mean_ms": 59.79713054399487,
+        "p50_ms": 57.257520162378654,
+        "p95_ms": 96.06030724686386,
+        "p99_ms": 112.63826490248177
+      },
+      "goodput_rps": 207.15
+    }
+  ]
+}

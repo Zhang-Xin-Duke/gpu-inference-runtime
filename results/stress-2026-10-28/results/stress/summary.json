@@ -1,0 +1,1629 @@
+{
+  "load": [
+    {
+      "category": "feature-load",
+      "variant": "cpu",
+      "offered_rps": 150.0,
+      "runs": 2,
+      "median_goodput_rps": 152.325,
+      "min_goodput_rps": 148.95,
+      "max_goodput_rps": 155.7,
+      "median_p95_ms": 48.1076196145101,
+      "median_p99_ms": 53.67214843732444,
+      "generator_p99_ms": 0.1021971557066337,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 6093,
+      "statuses": {
+        "ok": 6093
+      }
+    },
+    {
+      "category": "feature-load",
+      "variant": "cpu",
+      "offered_rps": 1800.0,
+      "runs": 2,
+      "median_goodput_rps": 232.0,
+      "min_goodput_rps": 231.8,
+      "max_goodput_rps": 232.2,
+      "median_p95_ms": 602.4011696985588,
+      "median_p99_ms": 620.6545275415949,
+      "generator_p99_ms": 0.08802746639686301,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 72175,
+      "statuses": {
+        "ok": 9280,
+        "rejected": 62895
+      }
+    },
+    {
+      "category": "feature-load",
+      "variant": "cpu",
+      "offered_rps": 450.0,
+      "runs": 2,
+      "median_goodput_rps": 246.525,
+      "min_goodput_rps": 245.4,
+      "max_goodput_rps": 247.65,
+      "median_p95_ms": 542.579035940088,
+      "median_p99_ms": 548.0048262994887,
+      "generator_p99_ms": 0.09344292938662248,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 18238,
+      "statuses": {
+        "ok": 9861,
+        "rejected": 8377
+      }
+    },
+    {
+      "category": "feature-load",
+      "variant": "cpu",
+      "offered_rps": 900.0,
+      "runs": 2,
+      "median_goodput_rps": 243.375,
+      "min_goodput_rps": 241.8,
+      "max_goodput_rps": 244.95,
+      "median_p95_ms": 559.0473975518366,
+      "median_p99_ms": 564.6378715273551,
+      "generator_p99_ms": 0.09532113226729359,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 36199,
+      "statuses": {
+        "ok": 9735,
+        "rejected": 26464
+      }
+    },
+    {
+      "category": "feature-load",
+      "variant": "cuda",
+      "offered_rps": 150.0,
+      "runs": 2,
+      "median_goodput_rps": 152.325,
+      "min_goodput_rps": 148.95,
+      "max_goodput_rps": 155.7,
+      "median_p95_ms": 54.21423713654141,
+      "median_p99_ms": 63.93100745502973,
+      "generator_p99_ms": 0.09820945789612487,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 6093,
+      "statuses": {
+        "ok": 6093
+      }
+    },
+    {
+      "category": "feature-load",
+      "variant": "cuda",
+      "offered_rps": 1800.0,
+      "runs": 2,
+      "median_goodput_rps": 223.625,
+      "min_goodput_rps": 212.05,
+      "max_goodput_rps": 235.2,
+      "median_p95_ms": 624.1746760419715,
+      "median_p99_ms": 642.7060031016339,
+      "generator_p99_ms": 0.09069478665615435,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 72175,
+      "statuses": {
+        "ok": 8945,
+        "rejected": 63230
+      }
+    },
+    {
+      "category": "feature-load",
+      "variant": "cuda",
+      "offered_rps": 450.0,
+      "runs": 2,
+      "median_goodput_rps": 237.2,
+      "min_goodput_rps": 236.95,
+      "max_goodput_rps": 237.45,
+      "median_p95_ms": 575.987092745055,
+      "median_p99_ms": 581.7469636725056,
+      "generator_p99_ms": 0.10018346799983698,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 18238,
+      "statuses": {
+        "ok": 9488,
+        "rejected": 8750
+      }
+    },
+    {
+      "category": "feature-load",
+      "variant": "cuda",
+      "offered_rps": 900.0,
+      "runs": 2,
+      "median_goodput_rps": 232.575,
+      "min_goodput_rps": 228.2,
+      "max_goodput_rps": 236.95,
+      "median_p95_ms": 602.5204511541649,
+      "median_p99_ms": 614.6311122223636,
+      "generator_p99_ms": 0.09437735868048872,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 36199,
+      "statuses": {
+        "ok": 9303,
+        "rejected": 26896
+      }
+    },
+    {
+      "category": "replica-before-fix",
+      "variant": 1,
+      "offered_rps": 1000.0,
+      "runs": 2,
+      "median_goodput_rps": 215.775,
+      "min_goodput_rps": 212.55,
+      "max_goodput_rps": 219.0,
+      "median_p95_ms": 985.7015433024452,
+      "median_p99_ms": 1015.5692857660525,
+      "generator_p99_ms": 0.08129188833512849,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 40212,
+      "statuses": {
+        "expired": 518,
+        "late_completion": 4,
+        "ok": 8631,
+        "failed": 9072,
+        "rejected": 21987
+      }
+    },
+    {
+      "category": "replica-before-fix",
+      "variant": 1,
+      "offered_rps": 200.0,
+      "runs": 2,
+      "median_goodput_rps": 203.8,
+      "min_goodput_rps": 200.45,
+      "max_goodput_rps": 207.15,
+      "median_p95_ms": 101.49528923185564,
+      "median_p99_ms": 126.48289209444279,
+      "generator_p99_ms": 0.10425131853633704,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 8152,
+      "statuses": {
+        "ok": 8152
+      }
+    },
+    {
+      "category": "replica-before-fix",
+      "variant": 1,
+      "offered_rps": 400.0,
+      "runs": 2,
+      "median_goodput_rps": 215.225,
+      "min_goodput_rps": 210.5,
+      "max_goodput_rps": 219.95,
+      "median_p95_ms": 956.7122067264277,
+      "median_p99_ms": 1005.5141443228243,
+      "generator_p99_ms": 0.08292585529066457,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 16233,
+      "statuses": {
+        "expired": 232,
+        "late_completion": 8,
+        "ok": 8609,
+        "failed": 4735,
+        "rejected": 2649
+      }
+    },
+    {
+      "category": "replica-before-fix",
+      "variant": 1,
+      "offered_rps": 600.0,
+      "runs": 2,
+      "median_goodput_rps": 213.0,
+      "min_goodput_rps": 210.9,
+      "max_goodput_rps": 215.1,
+      "median_p95_ms": 966.279328793692,
+      "median_p99_ms": 1005.5141443228243,
+      "generator_p99_ms": 0.09160173452271589,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 24183,
+      "statuses": {
+        "expired": 357,
+        "late_completion": 4,
+        "ok": 8520,
+        "failed": 6948,
+        "rejected": 8354
+      }
+    },
+    {
+      "category": "replica-before-fix",
+      "variant": 2,
+      "offered_rps": 1000.0,
+      "runs": 2,
+      "median_goodput_rps": 482.1,
+      "min_goodput_rps": 478.6,
+      "max_goodput_rps": 485.6,
+      "median_p95_ms": 567.4329701438955,
+      "median_p99_ms": 573.1072998453346,
+      "generator_p99_ms": 0.09160173452271589,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 40212,
+      "statuses": {
+        "ok": 19284,
+        "rejected": 20928
+      }
+    },
+    {
+      "category": "replica-before-fix",
+      "variant": 2,
+      "offered_rps": 200.0,
+      "runs": 2,
+      "median_goodput_rps": 177.775,
+      "min_goodput_rps": 168.5,
+      "max_goodput_rps": 187.05,
+      "median_p95_ms": 46.257942785048144,
+      "median_p99_ms": 50.83578292176137,
+      "generator_p99_ms": 0.09820945789612487,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 8152,
+      "statuses": {
+        "ok": 7111,
+        "failed": 1041
+      }
+    },
+    {
+      "category": "replica-before-fix",
+      "variant": 2,
+      "offered_rps": 400.0,
+      "runs": 2,
+      "median_goodput_rps": 405.825,
+      "min_goodput_rps": 397.95,
+      "max_goodput_rps": 413.7,
+      "median_p95_ms": 64.1998048679856,
+      "median_p99_ms": 72.71625400290769,
+      "generator_p99_ms": 0.08459266498200693,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 16233,
+      "statuses": {
+        "ok": 16233
+      }
+    },
+    {
+      "category": "replica-before-fix",
+      "variant": 2,
+      "offered_rps": 600.0,
+      "runs": 2,
+      "median_goodput_rps": 480.17499999999995,
+      "min_goodput_rps": 476.65,
+      "max_goodput_rps": 483.7,
+      "median_p95_ms": 561.8148219246491,
+      "median_p99_ms": 573.1072998453346,
+      "generator_p99_ms": 0.08629297754814527,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 24183,
+      "statuses": {
+        "ok": 19207,
+        "rejected": 4976
+      }
+    },
+    {
+      "category": "replica-load",
+      "variant": 1,
+      "offered_rps": 1000.0,
+      "runs": 2,
+      "median_goodput_rps": 204.25,
+      "min_goodput_rps": 202.05,
+      "max_goodput_rps": 206.45,
+      "median_p95_ms": 990.6300510189574,
+      "median_p99_ms": 1063.1412284994797,
+      "generator_p99_ms": 0.08292585529066457,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 40212,
+      "statuses": {
+        "expired": 625,
+        "late_completion": 4,
+        "ok": 8170,
+        "failed": 8979,
+        "rejected": 22434
+      }
+    },
+    {
+      "category": "replica-load",
+      "variant": 1,
+      "offered_rps": 200.0,
+      "runs": 2,
+      "median_goodput_rps": 203.8,
+      "min_goodput_rps": 200.45,
+      "max_goodput_rps": 207.15,
+      "median_p95_ms": 102.69294872043842,
+      "median_p99_ms": 124.35878044679976,
+      "generator_p99_ms": 0.09820945789612487,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 8152,
+      "statuses": {
+        "ok": 8152
+      }
+    },
+    {
+      "category": "replica-load",
+      "variant": 1,
+      "offered_rps": 400.0,
+      "runs": 2,
+      "median_goodput_rps": 213.05,
+      "min_goodput_rps": 210.5,
+      "max_goodput_rps": 215.6,
+      "median_p95_ms": 961.4957677600598,
+      "median_p99_ms": 1005.5141443228243,
+      "generator_p99_ms": 0.09437735868048872,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 16233,
+      "statuses": {
+        "expired": 249,
+        "late_completion": 8,
+        "ok": 8522,
+        "failed": 4817,
+        "rejected": 2637
+      }
+    },
+    {
+      "category": "replica-load",
+      "variant": 1,
+      "offered_rps": 600.0,
+      "runs": 2,
+      "median_goodput_rps": 220.975,
+      "min_goodput_rps": 217.95,
+      "max_goodput_rps": 224.0,
+      "median_p95_ms": 975.9421220816289,
+      "median_p99_ms": 1010.5417150444384,
+      "generator_p99_ms": 0.08048701815359258,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 24183,
+      "statuses": {
+        "expired": 352,
+        "late_completion": 11,
+        "ok": 8839,
+        "failed": 6589,
+        "rejected": 8392
+      }
+    },
+    {
+      "category": "replica-load",
+      "variant": 2,
+      "offered_rps": 1000.0,
+      "runs": 2,
+      "median_goodput_rps": 480.125,
+      "min_goodput_rps": 472.05,
+      "max_goodput_rps": 488.2,
+      "median_p95_ms": 576.2152120915307,
+      "median_p99_ms": 587.7971378545706,
+      "generator_p99_ms": 0.08459266498200693,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 40212,
+      "statuses": {
+        "ok": 19205,
+        "rejected": 21007
+      }
+    },
+    {
+      "category": "replica-load",
+      "variant": 2,
+      "offered_rps": 200.0,
+      "runs": 2,
+      "median_goodput_rps": 203.8,
+      "min_goodput_rps": 200.45,
+      "max_goodput_rps": 207.15,
+      "median_p95_ms": 47.17371775127134,
+      "median_p99_ms": 52.10913236595762,
+      "generator_p99_ms": 0.11066487535304532,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 8152,
+      "statuses": {
+        "ok": 8152
+      }
+    },
+    {
+      "category": "replica-load",
+      "variant": 2,
+      "offered_rps": 400.0,
+      "runs": 2,
+      "median_goodput_rps": 405.825,
+      "min_goodput_rps": 397.95,
+      "max_goodput_rps": 413.7,
+      "median_p95_ms": 66.80657438684335,
+      "median_p99_ms": 76.79243453241746,
+      "generator_p99_ms": 0.09251775186794305,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 16233,
+      "statuses": {
+        "ok": 16233
+      }
+    },
+    {
+      "category": "replica-load",
+      "variant": 2,
+      "offered_rps": 600.0,
+      "runs": 2,
+      "median_goodput_rps": 481.82500000000005,
+      "min_goodput_rps": 481.6,
+      "max_goodput_rps": 482.05,
+      "median_p95_ms": 561.8148219246491,
+      "median_p99_ms": 573.1072998453346,
+      "generator_p99_ms": 0.09344292938662248,
+      "ipc_full": 0,
+      "generator_stale": 0,
+      "offered": 24183,
+      "statuses": {
+        "ok": 19273,
+        "rejected": 4910
+      }
+    }
+  ],
+  "recovery": {
+    "cpu": {
+      "phases": [
+        {
+          "duration_s": 30.0,
+          "nominal_rps": 150.0,
+          "statuses": {
+            "ok": 4266
+          },
+          "latency": {
+            "count": 4266,
+            "mean_ms": 30.738384486470796,
+            "p50_ms": 29.98770561702154,
+            "p95_ms": 45.54502425437191,
+            "p99_ms": 50.813141908706854
+          },
+          "goodput_rps": 142.2
+        },
+        {
+          "duration_s": 30.0,
+          "nominal_rps": 1800.0,
+          "statuses": {
+            "ok": 6772,
+            "rejected": 47453
+          },
+          "latency": {
+            "count": 6772,
+            "mean_ms": 572.7408485620779,
+            "p50_ms": 587.5353474009435,
+            "p95_ms": 605.3382559625394,
+            "p99_ms": 623.6806104564603
+          },
+          "goodput_rps": 225.73333333333332
+        },
+        {
+          "duration_s": 60.0,
+          "nominal_rps": 150.0,
+          "statuses": {
+            "rejected": 4,
+            "ok": 8916
+          },
+          "latency": {
+            "count": 8916,
+            "mean_ms": 36.99547342580863,
+            "p50_ms": 32.472388113792626,
+            "p95_ms": 49.31873492184017,
+            "p99_ms": 235.21640706144316
+          },
+          "goodput_rps": 148.6
+        }
+      ],
+      "phase_offered": [
+        4266,
+        54225,
+        8920
+      ],
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 34078720,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 47457,
+        "reserved_bytes": 0,
+        "accepted": 19974,
+        "completed": 19974,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 8221,
+        "samples": 639168,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 6404.958516359329,
+        "h2d_ms": 4654.245879044756,
+        "gpu_pack_ms": 0.0,
+        "compute_ms": 69080.24725437164,
+        "d2h_ms": 140.20999238593504,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 2129920,
+        "backend_failed": false,
+        "ready": false
+      },
+      "generator_lag": {
+        "count": 67411,
+        "mean_ms": 0.0653641696274568,
+        "p50_ms": 0.06662231756833144,
+        "p95_ms": 0.07582241195141072,
+        "p99_ms": 0.09160173452271589
+      }
+    },
+    "cuda": {
+      "phases": [
+        {
+          "duration_s": 30.0,
+          "nominal_rps": 150.0,
+          "statuses": {
+            "ok": 4266
+          },
+          "latency": {
+            "count": 4266,
+            "mean_ms": 37.347935867551286,
+            "p50_ms": 36.956606711929204,
+            "p95_ms": 52.352830921682575,
+            "p99_ms": 58.40839631764247
+          },
+          "goodput_rps": 142.2
+        },
+        {
+          "duration_s": 30.0,
+          "nominal_rps": 1800.0,
+          "statuses": {
+            "ok": 6268,
+            "rejected": 47957
+          },
+          "latency": {
+            "count": 6268,
+            "mean_ms": 619.6490352941843,
+            "p50_ms": 636.2165907266352,
+            "p95_ms": 655.4945896422429,
+            "p99_ms": 662.0495355386654
+          },
+          "goodput_rps": 208.93333333333334
+        },
+        {
+          "duration_s": 60.0,
+          "nominal_rps": 150.0,
+          "statuses": {
+            "rejected": 5,
+            "ok": 8915
+          },
+          "latency": {
+            "count": 8915,
+            "mean_ms": 42.22694875936761,
+            "p50_ms": 36.2284155591895,
+            "p95_ms": 55.02335144987443,
+            "p99_ms": 292.77759234300686
+          },
+          "goodput_rps": 148.58333333333334
+        }
+      ],
+      "phase_offered": [
+        4266,
+        54225,
+        8920
+      ],
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 47962,
+        "reserved_bytes": 0,
+        "accepted": 19469,
+        "completed": 19469,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 7550,
+        "samples": 623008,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 8310.282945632935,
+        "h2d_ms": 2438.7577436193824,
+        "gpu_pack_ms": 21585.60086031165,
+        "compute_ms": 64050.56232881546,
+        "d2h_ms": 130.69372971425764,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 3375104,
+        "backend_failed": false,
+        "ready": false
+      },
+      "generator_lag": {
+        "count": 67411,
+        "mean_ms": 0.06291162118675345,
+        "p50_ms": 0.06530959471456863,
+        "p95_ms": 0.07072093257852285,
+        "p99_ms": 0.07890110592450993
+      }
+    }
+  },
+  "soak": {
+    "duration": 300.0,
+    "offered": 45295,
+    "statuses": {
+      "ok": 45295
+    },
+    "goodput_rps": 150.98333333333332,
+    "latency": {
+      "count": 45295,
+      "mean_ms": 37.81777321951011,
+      "p50_ms": 37.3261727790485,
+      "p95_ms": 53.93917405144048,
+      "p99_ms": 63.24792361754161
+    },
+    "rss_mb": {
+      "first_60_samples_median": 881.64453125,
+      "last_60_samples_median": 889.5,
+      "peak": 889.64453125
+    },
+    "cuda_allocated_bytes": {
+      "first_60_samples_median": 4452882944.0,
+      "last_60_samples_median": 4452884992.0,
+      "peak": 4486447616
+    },
+    "cuda_reserved_bytes": {
+      "first_60_samples_median": 4548722688.0,
+      "last_60_samples_median": 4548722688.0,
+      "peak": 4548722688
+    },
+    "after": {
+      "active_batches": 0,
+      "peak_reserved_bytes": 8359680,
+      "active_requests": 0,
+      "expired": 0,
+      "queued": 0,
+      "rejected": 0,
+      "reserved_bytes": 0,
+      "accepted": 45315,
+      "completed": 45315,
+      "failed": 0,
+      "cancelled": 0,
+      "deadline_misses": 0,
+      "batches": 19935,
+      "samples": 1450080,
+      "padded_tokens": 0,
+      "useful_tokens": 0,
+      "pack_ms": 15159.246807917953,
+      "h2d_ms": 7302.503262445331,
+      "gpu_pack_ms": 51877.67735739378,
+      "compute_ms": 161353.69220018387,
+      "d2h_ms": 232.51304962765425,
+      "staging_bytes": 0,
+      "peak_staging_bytes": 3375104,
+      "backend_failed": false,
+      "ready": false
+    }
+  },
+  "supplemental": [
+    {
+      "name": "batch-128-seed-17",
+      "phase_offered": [
+        4674,
+        9121,
+        4485
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "ok": 2475,
+            "rejected": 2199
+          },
+          "latency": {
+            "count": 2475,
+            "mean_ms": 514.3012617167199,
+            "p50_ms": 537.2069662773148,
+            "p95_ms": 559.0197233081085,
+            "p99_ms": 564.6099205411896
+          },
+          "goodput_rps": 247.5
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 900.0,
+          "statuses": {
+            "rejected": 6892,
+            "ok": 2229
+          },
+          "latency": {
+            "count": 2229,
+            "mean_ms": 572.1306148089197,
+            "p50_ms": 564.6099205411896,
+            "p95_ms": 636.2165907266352,
+            "p99_ms": 642.5787566339015
+          },
+          "goodput_rps": 222.9
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "rejected": 2277,
+            "ok": 2208
+          },
+          "latency": {
+            "count": 2208,
+            "mean_ms": 574.5481751619609,
+            "p50_ms": 593.4107008749528,
+            "p95_ms": 629.9174165610249,
+            "p99_ms": 642.5787566339015
+          },
+          "goodput_rps": 220.8
+        }
+      ],
+      "generator_lag": {
+        "count": 18280,
+        "mean_ms": 0.06375518521493713,
+        "p50_ms": 0.06530959471456863,
+        "p95_ms": 0.07072093257852285,
+        "p99_ms": 0.08048701815359258
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 11368,
+        "reserved_bytes": 0,
+        "accepted": 6932,
+        "completed": 6932,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 1748,
+        "samples": 221824,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 2278.7844631820917,
+        "h2d_ms": 586.0295196566731,
+        "gpu_pack_ms": 7325.648769343272,
+        "compute_ms": 18027.850554943085,
+        "d2h_ms": 85.60016510938294,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 3375104,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "batch-128-seed-7",
+      "phase_offered": [
+        4518,
+        8942,
+        4459
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "ok": 2285,
+            "rejected": 2233
+          },
+          "latency": {
+            "count": 2285,
+            "mean_ms": 556.4814686579568,
+            "p50_ms": 581.7181657435083,
+            "p95_ms": 605.3382559625394,
+            "p99_ms": 611.3916385221648
+          },
+          "goodput_rps": 228.5
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 900.0,
+          "statuses": {
+            "rejected": 6826,
+            "ok": 2116
+          },
+          "latency": {
+            "count": 2116,
+            "mean_ms": 604.2866269082521,
+            "p50_ms": 617.5055549073865,
+            "p95_ms": 642.5787566339015,
+            "p99_ms": 649.0045442002405
+          },
+          "goodput_rps": 211.6
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "rejected": 2333,
+            "ok": 2126
+          },
+          "latency": {
+            "count": 2126,
+            "mean_ms": 596.8158849990757,
+            "p50_ms": 599.3448078837024,
+            "p95_ms": 617.5055549073865,
+            "p99_ms": 623.6806104564603
+          },
+          "goodput_rps": 212.6
+        }
+      ],
+      "generator_lag": {
+        "count": 17919,
+        "mean_ms": 0.0680322425751902,
+        "p50_ms": 0.06864104041296946,
+        "p95_ms": 0.07734644243163408,
+        "p99_ms": 0.09251775186794305
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 11392,
+        "reserved_bytes": 0,
+        "accepted": 6547,
+        "completed": 6547,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 1653,
+        "samples": 209504,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 2703.1258083879948,
+        "h2d_ms": 886.8242247179151,
+        "gpu_pack_ms": 6347.229261011817,
+        "compute_ms": 16709.967969417572,
+        "d2h_ms": 90.44727479177527,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 3375104,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "batch-256-seed-17",
+      "phase_offered": [
+        4674,
+        9121,
+        4485
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "ok": 2744,
+            "rejected": 1930
+          },
+          "latency": {
+            "count": 2744,
+            "mean_ms": 454.53539186594435,
+            "p50_ms": 472.0236693364817,
+            "p95_ms": 501.0626365612987,
+            "p99_ms": 501.0626365612987
+          },
+          "goodput_rps": 274.4
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 900.0,
+          "statuses": {
+            "rejected": 6529,
+            "ok": 2592
+          },
+          "latency": {
+            "count": 2592,
+            "mean_ms": 489.55197989679067,
+            "p50_ms": 491.1897231264569,
+            "p95_ms": 516.2453355117426,
+            "p99_ms": 521.4077888668601
+          },
+          "goodput_rps": 259.2
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "rejected": 1834,
+            "ok": 2651
+          },
+          "latency": {
+            "count": 2651,
+            "mean_ms": 465.90280751281415,
+            "p50_ms": 467.35016765988286,
+            "p95_ms": 486.3264585410464,
+            "p99_ms": 496.10162035772146
+          },
+          "goodput_rps": 265.1
+        }
+      ],
+      "generator_lag": {
+        "count": 18280,
+        "mean_ms": 0.06805765646340681,
+        "p50_ms": 0.06796142615145492,
+        "p95_ms": 0.08048701815359258,
+        "p99_ms": 0.11864772510251563
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 10293,
+        "reserved_bytes": 0,
+        "accepted": 8007,
+        "completed": 8007,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 1020,
+        "samples": 256224,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 2071.3564697653055,
+        "h2d_ms": 824.6593770459294,
+        "gpu_pack_ms": 9025.148565654643,
+        "compute_ms": 22074.01599740982,
+        "d2h_ms": 82.73769765882753,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 6750208,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "batch-256-seed-7",
+      "phase_offered": [
+        4518,
+        8942,
+        4459
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "ok": 2726,
+            "rejected": 1792
+          },
+          "latency": {
+            "count": 2726,
+            "mean_ms": 453.3975781751243,
+            "p50_ms": 476.7439060298465,
+            "p95_ms": 501.0626365612987,
+            "p99_ms": 501.0626365612987
+          },
+          "goodput_rps": 272.6
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 900.0,
+          "statuses": {
+            "rejected": 6319,
+            "ok": 2623
+          },
+          "latency": {
+            "count": 2623,
+            "mean_ms": 483.5638713824456,
+            "p50_ms": 486.3264585410464,
+            "p95_ms": 501.0626365612987,
+            "p99_ms": 506.0732629269117
+          },
+          "goodput_rps": 262.3
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "rejected": 1867,
+            "ok": 2592
+          },
+          "latency": {
+            "count": 2592,
+            "mean_ms": 478.83776483344445,
+            "p50_ms": 481.51134509014497,
+            "p95_ms": 501.0626365612987,
+            "p99_ms": 501.0626365612987
+          },
+          "goodput_rps": 259.2
+        }
+      ],
+      "generator_lag": {
+        "count": 17919,
+        "mean_ms": 0.06681338856546093,
+        "p50_ms": 0.06728854074401477,
+        "p95_ms": 0.07658063607092483,
+        "p99_ms": 0.08979681847143996
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 9978,
+        "reserved_bytes": 0,
+        "accepted": 7961,
+        "completed": 7961,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 1014,
+        "samples": 254752,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 2413.928957656026,
+        "h2d_ms": 972.2941287308931,
+        "gpu_pack_ms": 8310.450205801986,
+        "compute_ms": 20988.053077220917,
+        "d2h_ms": 79.29594836570323,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 6750208,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "batch-512-seed-17",
+      "phase_offered": [
+        4674,
+        9121,
+        4485
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "ok": 2842,
+            "rejected": 1832
+          },
+          "latency": {
+            "count": 2842,
+            "mean_ms": 421.2686433669843,
+            "p50_ms": 440.26499863924727,
+            "p95_ms": 467.35016765988286,
+            "p99_ms": 476.7439060298465
+          },
+          "goodput_rps": 284.2
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 900.0,
+          "statuses": {
+            "rejected": 6422,
+            "ok": 2699
+          },
+          "latency": {
+            "count": 2699,
+            "mean_ms": 463.154251688954,
+            "p50_ms": 467.35016765988286,
+            "p95_ms": 481.51134509014497,
+            "p99_ms": 496.10162035772146
+          },
+          "goodput_rps": 269.9
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "rejected": 1797,
+            "ok": 2688
+          },
+          "latency": {
+            "count": 2688,
+            "mean_ms": 442.23141742778745,
+            "p50_ms": 444.66764862563974,
+            "p95_ms": 476.7439060298465,
+            "p99_ms": 486.3264585410464
+          },
+          "goodput_rps": 268.8
+        }
+      ],
+      "generator_lag": {
+        "count": 18280,
+        "mean_ms": 0.06272716914391231,
+        "p50_ms": 0.06338884919510765,
+        "p95_ms": 0.06932745081709915,
+        "p99_ms": 0.08292585529066457
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 10051,
+        "reserved_bytes": 0,
+        "accepted": 8249,
+        "completed": 8249,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 536,
+        "samples": 263968,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 1884.0358015149832,
+        "h2d_ms": 683.3055542595685,
+        "gpu_pack_ms": 9351.2410114198,
+        "compute_ms": 25375.451240062714,
+        "d2h_ms": 86.4464078033343,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 13500416,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "batch-512-seed-7",
+      "phase_offered": [
+        4518,
+        8942,
+        4459
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "ok": 2843,
+            "rejected": 1675
+          },
+          "latency": {
+            "count": 2843,
+            "mean_ms": 417.7692670871727,
+            "p50_ms": 435.9059392467795,
+            "p95_ms": 467.35016765988286,
+            "p99_ms": 481.51134509014497
+          },
+          "goodput_rps": 284.3
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 900.0,
+          "statuses": {
+            "rejected": 6254,
+            "ok": 2688
+          },
+          "latency": {
+            "count": 2688,
+            "mean_ms": 462.82607546267434,
+            "p50_ms": 462.7229382771117,
+            "p95_ms": 491.1897231264569,
+            "p99_ms": 501.0626365612987
+          },
+          "goodput_rps": 268.8
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 450.0,
+          "statuses": {
+            "rejected": 1784,
+            "ok": 2675
+          },
+          "latency": {
+            "count": 2675,
+            "mean_ms": 445.05726138913184,
+            "p50_ms": 449.11432511189616,
+            "p95_ms": 481.51134509014497,
+            "p99_ms": 496.10162035772146
+          },
+          "goodput_rps": 267.5
+        }
+      ],
+      "generator_lag": {
+        "count": 17919,
+        "mean_ms": 0.06677851243469224,
+        "p50_ms": 0.06596269066171431,
+        "p95_ms": 0.08715590732362674,
+        "p99_ms": 0.11401813174111795
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 9713,
+        "reserved_bytes": 0,
+        "accepted": 8226,
+        "completed": 8226,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 536,
+        "samples": 263232,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 1848.4775200486183,
+        "h2d_ms": 771.8396642617881,
+        "gpu_pack_ms": 9461.5446208762,
+        "compute_ms": 25474.3619389534,
+        "d2h_ms": 77.241069260519,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 13500416,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "knee-cpu-seed-17",
+      "phase_offered": [
+        2341,
+        3120,
+        3822
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 225.0,
+          "statuses": {
+            "ok": 2341
+          },
+          "latency": {
+            "count": 2341,
+            "mean_ms": 54.803982737487274,
+            "p50_ms": 51.32127332779392,
+            "p95_ms": 92.3120671492164,
+            "p99_ms": 107.17144416627093
+          },
+          "goodput_rps": 234.1
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 300.0,
+          "statuses": {
+            "ok": 2529,
+            "rejected": 591
+          },
+          "latency": {
+            "count": 2529,
+            "mean_ms": 465.76611996845986,
+            "p50_ms": 516.2453355117426,
+            "p95_ms": 531.888085423084,
+            "p99_ms": 537.2069662773148
+          },
+          "goodput_rps": 252.9
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 375.0,
+          "statuses": {
+            "rejected": 1422,
+            "ok": 2400
+          },
+          "latency": {
+            "count": 2400,
+            "mean_ms": 525.0208509961764,
+            "p50_ms": 526.6218667555286,
+            "p95_ms": 537.2069662773148,
+            "p99_ms": 542.579035940088
+          },
+          "goodput_rps": 240.0
+        }
+      ],
+      "generator_lag": {
+        "count": 9283,
+        "mean_ms": 0.07030152371926746,
+        "p50_ms": 0.07072093257852285,
+        "p95_ms": 0.07811990685595041,
+        "p99_ms": 0.09344292938662248
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 34078720,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 2013,
+        "reserved_bytes": 0,
+        "accepted": 7290,
+        "completed": 7290,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 1908,
+        "samples": 233280,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 1603.8452461361885,
+        "h2d_ms": 1091.773096255958,
+        "gpu_pack_ms": 0.0,
+        "compute_ms": 20649.708509922028,
+        "d2h_ms": 84.54623075155541,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 2129920,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "knee-cpu-seed-7",
+      "phase_offered": [
+        2250,
+        3025,
+        3678
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 225.0,
+          "statuses": {
+            "ok": 2250
+          },
+          "latency": {
+            "count": 2250,
+            "mean_ms": 55.36683926400211,
+            "p50_ms": 50.310041493769155,
+            "p95_ms": 97.99111942252583,
+            "p99_ms": 110.41884609595311
+          },
+          "goodput_rps": 225.0
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 300.0,
+          "statuses": {
+            "ok": 2515,
+            "rejected": 510
+          },
+          "latency": {
+            "count": 2515,
+            "mean_ms": 469.9163396681694,
+            "p50_ms": 516.2453355117426,
+            "p95_ms": 537.2069662773148,
+            "p99_ms": 542.579035940088
+          },
+          "goodput_rps": 251.5
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 375.0,
+          "statuses": {
+            "rejected": 1276,
+            "ok": 2402
+          },
+          "latency": {
+            "count": 2402,
+            "mean_ms": 521.3196498088284,
+            "p50_ms": 521.4077888668601,
+            "p95_ms": 548.0048262994887,
+            "p99_ms": 553.4848745624838
+          },
+          "goodput_rps": 240.2
+        }
+      ],
+      "generator_lag": {
+        "count": 8953,
+        "mean_ms": 0.06483320413515394,
+        "p50_ms": 0.06530959471456863,
+        "p95_ms": 0.07072093257852285,
+        "p99_ms": 0.08375511384357122
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 34078720,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 1786,
+        "reserved_bytes": 0,
+        "accepted": 7187,
+        "completed": 7187,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 1896,
+        "samples": 229984,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 1367.3002142459154,
+        "h2d_ms": 1411.9666003398597,
+        "gpu_pack_ms": 0.0,
+        "compute_ms": 19883.36246728897,
+        "d2h_ms": 94.3134158696048,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 2129920,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "knee-cuda-seed-17",
+      "phase_offered": [
+        2341,
+        3120,
+        3822
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 225.0,
+          "statuses": {
+            "ok": 2198,
+            "rejected": 143
+          },
+          "latency": {
+            "count": 2198,
+            "mean_ms": 446.4419352473713,
+            "p50_ms": 526.6218667555286,
+            "p95_ms": 629.9174165610249,
+            "p99_ms": 642.5787566339015
+          },
+          "goodput_rps": 219.8
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 300.0,
+          "statuses": {
+            "rejected": 747,
+            "ok": 2373
+          },
+          "latency": {
+            "count": 2373,
+            "mean_ms": 528.3475891203065,
+            "p50_ms": 531.888085423084,
+            "p95_ms": 548.0048262994887,
+            "p99_ms": 548.0048262994887
+          },
+          "goodput_rps": 237.3
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 375.0,
+          "statuses": {
+            "rejected": 1547,
+            "ok": 2275
+          },
+          "latency": {
+            "count": 2275,
+            "mean_ms": 554.0453145202699,
+            "p50_ms": 548.0048262994887,
+            "p95_ms": 599.3448078837024,
+            "p99_ms": 611.3916385221648
+          },
+          "goodput_rps": 227.5
+        }
+      ],
+      "generator_lag": {
+        "count": 9283,
+        "mean_ms": 0.06490720544930587,
+        "p50_ms": 0.06466296506392932,
+        "p95_ms": 0.07507169500139675,
+        "p99_ms": 0.08292585529066457
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 2437,
+        "reserved_bytes": 0,
+        "accepted": 6866,
+        "completed": 6866,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 1732,
+        "samples": 219712,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 2062.8449972718954,
+        "h2d_ms": 952.3323040083051,
+        "gpu_pack_ms": 7507.132878200151,
+        "compute_ms": 18363.13373851776,
+        "d2h_ms": 93.68157086125575,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 3375104,
+        "backend_failed": false,
+        "ready": false
+      }
+    },
+    {
+      "name": "knee-cuda-seed-7",
+      "phase_offered": [
+        2250,
+        3025,
+        3678
+      ],
+      "phases": [
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 225.0,
+          "statuses": {
+            "ok": 2250
+          },
+          "latency": {
+            "count": 2250,
+            "mean_ms": 133.1675982500116,
+            "p50_ms": 113.76464755150658,
+            "p95_ms": 270.3751944475327,
+            "p99_ms": 298.6624219491013
+          },
+          "goodput_rps": 225.0
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 300.0,
+          "statuses": {
+            "ok": 2166,
+            "rejected": 859
+          },
+          "latency": {
+            "count": 2166,
+            "mean_ms": 579.695316425431,
+            "p50_ms": 599.3448078837024,
+            "p95_ms": 629.9174165610249,
+            "p99_ms": 642.5787566339015
+          },
+          "goodput_rps": 216.6
+        },
+        {
+          "duration_s": 10.0,
+          "nominal_rps": 375.0,
+          "statuses": {
+            "rejected": 1600,
+            "ok": 2078
+          },
+          "latency": {
+            "count": 2078,
+            "mean_ms": 607.03441907165,
+            "p50_ms": 611.3916385221648,
+            "p95_ms": 636.2165907266352,
+            "p99_ms": 642.5787566339015
+          },
+          "goodput_rps": 207.8
+        }
+      ],
+      "generator_lag": {
+        "count": 8953,
+        "mean_ms": 0.07005422699089278,
+        "p50_ms": 0.07002072532527015,
+        "p95_ms": 0.07890110592450993,
+        "p99_ms": 0.09160173452271589
+      },
+      "after": {
+        "active_batches": 0,
+        "peak_reserved_bytes": 50954240,
+        "active_requests": 0,
+        "expired": 0,
+        "queued": 0,
+        "rejected": 2459,
+        "reserved_bytes": 0,
+        "accepted": 6514,
+        "completed": 6514,
+        "failed": 0,
+        "cancelled": 0,
+        "deadline_misses": 0,
+        "batches": 1657,
+        "samples": 208448,
+        "padded_tokens": 0,
+        "useful_tokens": 0,
+        "pack_ms": 2373.841008171439,
+        "h2d_ms": 944.2203040029854,
+        "gpu_pack_ms": 6778.222886508796,
+        "compute_ms": 17121.818196296692,
+        "d2h_ms": 82.60401125205681,
+        "staging_bytes": 0,
+        "peak_staging_bytes": 3375104,
+        "backend_failed": false,
+        "ready": false
+      }
+    }
+  ]
+}

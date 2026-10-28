@@ -71,6 +71,29 @@ in-process Runtime API; the existing HTTP dense/sequence protocol is unchanged.
 
 ## Measurement
 
+The extended dual-L40-host evaluation records 23 layouts with two input seeds,
+three rounds per method and 20 repetitions per round. The following wall times
+include CPU preparation, upload and completed packing; each value is the median
+of the two seed-level medians. Only one GPU runs the packing comparison.
+
+| Input layout | CPU expand/upload | Compact upload/GPU pack | CPU / GPU time |
+|---|---:|---:|---:|
+| Small: 4 requests × 4 samples, widths 16/32 | 0.063 ms | 0.199 ms | 0.32× |
+| 32 requests × 64 samples, 8 × 256 columns, half shared | 7.021 ms | 4.595 ms | 1.53× |
+| Same dimensions, 6 of 8 features shared | 6.656 ms | 3.028 ms | 2.20× |
+
+In the last layout, compact feature payload is 4,390,912 bytes rather than
+16,777,216 expanded bytes, plus 12,288 descriptor bytes. Shared rows travel once
+per request and expand on the GPU. The two seeds give 2.09× and 2.30× packing
+speedups. Small requests pay more for descriptors, an extra upload and a kernel.
+Device staging additionally retains the compact source alongside expanded model
+input; lower transfer volume does not imply lower peak GPU memory.
+
+These are packing results. The [load methodology](LOAD_TESTING.md) separately
+measures model inference and overload behavior. Raw seed results:
+[7](../results/stress-2026-10-28/results/stress/micro/seed-7.json) and
+[17](../results/stress-2026-10-28/results/stress/micro/seed-17.json).
+
 ```bash
 python -m pytest tests/test_feature_pack.py -q
 python benchmarks/feature_pack.py --iterations 30 --rounds 3 \

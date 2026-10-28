@@ -1,0 +1,69 @@
+Collecting ninja
+  Using cached ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (5.4 kB)
+Requirement already satisfied: cuda-toolkit==13.0.2 in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cccl,cudart,nvcc]==13.0.2) (13.0.2)
+Collecting nvidia-cuda-cccl==13.0.85.* (from cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Downloading nvidia_cuda_cccl-13.0.85-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Requirement already satisfied: nvidia-cuda-runtime==13.0.96.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cccl,cudart,nvcc]==13.0.2) (13.0.96)
+Collecting nvidia-cuda-nvcc==13.0.88.* (from cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Downloading nvidia_cuda_nvcc-13.0.88-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.8 kB)
+Collecting nvidia-nvvm (from nvidia-cuda-nvcc==13.0.88.*->cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Downloading nvidia_nvvm-13.4.92-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cuda-crt (from nvidia-cuda-nvcc==13.0.88.*->cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Downloading nvidia_cuda_crt-13.4.92-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Downloading nvidia_cuda_cccl-13.0.85-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 35.9 MB/s eta 0:00:00
+Downloading nvidia_cuda_nvcc-13.0.88-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (37.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 37.4/37.4 MB 131.1 MB/s eta 0:00:00
+Using cached ninja-1.13.2-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (183 kB)
+Downloading nvidia_cuda_crt-13.4.92-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (160 kB)
+Downloading nvidia_nvvm-13.4.92-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (72.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 72.6/72.6 MB 51.0 MB/s eta 0:00:00
+Installing collected packages: nvidia-nvvm, nvidia-cuda-crt, nvidia-cuda-cccl, ninja, nvidia-cuda-nvcc
+Successfully installed ninja-1.13.2 nvidia-cuda-cccl-13.0.85 nvidia-cuda-crt-13.4.92 nvidia-cuda-nvcc-13.0.88 nvidia-nvvm-13.4.92
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: python -m pip install --upgrade pip
+Collecting cuda-toolkit==13.0.2 (from cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Downloading cuda_toolkit-13.0.2-py2.py3-none-any.whl.metadata (9.4 kB)
+Collecting nvidia-cuda-cccl==13.0.85.* (from cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Using cached nvidia_cuda_cccl-13.0.85-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cuda-runtime==13.0.96.* (from cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Downloading nvidia_cuda_runtime-13.0.96-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cuda-nvcc==13.0.88.* (from cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Using cached nvidia_cuda_nvcc-13.0.88-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.8 kB)
+Collecting nvidia-nvvm (from nvidia-cuda-nvcc==13.0.88.*->cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Using cached nvidia_nvvm-13.4.92-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cuda-crt (from nvidia-cuda-nvcc==13.0.88.*->cuda-toolkit[cccl,cudart,nvcc]==13.0.2)
+  Using cached nvidia_cuda_crt-13.4.92-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Downloading cuda_toolkit-13.0.2-py2.py3-none-any.whl (2.4 kB)
+Using cached nvidia_cuda_cccl-13.0.85-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.1 MB)
+Using cached nvidia_cuda_nvcc-13.0.88-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (37.4 MB)
+Downloading nvidia_cuda_runtime-13.0.96-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.2/2.2 MB 40.8 MB/s eta 0:00:00
+Using cached nvidia_cuda_crt-13.4.92-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (160 kB)
+Using cached nvidia_nvvm-13.4.92-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (72.6 MB)
+Installing collected packages: cuda-toolkit, nvidia-nvvm, nvidia-cuda-runtime, nvidia-cuda-crt, nvidia-cuda-cccl, nvidia-cuda-nvcc
+Successfully installed cuda-toolkit-13.0.2 nvidia-cuda-cccl-13.0.85 nvidia-cuda-crt-13.4.92 nvidia-cuda-nvcc-13.0.88 nvidia-cuda-runtime-13.0.96 nvidia-nvvm-13.4.92
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: python -m pip install --upgrade pip
+Collecting nvidia-nvvm==13.0.88
+  Downloading nvidia_nvvm-13.0.88-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl.metadata (1.7 kB)
+Collecting nvidia-cuda-crt==13.0.88
+  Downloading nvidia_cuda_crt-13.0.88-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (1.7 kB)
+Downloading nvidia_nvvm-13.0.88-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (61.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.6/61.6 MB 118.0 MB/s eta 0:00:00
+Downloading nvidia_cuda_crt-13.0.88-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (134 kB)
+Installing collected packages: nvidia-nvvm, nvidia-cuda-crt
+  Attempting uninstall: nvidia-nvvm
+    Found existing installation: nvidia-nvvm 13.4.92
+    Uninstalling nvidia-nvvm-13.4.92:
+      Successfully uninstalled nvidia-nvvm-13.4.92
+  Attempting uninstall: nvidia-cuda-crt
+    Found existing installation: nvidia-cuda-crt 13.4.92
+    Uninstalling nvidia-cuda-crt-13.4.92:
+      Successfully uninstalled nvidia-cuda-crt-13.4.92
+Successfully installed nvidia-cuda-crt-13.0.88 nvidia-nvvm-13.0.88
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: python -m pip install --upgrade pip

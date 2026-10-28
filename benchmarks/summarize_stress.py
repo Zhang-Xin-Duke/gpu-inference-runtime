@@ -16,8 +16,13 @@ def main():
     p.add_argument('--root',type=Path,required=True)
     args=p.parse_args();root=args.root
     groups=defaultdict(list);matched=defaultdict(list)
-    for folder in ('feature-load','replica-load'):
-        for path in sorted((root/folder).glob('*.json')):
+    repaired=root.parent/'repaired'
+    sources=[('feature-load',root/'feature-load'),
+             ('replica-load',(repaired if (repaired/'complete.json').exists() else root)/'replica-load')]
+    if (repaired/'complete.json').exists():
+        sources.append(('replica-before-fix',root/'replica-load'))
+    for folder,directory in sources:
+        for path in sorted(directory.glob('*.json')):
             if path.name.endswith('.workers.json'):continue
             d=json.loads(path.read_text());c=d['config']
             assert d['offered']==sum(d['producer'].values()),path
@@ -56,13 +61,25 @@ def main():
     obs=soak['observations']
     def memory(key):
         values=[o[key] for o in obs if key in o]
-        return dict(first_min=median(values[:min(60,len(values))]),
-                    last_min=median(values[-min(60,len(values)):]),peak=max(values)) if values else None
+        return dict(first_60_samples_median=median(values[:min(60,len(values))]),
+                    last_60_samples_median=median(values[-min(60,len(values)):]),peak=max(values)) if values else None
     summary=dict(load=rows,recovery=recovery,
         soak=dict(duration=soak['config']['duration'],offered=soak['offered'],statuses=soak['statuses'],
                   goodput_rps=soak['goodput_rps'],latency=soak['latency'],
                   rss_mb=memory('rss_mb'),cuda_allocated_bytes=memory('cuda_allocated_bytes'),
                   cuda_reserved_bytes=memory('cuda_reserved_bytes'),after=soak['after']))
+    supplement=root.parent/'supplement'
+    if (supplement/'complete.json').exists():
+        supplemental=[]
+        for path in sorted(supplement.glob('*.json')):
+            if not path.stem.startswith(('knee-','batch-')):continue
+            d=json.loads(path.read_text())
+            assert sum(d['statuses'].values())==d['received']==d['producer']['emitted']
+            assert d['after']['reserved_bytes']==d['after']['queued']==d['after']['active_requests']==0
+            supplemental.append(dict(name=path.stem,phase_offered=d['phase_offered'],
+                                     phases=d['phases'],generator_lag=d['generator_lag'],after=d['after']))
+        assert len(supplemental)==10
+        summary['supplemental']=supplemental
     (root/'summary.json').write_text(json.dumps(summary,indent=2)+'\n')
     plt.rcParams.update({'font.size':10,'axes.spines.top':False,'axes.spines.right':False})
     fig,axes=plt.subplots(2,3,figsize=(16,8),layout='constrained')
@@ -71,7 +88,8 @@ def main():
         for variant in variants:
             selected=sorted((r for r in rows if r['category']==category and r['variant']==variant),key=lambda r:r['offered_rps'])
             x=[r['offered_rps'] for r in selected];y=[r['median_goodput_rps'] for r in selected]
-            label=(f'{variant} packing' if category=='feature-load' else f'{variant} GPU replica(s)')
+            label=(('CPU packing' if variant=='cpu' else 'Fused GPU packing')
+                   if category=='feature-load' else f'{variant} GPU replica'+('s' if variant!=1 else ''))
             ax.plot(x,y,'o-',color=colors[variant],label=label)
             ax.fill_between(x,[r['min_goodput_rps'] for r in selected],[r['max_goodput_rps'] for r in selected],color=colors[variant],alpha=.12)
         ax.set(xlabel='Offered requests / s',ylabel='On-time completions / s')
@@ -106,13 +124,14 @@ def main():
     for backend in ('cpu','cuda'):
         selected=sorted((r for r in rows if r['category']=='feature-load' and r['variant']==backend),key=lambda r:r['offered_rps'])
         axes[1,2].plot([r['offered_rps'] for r in selected],
-            [100*r['statuses'].get('rejected',0)/r['offered'] for r in selected],'o-',label=f'{backend} packing',color=colors[backend])
+            [100*r['statuses'].get('rejected',0)/r['offered'] for r in selected],'o-',
+            label='CPU packing' if backend=='cpu' else 'Fused GPU packing',color=colors[backend])
     axes[1,2].set(title='Admission rejection under load',xlabel='Offered requests / s',ylabel='Rejected / offered (%)')
     axes[1,2].legend(frameon=False)
     for ax in axes.flat:ax.grid(alpha=.2);ax.set_axisbelow(True);ax.set_ylim(bottom=0)
-    fig.suptitle('L40 evaluation: open-loop load, overload recovery and stability\nTwo arrival seeds per load cell; shading shows seed range',fontsize=14)
+    fig.suptitle('L40 evaluation: open-loop load, overload recovery and stability\nLoad sweeps: two arrival seeds per configuration; shading shows seed range',fontsize=14)
     fig.savefig(root/'stress-overview.svg');fig.savefig(root/'stress-overview.png',dpi=160);plt.close(fig)
-    manifest={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*')
+    manifest={str(p.relative_to(root.parent)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.parent.rglob('*')
               if p.is_file() and p.name!='checksums.json'}
     (root/'checksums.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(json.dumps(summary,indent=2))
