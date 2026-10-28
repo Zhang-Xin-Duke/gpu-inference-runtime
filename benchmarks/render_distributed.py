@@ -16,8 +16,11 @@ def main():
     args=p.parse_args()
     data=json.loads(args.input.read_text())
     rows=[r for r in data['observations'] if r['t']>=0]
-    if len(rows)<3 or len(rows[0]['backend'].get('nodes',[]))!=2:
-        raise ValueError('recorded two-replica observations required')
+    workers=len(rows[0]['backend'].get('nodes',[])) if rows else 0
+    if len(rows)<3 or workers<2:
+        raise ValueError('recorded observations for at least two replicas required')
+    if any(len(r['backend'].get('nodes',[]))!=workers for r in rows):
+        raise ValueError('replica count must remain constant across observations')
     t=np.array([r['t'] for r in rows])
     ok=np.array([r['outcomes'].get('ok',0) for r in rows])
     rates=np.r_[0,np.diff(ok)/np.maximum(.001,np.diff(t))]
@@ -25,12 +28,13 @@ def main():
     inflight=np.array([[n['outstanding'] for n in r['backend']['nodes']] for r in rows])
     plt.rcParams.update({'font.family':'DejaVu Sans','font.size':10,
                          'axes.spines.top':False,'axes.spines.right':False})
-    colors=['#3267aa','#168575']
-    fig=plt.figure(figsize=(10,7.1),facecolor='#f7f9fb')
-    gs=fig.add_gridspec(3,2,height_ratios=[.85,1,1],hspace=.5,wspace=.28,
+    colors=[plt.get_cmap('tab10')(i%10) for i in range(workers)]
+    fig=plt.figure(figsize=(max(10,workers*3.6),7.1),facecolor='#f7f9fb')
+    columns=workers*2
+    gs=fig.add_gridspec(3,columns,height_ratios=[.85,1,1],hspace=.5,wspace=.28,
                         left=.08,right=.96,bottom=.17,top=.86)
-    cards=[fig.add_subplot(gs[0,i]) for i in range(2)]
-    throughput=fig.add_subplot(gs[1,:]);latency=fig.add_subplot(gs[2,0]);queue=fig.add_subplot(gs[2,1])
+    cards=[fig.add_subplot(gs[0,2*i:2*i+2]) for i in range(workers)]
+    throughput=fig.add_subplot(gs[1,:]);latency=fig.add_subplot(gs[2,:workers]);queue=fig.add_subplot(gs[2,workers:])
     def draw(frame):
         end=frame+1;row=rows[frame]
         fig.suptitle(data.get('title','Recorded distributed inference run'),x=.08,ha='left',weight='bold',fontsize=16)

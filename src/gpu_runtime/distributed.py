@@ -1,6 +1,6 @@
 """Request-level data parallel inference over identical remote model replicas."""
 from concurrent.futures import Future, ThreadPoolExecutor, InvalidStateError
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import http.client
 import json
 import threading
@@ -21,6 +21,7 @@ class Node:
     failures: int = 0
     cooldown_until: float = 0.
     connection_epoch: int = 0
+    idle_connections: list = field(default_factory=list, repr=False)
 
 
 class Router:
@@ -31,7 +32,6 @@ class Router:
             raise ValueError("invalid router limits or policy")
         self.nodes = [Node(url.rstrip("/")) for url in endpoints]
         self.lock = threading.Lock()
-        self.local = threading.local()
         self.connections = set()
         self.per_node_limit = 16
         self.policy, self.retry, self.cooldown_s = policy, retry, cooldown_s
@@ -127,19 +127,14 @@ class Router:
                 selected = self._choose(excluded, samples)
                 node = self.nodes[selected]
                 excluded.add(selected)
+                conn = None
+                reusable = False
                 try:
-                    cache = getattr(self.local, "connections", None)
-                    if cache is None: cache = self.local.connections = {}
-                    with self.lock: epoch = node.connection_epoch
-                    cached = cache.get(selected)
-                    conn = cached[1] if cached is not None else None
-                    if cached is not None and cached[0] != epoch:
-                        conn.close()
-                        with self.lock: self.connections.discard(conn)
-                        conn = None
+                    with self.lock:
+                        epoch = node.connection_epoch
+                        conn = node.idle_connections.pop() if node.idle_connections else None
                     if conn is None:
                         conn = self._connection(node, remaining)
-                        cache[selected] = (epoch, conn)
                         with self.lock: self.connections.add(conn)
                     conn.timeout = remaining
                     if conn.sock is not None: conn.sock.settimeout(remaining)
@@ -157,22 +152,28 @@ class Router:
                         raise ValueError("invalid replica output schema")
                     if time.perf_counter() > deadline: raise TimeoutError("RPC exceeded deadline")
                     with self.lock: node.completed += 1
+                    reusable = True
                     return result[0]
                 except (OSError, http.client.HTTPException, TimeoutError) as exc:
                     last_error = exc
-                    cached = getattr(self.local, "connections", {}).pop(selected, None)
-                    if cached is not None:
-                        cached[1].close()
-                        with self.lock: self.connections.discard(cached[1])
                     with self.lock:
                         node.failures += 1
-                        # A restarted worker invalidates every thread's old
-                        # keep-alive connection. Discard them lazily, without
-                        # interrupting calls already using those sockets.
+                        # Idle sockets are exclusively owned by this pool.
+                        # Active leases close on return if their epoch changed.
                         node.connection_epoch += 1
+                        for idle in node.idle_connections:
+                            idle.close()
+                            self.connections.discard(idle)
+                        node.idle_connections.clear()
                         node.cooldown_until = time.perf_counter() + (min(.05,self.cooldown_s) if isinstance(exc,TimeoutError) else self.cooldown_s)
                 finally:
                     with self.lock:
+                        if conn is not None:
+                            if reusable and epoch == node.connection_epoch and not self.closed:
+                                node.idle_connections.append(conn)
+                            else:
+                                conn.close()
+                                self.connections.discard(conn)
                         node.outstanding -= samples
                         node.active -= 1
             raise last_error or ConnectionError("no replica completed request")
@@ -181,14 +182,19 @@ class Router:
     def stats(self):
         with self.lock:
             return dict(accepted=self.accepted, rejected=self.rejected, finished=self.finished,
-                        active=self.active, nodes=[dict(endpoint=n.url, outstanding=n.outstanding, active=n.active,
+                        active=self.active, open_connections=len(self.connections),
+                        nodes=[dict(endpoint=n.url, outstanding=n.outstanding, active=n.active,
                         requests=n.requests, completed=n.completed, failures=n.failures,
+                        idle_connections=len(n.idle_connections),
                         cooling_down=n.cooldown_until > time.perf_counter()) for n in self.nodes])
 
     def shutdown(self):
         with self.lock: self.closed = True
         self.pool.shutdown(wait=True)
-        for conn in self.connections: conn.close()
+        with self.lock:
+            for conn in self.connections: conn.close()
+            self.connections.clear()
+            for node in self.nodes: node.idle_connections.clear()
 
     def __enter__(self): return self
     def __exit__(self,*_): self.shutdown()

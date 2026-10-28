@@ -138,3 +138,52 @@ def test_restart_invalidates_other_rpc_threads_stale_sockets(monkeypatch):
         assert router.stats()['nodes'][0]['failures']==1
     finally:
         release_a.set();release_b.set();router.shutdown()
+
+
+def test_replica_connections_stay_bounded_when_rpc_threads_change_nodes(monkeypatch):
+    # A thread-local cache can leave every RPC thread holding an idle socket
+    # to every replica, consuming the service's bounded connection permits.
+    barrier=threading.Barrier(4)
+    lock=threading.Lock()
+    live={'http://one.test':0,'http://two.test':0}
+    peak=dict(live)
+    body=wire.encode((torch.ones(1,2),))
+    class Response:
+        status=200
+        def read(self,*_):return body
+    class Connection:
+        sock=None
+        def __init__(self,url):
+            self.url=url;self.closed=False
+            with lock:
+                live[url]+=1;peak[url]=max(peak[url],live[url])
+        def request(self,*_):pass
+        def getresponse(self):barrier.wait(timeout=5);return Response()
+        def close(self):
+            with lock:
+                if not self.closed:live[self.url]-=1;self.closed=True
+    monkeypatch.setattr(Router,'_get',lambda *_:dict(model_version='v1',outputs=2))
+    monkeypatch.setattr(Router,'_connection',staticmethod(lambda node,*_:Connection(node.url)))
+    router=Router(list(live),concurrency=4,retry=False)
+    router.per_node_limit=2
+    phase=[0];threads={}
+    def choose(excluded,samples):
+        # Keep two requests per replica, but deliberately rotate thread
+        # ownership across replicas between waves.
+        with router.lock:
+            tid=threading.get_ident()
+            if tid not in threads:threads[tid]=len(threads)
+            selected=(threads[tid]+phase[0])%2
+            node=router.nodes[selected]
+            assert node.active<2
+            node.active+=1;node.outstanding+=samples;node.requests+=1
+            return selected
+    monkeypatch.setattr(router,'_choose',choose)
+    try:
+        for wave in range(3):
+            phase[0]=wave
+            futures=[router.submit(torch.ones(1,8),timeout_ms=5000) for _ in range(4)]
+            for future in futures:future.result(6)
+        assert all(value<=2 for value in peak.values()),peak
+    finally:router.shutdown()
+    assert all(value==0 for value in live.values())

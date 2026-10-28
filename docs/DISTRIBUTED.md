@@ -27,7 +27,7 @@ The least-work policy selects the available replica with the fewest outstanding 
 
 The router caps pending requests and uses at most 32 RPC threads, with a limit of 16 active RPCs per replica. A queued cancellation remains accounted for until its queued wrapper is consumed. A cancellation after dispatch detaches the caller; it does not reclaim resources still used by the worker.
 
-The router uses persistent HTTP connections and binary tensor payloads to avoid repeatedly encoding arrays as JSON. Small RPC responses disable server-side Nagle buffering. Those choices reduce avoidable transport overhead, while real network latency and CPU serialization still remain in end-to-end results.
+The router leases persistent HTTP connections from a shared pool per replica, capped by that replica's 16 active RPC permits. RPC threads return idle connections to the pool, so changing the selected replica does not retain one socket per thread per replica. Binary tensor payloads avoid repeatedly encoding arrays as JSON. Small RPC responses disable server-side Nagle buffering. Those choices reduce avoidable transport overhead, while real network latency and CPU serialization still remain in end-to-end results.
 
 ## Deadline and failure behavior
 
@@ -37,7 +37,7 @@ A transport failure triggers a temporary node cooldown. If time remains, one att
 
 Cooldown expires automatically so a restarted replica can receive requests again. The router does not persist requests, model registrations or completed results across its own process restart.
 
-A transport failure invalidates that worker's cached connection generation across RPC threads. Each thread closes an outdated idle connection before its next request, while already active calls retain their socket ownership. This avoids serial cooldown renewals from different threads' stale keep-alive sockets after a worker restart. A cross-thread regression test and a recorded RTX 5090 process-restart experiment cover this behavior.
+A transport failure advances that worker's connection generation and closes idle pooled sockets. Already active calls retain their leases and close outdated connections when returning them. A regression test rotates RPC threads across replicas and checks that open connections stay within the per-replica budget; another checks restart invalidation. Router statistics expose open and idle connection counts.
 
 ## Example
 

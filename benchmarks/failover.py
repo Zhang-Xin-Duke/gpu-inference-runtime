@@ -18,6 +18,9 @@ def main():
     p.add_argument('--output',type=Path,required=True)
     p.add_argument('--duration',type=float,default=60)
     p.add_argument('--rps',type=float,default=300)
+    p.add_argument('--features',type=int,default=256)
+    p.add_argument('--hidden',type=int,default=512)
+    p.add_argument('--samples',type=int,default=1)
     args=p.parse_args()
     events=[]
     args.output.parent.mkdir(parents=True,exist_ok=True)
@@ -25,7 +28,9 @@ def main():
         control=Path(tmp)/'start.json'
         proc=subprocess.Popen([sys.executable,'benchmarks/extended.py','--endpoints',*args.endpoints,
             '--duration',str(args.duration),'--rps',str(args.rps),'--deadline-ms','1000',
-            '--max-requests','256','--control-file',str(control),'--output',str(args.output)],
+            '--max-requests','256','--features',str(args.features),
+            '--hidden',str(args.hidden),'--samples',str(args.samples),
+            '--control-file',str(control),'--output',str(args.output)],
             start_new_session=os.name!='nt')
         try:
             while not control.exists():
