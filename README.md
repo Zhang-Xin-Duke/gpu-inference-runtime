@@ -85,6 +85,13 @@ flowchart LR
 
 ## Quick start
 
+For requests with shared and sample-level features, the optional
+[fused GPU feature adapter](docs/FEATURE_PACKING.md) uploads compact inputs and
+uses one CUDA kernel to expand shared rows and assemble the model input.
+`feature_packing="cpu"` retains CPU packing for matched comparisons.
+[Scaling constraints and evaluation design](docs/SCALING.md) describe the
+interaction between router capacity, per-worker batching and GPU replicas.
+
 Requirements: Python 3.11+, a C++20 compiler and a working PyTorch installation. CUDA execution additionally requires an NVIDIA GPU, compatible driver and CUDA-enabled PyTorch. CPU execution exercises the same scheduler and request lifecycle.
 
 ```bash

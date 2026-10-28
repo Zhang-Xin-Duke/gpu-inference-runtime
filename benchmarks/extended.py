@@ -20,6 +20,7 @@ import torch
 from gpu_runtime import Runtime, ModelSpec, AdmissionError
 from gpu_runtime.models import DenseModel, SequenceModel
 from gpu_runtime.distributed import Router
+from gpu_runtime.feature_pack import FeatureSchema, reference_pack
 from run import hardware
 
 
@@ -50,6 +51,9 @@ def catalog(args):
     items=[]
     for i in range(64):
         if args["kind"]=="dense":items.append((torch.randn(args["samples"],args["features"]),))
+        elif args["kind"]=="features":
+            items.append(tuple(torch.randn(1 if shared else args["samples"], width)
+                               for width,shared in zip(args["feature_widths"],args["shared_features"])))
         else:
             length=distributions[args["lengths"]][i%len(distributions[args["lengths"]])]
             items.append((torch.randint(0,4096,(args["samples"],length)),torch.full((args["samples"],),length)))
@@ -95,10 +99,15 @@ def backend(args, work, control):
         runtime=Runtime(device=args["device"],max_batch=max_batch,max_requests=args["max_requests"],
                         delay_ms=0 if args["mode"]=='unbatched' else args["delay_ms"],
                         max_inflight=args["slots"],pipeline=args["mode"]=='pipeline',
-                        shape_buckets=not args["no_buckets"],policy=args["policy"])
-        model=(DenseModel(args["features"],args["hidden"],32) if args["kind"]=='dense'
+                        shape_buckets=not args["no_buckets"],policy=args["policy"],
+                        feature_packing=args.get("feature_packing","cuda"))
+        width=sum(args["feature_widths"]) if args["kind"]=="features" else args["features"]
+        model=(DenseModel(width,args["hidden"],32) if args["kind"] in ('dense','features')
                else SequenceModel(4096,args["embedding"],32))
-        runtime.register('v1',ModelSpec(model,args["kind"],args["features"] if args["kind"]=='dense' else args["embedding"],32))
+        schema=(FeatureSchema(tuple(args["feature_widths"]),tuple(args["shared_features"]))
+                if args["kind"]=="features" else None)
+        runtime.register('v1',ModelSpec(model,args["kind"],width if args["kind"]!='sequence' else args["embedding"],32,
+                                      feature_schema=schema))
         def submit(x,timeout):return runtime.submit('v1',*x,timeout_ms=timeout).future
     try:
         for i in range(16):submit(inputs[i%len(inputs)],10000).result(15)
@@ -112,7 +121,8 @@ def backend(args, work, control):
         else:
             with torch.inference_mode():
                 for i,expected in references.items():
-                    direct=model(*(x.to(args["device"]) for x in inputs[i])).cpu()
+                    model_inputs=((reference_pack(schema,[inputs[i]]),) if schema else inputs[i])
+                    direct=model(*(x.to(args["device"]) for x in model_inputs)).cpu()
                     torch.testing.assert_close(expected,direct,rtol=1e-4,atol=1e-5)
         before=runtime.stats()
         control.send(dict(ready=True, hardware=hardware(args["device"]),
@@ -121,11 +131,15 @@ def backend(args, work, control):
         tag,begin=work.get(timeout=30)
         assert tag=='start'
         counts=Counter(); latency=Histogram(); transport=Histogram(); admission=Histogram()
+        phases=args.get('phases') or [(args['duration'],args['rps'])]
+        phase_bounds=np.cumsum([p[0] for p in phases]).tolist()
+        phase_counts=[Counter() for _ in phases];phase_latency=[Histogram() for _ in phases]
+        def phase_of(arrival):return min(bisect.bisect_right(phase_bounds,arrival-begin),len(phases)-1)
         lock=threading.Lock(); stop=threading.Event(); observations=[]; received=0
         sampled=[]; interval=[Histogram()]
         def observe():
             while not stop.is_set():
-                row=dict(t=time.perf_counter()-begin,rss_mb=rss_mb(),backend=runtime.stats())
+                row=dict(t=time.perf_counter()-begin,rss_mb=rss_mb(),process_cpu_s=time.process_time(),backend=runtime.stats())
                 with lock:
                     row.update(outcomes=dict(counts),interval_latency=interval[0].summary())
                     interval[0]=Histogram()
@@ -150,6 +164,8 @@ def backend(args, work, control):
                 counts[status]+=1
                 latency.add((stamp-arrival)*1000)
                 interval[0].add((stamp-arrival)*1000)
+                phase_counts[phase_of(arrival)][status]+=1
+                phase_latency[phase_of(arrival)].add((stamp-arrival)*1000)
         while True:
             item=work.get(timeout=max(30,args["duration"]+10))
             if item is None:break
@@ -158,7 +174,9 @@ def backend(args, work, control):
             with lock:transport.add((now-sent)*1000)
             remaining=args["deadline_ms"]-(now-arrival)*1000
             if remaining<=0:
-                with lock:counts['transport_expired']+=1
+                with lock:
+                    counts['transport_expired']+=1
+                    phase_counts[phase_of(arrival)]['transport_expired']+=1
                 continue
             start=time.perf_counter()
             try:
@@ -166,15 +184,20 @@ def backend(args, work, control):
                 with lock:admission.add((time.perf_counter()-start)*1000)
                 future.add_done_callback(lambda f,a=arrival,i=index:done(f,a,i))
             except AdmissionError:
-                with lock:counts['rejected']+=1
+                with lock:
+                    counts['rejected']+=1
+                    phase_counts[phase_of(arrival)]['rejected']+=1
             except TimeoutError:
-                with lock:counts['expired_at_admission']+=1
+                with lock:
+                    counts['expired_at_admission']+=1
+                    phase_counts[phase_of(arrival)]['expired_at_admission']+=1
         drain_start=time.perf_counter()
         runtime.shutdown()
         drained=time.perf_counter()
         stop.set();monitor.join(timeout=10)
         after=runtime.stats()
         assert sum(counts.values())==received,(counts,received)
+        assert sum(sum(c.values()) for c in phase_counts)==received
         if args["endpoints"]:assert after['active']==0 and after['finished']==after['accepted']
         else:assert after['reserved_bytes']==after['queued']==after['active_requests']==0
         for i,value in sampled:torch.testing.assert_close(value,references[i],rtol=1e-4,atol=1e-5)
@@ -184,7 +207,10 @@ def backend(args, work, control):
                           before=before,after=after,observations=observations,
                           correctness='direct/replica parity and sampled outputs passed',
                           accounting='all emitted requests terminal; reservations released',
-                          sampled_output_checks=len(sampled)))
+                          sampled_output_checks=len(sampled),
+                          phases=[dict(duration_s=d,nominal_rps=r,statuses=dict(c),latency=h.summary(),
+                                       goodput_rps=c['ok']/d)
+                                  for (d,r),c,h in zip(phases,phase_counts,phase_latency)]))
     except BaseException as exc:
         try:control.send(dict(error=repr(exc)))
         except Exception:pass
@@ -207,16 +233,25 @@ def execute(args):
         Path(args.control_file).write_text(json.dumps(dict(begin=begin,wall_time=time.time())))
     rng=np.random.default_rng(args.seed)
     target=0.;rid=0;counts=Counter();lag=Histogram()
+    phases=getattr(args,'phases',None) or [(args.duration,args.rps)]
+    phase_offered=[0 for _ in phases]
+    def arrivals():
+        offset=0.
+        for phase,(duration,rate) in enumerate(phases):
+            target=0.
+            while True:
+                target+=float(rng.exponential(1/rate))
+                if target>=duration:break
+                yield offset+target,phase
+            offset+=duration
     try:
-        while True:
-            target+=float(rng.exponential(1/args.rps))
-            if target>=args.duration:break
+        for target,phase in arrivals():
             offset=(int(target)+target%1/10) if args.burst else target
             arrival=begin+offset
             remaining=arrival-time.perf_counter()
             if remaining>0:time.sleep(remaining)
             sent=time.perf_counter();lag.add((sent-arrival)*1000)
-            rid+=1
+            rid+=1;phase_offered[phase]+=1
             if sent-arrival>args.deadline_ms/1000:counts['generator_stale']+=1;continue
             try:work.put_nowait((rid,rid%64,arrival,sent));counts['emitted']+=1
             except queue.Full:counts['ipc_full']+=1
@@ -229,7 +264,7 @@ def execute(args):
         if process.exitcode!=0 or 'error' in result:raise RuntimeError(result)
         assert result['received']==counts['emitted']
         assert rid==counts['emitted']+counts['ipc_full']+counts['generator_stale']
-        return dict(config=vars(args),ready=ready,offered=rid,producer=dict(counts),
+        return dict(config=vars(args),ready=ready,offered=rid,phase_offered=phase_offered,producer=dict(counts),
                     generator_lag=lag.summary(),**result)
     finally:
         if process.is_alive():process.kill();process.join()
@@ -243,7 +278,11 @@ def main():
     p.add_argument('--duration',type=float,default=20)
     p.add_argument('--rps',type=float,default=1000)
     p.add_argument('--deadline-ms',type=float,default=100)
-    p.add_argument('--kind',choices=['dense','sequence'],default='dense')
+    p.add_argument('--kind',choices=['dense','sequence','features'],default='dense')
+    p.add_argument('--feature-widths',type=int,nargs='+',default=[64,64,64,64])
+    p.add_argument('--shared-features',type=int,nargs='+',default=[1,0,1,0])
+    p.add_argument('--feature-packing',choices=['cpu','cuda'],default='cuda')
+    p.add_argument('--phases',nargs='+',help='continuous duration:rate phases, e.g. 30:200 30:2000 60:200')
     p.add_argument('--mode',choices=['unbatched','sync','pipeline'],default='pipeline')
     p.add_argument('--max-batch',type=int,default=64)
     p.add_argument('--slots',type=int,default=2)
@@ -268,6 +307,19 @@ def main():
     p.add_argument('--control-file')
     p.add_argument('--output',required=True)
     args=p.parse_args()
+    if args.phases:
+        try:
+            args.phases=[tuple(map(float,value.split(':'))) for value in args.phases]
+            if any(len(value)!=2 or min(value)<=0 for value in args.phases):raise ValueError()
+        except ValueError:p.error('phases require positive duration:rate pairs')
+        if args.burst:p.error('phases and burst cannot be combined')
+        args.duration=sum(value[0] for value in args.phases)
+    if args.kind=='features':
+        if args.endpoints:p.error('feature-schema models currently use the in-process API')
+        if any(value not in (0,1) for value in args.shared_features):p.error('shared flags must be 0 or 1')
+        args.shared_features=[bool(value) for value in args.shared_features]
+        try:FeatureSchema(tuple(args.feature_widths),tuple(args.shared_features))
+        except ValueError as error:p.error(str(error))
     if args.duration<=0 or args.rps<=0 or not 0<args.deadline_ms<=10000:p.error('invalid time/rate limits')
     result=execute(args)
     output=Path(args.output);output.parent.mkdir(parents=True,exist_ok=True)

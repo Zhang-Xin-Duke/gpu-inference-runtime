@@ -34,6 +34,11 @@ The implementation favors a small explicit adapter over arbitrary ragged tensor 
 
 ## 4. Staging slots
 
+Feature-schema models optionally stage compact shared/sample inputs and use a
+single GPU packing kernel. Their slot budget includes descriptor tables,
+compact host/device payloads and expanded device input. See
+[feature packing](FEATURE_PACKING.md) for the layout and CPU comparison path.
+
 A slot contains pinned host inputs, device inputs, a pinned output and completion events. It is allocated at the configured maximum batch size for a shape signature, then reused for smaller batches through slices. Only the used sample range is initialized and transferred.
 
 Completed matching slots are reused first. When a new shape needs capacity, completed idle slots can be evicted. Executing slots are never evicted. The number of slots is capped by `max_inflight`; byte limits may reject a shape before the count limit is reached.

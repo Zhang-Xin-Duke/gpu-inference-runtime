@@ -3,3 +3,5 @@ results/rtx5090/** -text
 docs/demo/** -text
 results/demo*.json -text
 results/three-l40-2026-10-28/** -text -whitespace
+results/feature-pack-2026-10-28/** -text -whitespace
+results/stress-2026-10-28/** -text -whitespace

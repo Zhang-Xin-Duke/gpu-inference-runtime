@@ -10,6 +10,7 @@ from typing import Literal
 import torch
 
 from ._scheduler import Scheduler
+from .feature_pack import FeatureSchema, FeatureStaging, load_cuda_packer
 
 
 class AdmissionError(RuntimeError):
@@ -19,11 +20,12 @@ class AdmissionError(RuntimeError):
 @dataclass(frozen=True)
 class ModelSpec:
     model: torch.nn.Module
-    kind: Literal["dense", "sequence"]
+    kind: Literal["dense", "sequence", "features"]
     width: int
     outputs: int
     max_length: int = 256
     vocabulary: int = 4096
+    feature_schema: FeatureSchema | None = None
 
 
 @dataclass
@@ -50,17 +52,24 @@ class Handle:
 
 class Slot:
     """A lease retained through the final D2H event, including cancelled work."""
-    def __init__(self, spec, bucket, capacity, device):
-        shapes = [(capacity, spec.width)] if spec.kind == "dense" else [(capacity, bucket), (capacity,)]
-        dtype = torch.float32 if spec.kind == "dense" else torch.int64
+    def __init__(self, spec, bucket, capacity, device, fused_features=False):
+        shapes = ([(capacity, bucket), (capacity,)] if spec.kind == "sequence"
+                  else [(capacity, spec.width)])
+        dtype = torch.int64 if spec.kind == "sequence" else torch.float32
         pinned = device.type == "cuda"
-        self.signature = (spec.kind, spec.width, spec.outputs, bucket)
-        self.host = [torch.empty(s, dtype=dtype, pin_memory=pinned) for s in shapes]
-        self.device = [torch.empty_like(x, device=device) for x in self.host] if pinned else self.host
+        self.signature = (spec.kind, spec.width, spec.outputs, bucket, spec.feature_schema)
+        self.features = (FeatureStaging(spec.feature_schema, capacity, device)
+                         if spec.kind == "features" and fused_features else None)
+        self.host = ([] if self.features else
+                     [torch.empty(s, dtype=dtype, pin_memory=pinned) for s in shapes])
+        self.device = ([self.features.output] if self.features else
+                       [torch.empty_like(x, device=device) for x in self.host] if pinned else self.host)
         self.output = torch.empty((capacity, spec.outputs), dtype=torch.float32, pin_memory=pinned)
         # Staging only: excludes weights, intermediate activations and allocator caches.
         self.bytes = sum(x.numel() * x.element_size() for x in self.host) * (2 if pinned else 1)
         self.bytes += self.output.numel() * self.output.element_size()
+        if self.features:
+            self.bytes += FeatureStaging.storage_bytes(spec.feature_schema, capacity, True)
         self.events = [torch.cuda.Event(enable_timing=True) for _ in range(6)] if pinned else []
 
 
@@ -73,11 +82,15 @@ class Runtime:
     """
     def __init__(self, *, device="cpu", max_batch=64, max_requests=1024,
                  max_request_bytes=256 << 20, staging_bytes=128 << 20,
-                 max_inflight=2, delay_ms=2., policy="deadline", pipeline=True, shape_buckets=True):
+                 max_inflight=2, delay_ms=2., policy="deadline", pipeline=True, shape_buckets=True,
+                 feature_packing="cuda"):
         self.shape_buckets = shape_buckets
         self.backend_error = None
         self.quarantined = []
         self.device = torch.device(device)
+        if feature_packing not in ("cpu", "cuda"):
+            raise ValueError("feature_packing must be cpu or cuda")
+        self.fused_features = self.device.type == "cuda" and feature_packing == "cuda"
         if self.device.type not in ("cpu", "cuda"):
             raise ValueError("only CPU and CUDA are supported")
         if staging_bytes <= 0:
@@ -95,7 +108,7 @@ class Runtime:
         self.pending = queue.Queue()
         self.metrics = dict(completed=0, failed=0, cancelled=0, deadline_misses=0,
                             batches=0, samples=0, padded_tokens=0, useful_tokens=0,
-                            pack_ms=0., h2d_ms=0., compute_ms=0., d2h_ms=0.)
+                            pack_ms=0., h2d_ms=0., gpu_pack_ms=0., compute_ms=0., d2h_ms=0.)
         self.timelines = []
         if self.device.type == "cuda":
             if not torch.cuda.is_available():
@@ -113,10 +126,16 @@ class Runtime:
         self.worker.start()
 
     def register(self, version: str, spec: ModelSpec):
-        if not version or ":" in version or spec.kind not in ("dense", "sequence"):
+        if not version or ":" in version or spec.kind not in ("dense", "sequence", "features"):
             raise ValueError("version must be nonempty without ':' and kind must be supported")
         if min(spec.width, spec.outputs, spec.max_length, spec.vocabulary) <= 0:
             raise ValueError("model dimensions must be positive")
+        if spec.kind == "features":
+            if not isinstance(spec.feature_schema, FeatureSchema) or spec.feature_schema.width != spec.width:
+                raise ValueError("feature schema must match model input width")
+            if self.fused_features:
+                with torch.cuda.device(self.device):
+                    load_cuda_packer()
         with self.lock:
             if self.closed or version in self.models:
                 raise ValueError("closed runtime or duplicate model version")
@@ -131,10 +150,12 @@ class Runtime:
             if not inputs or any(x.device.type != "cpu" or x.requires_grad for x in inputs):
                 raise ValueError("inputs must be CPU tensors without gradients")
             x = inputs[0]
-            if x.ndim != 2 or not 0 < x.shape[0] <= self.max_batch:
+            n = spec.feature_schema.validate(inputs) if spec.kind == "features" else x.shape[0] if x.ndim else 0
+            if x.ndim != 2 or not 0 < n <= self.max_batch:
                 raise ValueError("expected [samples, features/sequence] within max_batch")
-            n = x.shape[0]
-            if spec.kind == "dense":
+            if spec.kind == "features":
+                bucket = spec.width
+            elif spec.kind == "dense":
                 if len(inputs) != 1 or x.dtype != torch.float32 or x.shape[1] != spec.width:
                     raise ValueError("dense requires float32 [samples, width]")
                 bucket = spec.width
@@ -147,8 +168,10 @@ class Runtime:
                     raise ValueError("invalid sequence length or token ID")
                 bucket = (min(1 << (x.shape[1] - 1).bit_length(), spec.max_length)
                           if self.shape_buckets else spec.max_length)
-            bytes_per = (spec.width * 4 if spec.kind == "dense" else bucket * 8 + 8)
+            bytes_per = (bucket * 8 + 8 if spec.kind == "sequence" else spec.width * 4)
             reservation = n * (bytes_per * 2 + spec.outputs * 4)
+            if spec.kind == "features" and self.fused_features:
+                reservation += n * spec.width * 4 + len(inputs) * 6 * 8 * 2
             future = Future()
             try:
                 rid = self.native.offer(f"{version}:{bucket}", n, reservation, timeout_ms)
@@ -169,14 +192,17 @@ class Runtime:
             return cancelled
 
     def _slot(self, spec, bucket):
-        signature = (spec.kind, spec.width, spec.outputs, bucket)
+        signature = (spec.kind, spec.width, spec.outputs, bucket, spec.feature_schema)
         with self.lock:
             for i, slot in enumerate(self.idle_slots):
                 if slot.signature == signature: return self.idle_slots.pop(i)
             # Capacity is reserved at full batch size, avoiding allocator growth
             # for every partially filled batch. Evict only completed idle slots.
-            estimate = self.max_batch * ((spec.width * 4 if spec.kind == "dense" else bucket * 8 + 8)
+            estimate = self.max_batch * ((bucket * 8 + 8 if spec.kind == "sequence" else spec.width * 4)
                                         * (2 if self.device.type == "cuda" else 1) + spec.outputs * 4)
+            if spec.kind == "features" and self.fused_features:
+                estimate = (FeatureStaging.storage_bytes(spec.feature_schema, self.max_batch, True)
+                            + self.max_batch * spec.outputs * 4)
             if estimate > self.staging_bytes:
                 raise MemoryError("one staging slot exceeds configured staging budget")
             while self.idle_slots and (self.slot_count >= self.max_inflight
@@ -186,7 +212,7 @@ class Runtime:
                 self.pool_bytes -= old.bytes
             if self.slot_count >= self.max_inflight or self.pool_bytes + estimate > self.staging_bytes:
                 raise MemoryError("staging budget exhausted by in-flight work")
-            slot = Slot(spec, bucket, self.max_batch, self.device)
+            slot = Slot(spec, bucket, self.max_batch, self.device, self.fused_features)
             self.slot_count += 1
             self.pool_bytes += slot.bytes
             self.peak_pool_bytes = max(self.peak_pool_bytes, self.pool_bytes)
@@ -220,11 +246,21 @@ class Runtime:
                     spec, bucket = records[0].generation, records[0].bucket
                     slot = self._slot(spec, bucket)
                     offsets, pos = [], 0
-                    for tensor in slot.host: tensor[:batch.samples].zero_()
+                    if slot.features:
+                        slot.features.prepare([record.tensors for record in records])
+                    else:
+                        for tensor in slot.host: tensor[:batch.samples].zero_()
                     for record in records:
                         end = pos + record.samples
-                        slot.host[0][pos:end, :record.tensors[0].shape[1]].copy_(record.tensors[0])
-                        if spec.kind == "sequence": slot.host[1][pos:end].copy_(record.tensors[1])
+                        if spec.kind == "features":
+                            if not slot.features:
+                                col = 0
+                                for x, dim in zip(record.tensors, spec.feature_schema.widths):
+                                    slot.host[0][pos:end, col:col + dim].copy_(x)
+                                    col += dim
+                        else:
+                            slot.host[0][pos:end, :record.tensors[0].shape[1]].copy_(record.tensors[0])
+                            if spec.kind == "sequence": slot.host[1][pos:end].copy_(record.tensors[1])
                         offsets.append((pos, end))
                         pos = end
                     packed = time.perf_counter()
@@ -234,9 +270,12 @@ class Runtime:
                                 self.copy_stream.wait_stream(torch.cuda.current_stream(self.device))
                                 with torch.cuda.stream(self.copy_stream):
                                     slot.events[0].record()
-                                    for host, dev in zip(slot.host, slot.device):
-                                        dev[:pos].copy_(host[:pos], non_blocking=True)
-                                        dev.record_stream(self.copy_stream)
+                                    if slot.features:
+                                        slot.features.enqueue(pos)
+                                    else:
+                                        for host, dev in zip(slot.host, slot.device):
+                                            dev[:pos].copy_(host[:pos], non_blocking=True)
+                                            dev.record_stream(self.copy_stream)
                                     slot.events[1].record()
                                 with torch.cuda.stream(self.compute_stream):
                                     self.compute_stream.wait_event(slot.events[1])
@@ -285,6 +324,9 @@ class Runtime:
                                      h2d_end_ms=self.origin.elapsed_time(slot.events[1]),
                                      compute_start_ms=self.origin.elapsed_time(slot.events[2]),
                                      compute_end_ms=self.origin.elapsed_time(slot.events[3]))
+                        if slot.features:
+                            stage["h2d_ms"] = slot.events[0].elapsed_time(slot.features.upload_done)
+                            stage["gpu_pack_ms"] = slot.features.upload_done.elapsed_time(slot.events[1])
                     else: stage = dict(compute_ms=cpu_ms)
                     values = [slot.output[a:b].clone() for a, b in offsets]
                 except Exception as exc:

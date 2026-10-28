@@ -12,6 +12,8 @@ license = {file = "LICENSE"}
 
 [project.optional-dependencies]
 test = ["pytest>=8"]
+bench = ["matplotlib>=3.8"]
+cuda-build = ["ninja>=1.11"]
 
 [project.scripts]
 gpu-runtime-service = "gpu_runtime.service:main"

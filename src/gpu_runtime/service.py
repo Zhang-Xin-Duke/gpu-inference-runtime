@@ -23,6 +23,8 @@ class Server(ThreadingHTTPServer):
         self.runtime = runtime
         self.model_version = next(iter(runtime.models))
         spec = runtime.models[self.model_version]
+        if spec.kind == "features":
+            raise ValueError("feature-schema models currently use the in-process Runtime API")
         digest = hashlib.sha256()
         for name, tensor in sorted(spec.model.state_dict().items()):
             digest.update(name.encode())
