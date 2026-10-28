@@ -1,8 +1,10 @@
 """Request-level data parallel inference over identical remote model replicas."""
 from concurrent.futures import Future, ThreadPoolExecutor, InvalidStateError
+from collections import Counter
 from dataclasses import dataclass, field
 import http.client
 import json
+import math
 import threading
 import time
 from urllib.parse import urlsplit
@@ -19,6 +21,8 @@ class Node:
     requests: int = 0
     completed: int = 0
     failures: int = 0
+    stale_connections: int = 0
+    retired_idle_connections: int = 0
     cooldown_until: float = 0.
     connection_epoch: int = 0
     idle_connections: list = field(default_factory=list, repr=False)
@@ -26,15 +30,20 @@ class Node:
 
 class Router:
     def __init__(self, endpoints, *, max_pending=256, concurrency=64, policy="least_work",
-                 retry=True, cooldown_s=2.):
+                 retry=True, cooldown_s=2., keepalive_s=4.):
         if not endpoints or len(set(endpoints)) != len(endpoints): raise ValueError("unique endpoints required")
         if min(max_pending, concurrency) <= 0 or policy not in ("least_work", "round_robin"):
             raise ValueError("invalid router limits or policy")
+        if not math.isfinite(keepalive_s) or keepalive_s < 0:
+            raise ValueError("keepalive_s must be finite and nonnegative")
         self.nodes = [Node(url.rstrip("/")) for url in endpoints]
         self.lock = threading.Lock()
         self.connections = set()
         self.per_node_limit = 16
         self.policy, self.retry, self.cooldown_s = policy, retry, cooldown_s
+        self.keepalive_s = keepalive_s
+        self.attempt_errors = Counter()
+        self.routing_unavailable = 0
         self.cursor = 0
         self.closed = False
         self.accepted = self.rejected = self.finished = self.active = 0
@@ -68,7 +77,9 @@ class Router:
         with self.lock:
             now = time.perf_counter()
             candidates = [i for i,n in enumerate(self.nodes) if i not in excluded and n.cooldown_until <= now and n.active < self.per_node_limit]
-            if not candidates: raise ConnectionError("no available replicas")
+            if not candidates:
+                self.routing_unavailable += 1
+                raise ConnectionError("no available replicas")
             if self.policy == "round_robin":
                 selected = min(candidates, key=lambda i: (i-self.cursor) % len(self.nodes))
             else:
@@ -129,10 +140,19 @@ class Router:
                 excluded.add(selected)
                 conn = None
                 reusable = False
+                reused = False
                 try:
                     with self.lock:
                         epoch = node.connection_epoch
-                        conn = node.idle_connections.pop() if node.idle_connections else None
+                        while node.idle_connections:
+                            candidate, returned = node.idle_connections.pop()
+                            if time.perf_counter() - returned < self.keepalive_s:
+                                conn = candidate
+                                reused = True
+                                break
+                            candidate.close()
+                            self.connections.discard(candidate)
+                            node.retired_idle_connections += 1
                     if conn is None:
                         conn = self._connection(node, remaining)
                         with self.lock: self.connections.add(conn)
@@ -156,21 +176,32 @@ class Router:
                     return result[0]
                 except (OSError, http.client.HTTPException, TimeoutError) as exc:
                     last_error = exc
+                    stale = reused and isinstance(exc, (http.client.RemoteDisconnected,
+                                                          BrokenPipeError, ConnectionResetError))
                     with self.lock:
                         node.failures += 1
+                        self.attempt_errors[type(exc).__name__] += 1
                         # Idle sockets are exclusively owned by this pool.
                         # Active leases close on return if their epoch changed.
                         node.connection_epoch += 1
-                        for idle in node.idle_connections:
+                        for idle, _ in node.idle_connections:
                             idle.close()
                             self.connections.discard(idle)
                         node.idle_connections.clear()
-                        node.cooldown_until = time.perf_counter() + (min(.05,self.cooldown_s) if isinstance(exc,TimeoutError) else self.cooldown_s)
+                        if stale:
+                            # A server may retire an idle socket while remaining
+                            # healthy. Invalidate stale leases without parking the
+                            # entire replica. A single-worker router may reconnect
+                            # within its existing two-attempt/deadline budget.
+                            node.stale_connections += 1
+                            if len(self.nodes) == 1: excluded.discard(selected)
+                        else:
+                            node.cooldown_until = time.perf_counter() + (min(.05,self.cooldown_s) if isinstance(exc,TimeoutError) else self.cooldown_s)
                 finally:
                     with self.lock:
                         if conn is not None:
                             if reusable and epoch == node.connection_epoch and not self.closed:
-                                node.idle_connections.append(conn)
+                                node.idle_connections.append((conn, time.perf_counter()))
                             else:
                                 conn.close()
                                 self.connections.discard(conn)
@@ -183,8 +214,11 @@ class Router:
         with self.lock:
             return dict(accepted=self.accepted, rejected=self.rejected, finished=self.finished,
                         active=self.active, open_connections=len(self.connections),
+                        attempt_errors=dict(self.attempt_errors), routing_unavailable=self.routing_unavailable,
                         nodes=[dict(endpoint=n.url, outstanding=n.outstanding, active=n.active,
                         requests=n.requests, completed=n.completed, failures=n.failures,
+                        stale_connections=n.stale_connections,
+                        retired_idle_connections=n.retired_idle_connections,
                         idle_connections=len(n.idle_connections),
                         cooling_down=n.cooldown_until > time.perf_counter()) for n in self.nodes])
 

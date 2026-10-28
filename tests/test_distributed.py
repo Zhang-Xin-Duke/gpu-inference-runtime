@@ -187,3 +187,56 @@ def test_replica_connections_stay_bounded_when_rpc_threads_change_nodes(monkeypa
         assert all(value<=2 for value in peak.values()),peak
     finally:router.shutdown()
     assert all(value==0 for value in live.values())
+
+
+def test_idle_peer_close_reconnects_without_cooling_healthy_replica(monkeypatch):
+    import http.client
+    body=wire.encode((torch.ones(1,2),))
+    created=[]
+    class Response:
+        status=200
+        def read(self,*_):return body
+    class Connection:
+        sock=None
+        def __init__(self):self.calls=0;created.append(self)
+        def request(self,*_):self.calls+=1
+        def getresponse(self):
+            if self.calls>1:raise http.client.RemoteDisconnected('idle peer closed')
+            return Response()
+        def close(self):pass
+    monkeypatch.setattr(Router,'_get',lambda *_:dict(model_version='v1',outputs=2))
+    monkeypatch.setattr(Router,'_connection',staticmethod(lambda *_:Connection()))
+    with Router(['http://healthy.test'],concurrency=1,cooldown_s=2) as router:
+        for _ in range(3):
+            assert router.submit(torch.ones(1,8),timeout_ms=1000).result(2).shape==(1,2)
+        stats=router.stats()
+        assert not stats['nodes'][0]['cooling_down']
+        assert stats['nodes'][0]['stale_connections']==2
+        assert stats['active']==0 and stats['finished']==3
+
+
+def test_idle_pool_retires_sockets_before_server_idle_timeout(replicas):
+    url=f'http://127.0.0.1:{replicas[0][1].server_port}'
+    with Router([url],concurrency=1,keepalive_s=.01) as router:
+        router.submit(torch.ones(1,8),timeout_ms=1000).result(2)
+        time.sleep(.03)
+        router.submit(torch.ones(1,8),timeout_ms=1000).result(2)
+        stats=router.stats()
+        assert stats['nodes'][0]['retired_idle_connections']==1
+        assert stats['nodes'][0]['failures']==0
+
+
+def test_real_server_idle_close_does_not_disable_healthy_worker(replicas,monkeypatch):
+    from gpu_runtime.service import Handler
+    original=Handler.setup
+    def setup(handler):
+        original(handler)
+        handler.connection.settimeout(.05)
+    monkeypatch.setattr(Handler,'setup',setup)
+    url=f'http://127.0.0.1:{replicas[0][1].server_port}'
+    with Router([url],concurrency=1,keepalive_s=4,cooldown_s=2) as router:
+        router.submit(torch.ones(1,8),timeout_ms=1000).result(2)
+        time.sleep(.1)
+        assert router.submit(torch.ones(1,8),timeout_ms=1000).result(2).shape==(1,2)
+        node=router.stats()['nodes'][0]
+        assert node['stale_connections']==1 and not node['cooling_down']

@@ -22,6 +22,7 @@ def main():
     p.add_argument('--soak-seconds', type=float, default=300)
     p.add_argument('--seeds', nargs='+', type=int, default=[7,17])
     p.add_argument('--skip-micro', action='store_true')
+    p.add_argument('--replicas-only', action='store_true')
     p.add_argument('--phase-seconds', nargs=3, type=float, default=[30,30,60])
     p.add_argument('--device', choices=['cpu','cuda'], default='cuda')
     p.add_argument('--hidden', type=int, default=32768)
@@ -62,24 +63,25 @@ def main():
         if args.device=='cuda':
             telemetry=subprocess.Popen(['nvidia-smi','--query-gpu=timestamp,index,name,utilization.gpu,utilization.memory,memory.used,power.draw,clocks.sm,clocks.mem',
                                         '--format=csv','-l','1'],stdout=(out/'gpu-telemetry.csv').open('w'),stderr=(out/'gpu-telemetry.log').open('w'))
-        if not args.skip_micro:
+        if not args.skip_micro and not args.replicas_only:
             for seed in args.seeds:
                 run(f'micro/seed-{seed}',['benchmarks/feature_pack.py','--suite','extended',
                      '--iterations','20','--rounds','3','--seed',str(seed)],env0,timeout=360)
         # Reverse CPU/fused order on the second seed, preserving arrivals.
-        for seed in args.seeds:
+        for seed in ([] if args.replicas_only else args.seeds):
             for rate in args.feature_rates:
                 order=('cpu','cuda') if args.seeds.index(seed)%2==0 else ('cuda','cpu')
                 for backend in order:
                     command=feature.copy();command[command.index('--feature-packing')+1]=backend
                     run(f'feature-load/{backend}-rps-{rate:g}-seed-{seed}',
                         command+['--duration',str(args.cell_seconds),'--rps',str(rate),'--seed',str(seed)],env0)
-        for backend in ('cpu','cuda'):
+        for backend in (() if args.replicas_only else ('cpu','cuda')):
             command=feature.copy();command[command.index('--feature-packing')+1]=backend
             phase_args=[f'{duration:g}:{rate}' for duration,rate in zip(args.phase_seconds,(150,1800,150))]
             run(f'feature-recovery/{backend}',command+['--phases',*phase_args,'--seed','47'],env0,timeout=sum(args.phase_seconds)+180)
-        run('feature-soak/cuda',feature+['--duration',str(args.soak_seconds),'--rps','150','--seed','53'],
-            env0,timeout=args.soak_seconds+180)
+        if not args.replicas_only:
+            run('feature-soak/cuda',feature+['--duration',str(args.soak_seconds),'--rps','150','--seed','53'],
+                env0,timeout=args.soak_seconds+180)
         if args.device=='cuda' and torch.cuda.device_count() >= 2:
             endpoints=[]
             for gpu in (0,1):

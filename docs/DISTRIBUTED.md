@@ -29,11 +29,23 @@ The router caps pending requests and uses at most 32 RPC threads, with a limit o
 
 The router leases persistent HTTP connections from a shared pool per replica, capped by that replica's 16 active RPC permits. RPC threads return idle connections to the pool, so changing the selected replica does not retain one socket per thread per replica. Binary tensor payloads avoid repeatedly encoding arrays as JSON. Small RPC responses disable server-side Nagle buffering. Those choices reduce avoidable transport overhead, while real network latency and CPU serialization still remain in end-to-end results.
 
+Idle connections expire locally after four seconds by default, before the bundled
+HTTP service's five-second idle timeout. `keepalive_s` can lower that threshold
+for another server contract. Expired connections close before leasing, and their
+retirement counts appear in per-worker statistics.
+
 ## Deadline and failure behavior
 
 The router maintains its own monotonic deadline and passes the remaining budget to a worker. The worker applies a relative local timeout; the router checks its original deadline again before returning a result. No cross-machine monotonic clock synchronization is assumed.
 
-A transport failure triggers a temporary node cooldown. If time remains, one attempt may be made on a different replica. A remote operation can continue after its caller times out; failover can therefore perform duplicate computation. This is safe for the bundled stateless forward models, but it is not an exactly-once protocol for stateful operations.
+A new-connection failure or overload response triggers a temporary node cooldown.
+If time remains, one attempt may be made on a different replica. A peer closing a
+reused idle connection instead invalidates old pooled connections without
+cooling down the whole worker. A single-worker router can reconnect to that
+worker within the same two-attempt limit and original deadline. A remote
+operation can continue after its caller times out; retries can therefore
+duplicate computation. This is safe for the bundled stateless forward models,
+but it is not an exactly-once protocol for stateful operations.
 
 Cooldown expires automatically so a restarted replica can receive requests again. The router does not persist requests, model registrations or completed results across its own process restart.
 

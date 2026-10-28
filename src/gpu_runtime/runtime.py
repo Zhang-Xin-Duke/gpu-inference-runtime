@@ -327,6 +327,9 @@ class Runtime:
                         if slot.features:
                             stage["h2d_ms"] = slot.events[0].elapsed_time(slot.features.upload_done)
                             stage["gpu_pack_ms"] = slot.features.upload_done.elapsed_time(slot.events[1])
+                            stage["h2d_end_ms"] = self.origin.elapsed_time(slot.features.upload_done)
+                            stage["gpu_pack_start_ms"] = stage["h2d_end_ms"]
+                            stage["gpu_pack_end_ms"] = self.origin.elapsed_time(slot.events[1])
                     else: stage = dict(compute_ms=cpu_ms)
                     values = [slot.output[a:b].clone() for a, b in offsets]
                 except Exception as exc:

@@ -46,6 +46,11 @@ def test_feature_runtime_matches_direct_model_and_reuses_slots(device, backend):
                     expected = model(reference_pack(schema, [x]).to(device)).cpu()
                 torch.testing.assert_close(handle.result(15), expected, rtol=1e-4, atol=1e-5)
         assert runtime.stats()["reserved_bytes"] == 0
+        if device == "cuda" and backend == "cuda":
+            for timeline in runtime.timelines:
+                assert timeline["h2d_end_ms"] <= timeline["gpu_pack_start_ms"]
+                assert timeline["gpu_pack_start_ms"] <= timeline["gpu_pack_end_ms"]
+                assert timeline["gpu_pack_end_ms"] <= timeline["compute_start_ms"]
         assert runtime.slot_count <= runtime.max_inflight
         assert runtime.pool_bytes <= runtime.staging_bytes
     assert runtime.stats()["staging_bytes"] == 0
