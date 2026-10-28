@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/2ab5fb82-63d8-4ec7-8c25-6c92ca5e4261
 2. **Batch:** group compatible model versions and shapes; flush on size, age or deadline.
 3. **Complete:** copy results back, restore each caller's rows, then recycle staging buffers.
 
-The animation illustrates a [real recorded RTX 5090 run](docs/demo/recording.json), slowed into explanatory stages. Its timing is schematic. Outputs passed comparison with a direct model forward.
+The animation illustrates [recorded request data](docs/demo/recording.json), slowed into explanatory stages. Its timing is schematic. Outputs passed comparison with a direct model forward.
 
 After [installation](#quick-start), run the same example:
 
@@ -27,40 +27,27 @@ python examples/quick_demo.py --device cuda
 
 Use `--device cpu` to explore the same request lifecycle without a GPU. [Example source](examples/quick_demo.py) · [Architecture](docs/DESIGN.md) · [Quick start](#quick-start).
 
-## Multi-GPU measurements
+## L40 evaluation
 
 ![One versus two L40 devices on a compute-heavy workload](results/three-l40-2026-10-28/fixed/host-0/results/compute/replica-sweep.svg)
 
-On a **1.08B-parameter float32 model**, moving from one to two L40 devices increased on-time throughput from **244.1 to 519.85 requests/s (2.13×)** and reduced completion P99 from **1,005.51 to 542.58 ms**. The generator and CPU router run on the dual-GPU host over local HTTP. Both configurations receive identical inputs at nominal 1,000 requests/s with a 1,000 ms deadline; values are medians of two seeds. The workload is overloaded: one replica completes **4,882 / 20,244** requests on time, and two complete **10,397 / 20,244**, with admission rejections and other outcomes retained.
+A **1.08B-parameter float32 model** runs on one or two L40 devices, with the generator and CPU router on the same host over local HTTP. Both configurations receive identical inputs at nominal 1,000 requests/s with a 1,000 ms deadline. Values below are medians of two 10-second runs with different seeds.
+
+| Measurement | One GPU | Two GPUs |
+|---|---:|---:|
+| On-time throughput | 244.10 req/s | 519.85 req/s |
+| Completion P99 | 1,005.51 ms | 542.58 ms |
+| On-time requests / offered, both seeds | 4,882 / 20,244 | 10,397 / 20,244 |
+
+Two replicas deliver **2.13× deadline goodput** in this overloaded workload. Rejected, expired and failed requests remain in the [full results](docs/MULTI_GPU_EVALUATION.md).
 
 ![Three L40 replicas: recorded worker stop and restart](results/three-l40-2026-10-28/fixed/three-replica-recovery.gif)
 
-The three-replica recording spans two Thunder hosts. During a worker stop, its healthy peers continue serving; the restarted worker is observed completing requests again about **23.2 seconds** after the restart command. The 75-second run completes **6,818 / 7,485** requests on time and retains **667 failures**. Peak observed router connections are **35**; active requests and open connections return to zero after drain.
+In the same deployment, a three-replica stop/restart test spans two hosts. Healthy peers complete **2,335 requests** while one worker is stopped; that worker is observed completing requests again about **23.2 seconds** after restart. The 75-second run records **6,818 / 7,485** on-time requests and **667 failures**. Connections peak at **35** and return to zero after drain.
 
-The tests exposed excess idle sockets in per-thread caches. A bounded connection pool per replica now controls ownership across RPC threads; both GPU hosts passed **33 tests**, including CUDA cases. The report retains the failed recovery before this fix, the remaining recovery losses, allocation topology, worker compute counters and raw measurements. [Full multi-GPU evaluation](docs/MULTI_GPU_EVALUATION.md) · [Results and checksums](results/three-l40-2026-10-28/).
+[Conditions, failure analysis and reproduction](docs/MULTI_GPU_EVALUATION.md) · [Raw data and checksums](results/three-l40-2026-10-28/)
 
-## Single-GPU measurements
-
-**Measured on one local RTX 5090, Windows WDDM, FP32:**
-
-| Check | Result |
-|---|---|
-| Installed-wheel correctness | **31 passed, 1 skipped**; all three CUDA cases passed; Unix SIGTERM drain test skipped on Windows |
-| Three-seed steady/burst comparison | Two-slot batching completed **18,000 / 18,000** requests within 100 ms across both bundled models |
-| Five-minute soaks | **300,291 / 300,291** requests on time for each model; request reservations released after drain |
-| Highest independent-process load cell | Both pipeline models completed **80,063 / 80,063** requests in 10 s at nominal 8,000 requests/s |
-| Large FP32 compute stress | Approximately 2.15B parameters; observed **99% GPU utilization**, 577.2 W peak, 74°C maximum at stock settings |
-
-![RTX 5090 deadline goodput across offered load](results/rtx5090/load-sweep.svg)
-
-The 91 extended cells include load, batch/slot, model-size, sequence-padding and sustained tests. The highest tested rate is not a calibrated maximum capacity. Local profiler traces contain real kernels/copies on distinct streams but show **zero copy/compute overlap**; higher application goodput does not establish physical overlap. [Full RTX 5090 results, conditions and negative outcomes](docs/RTX5090_EVALUATION.md) · [Raw data and checksums](results/rtx5090/).
-
-![Recorded process failover on one RTX 5090](results/rtx5090/local-process-replicas/process-failover.gif)
-
-Two local worker processes share one physical GPU in this recording. A controlled stop/restart exposed stale HTTP connections across RPC threads; connection invalidation allows the restarted worker to rejoin. Both before/after recordings and deadline losses are retained. The newer [L40 evaluation](docs/MULTI_GPU_EVALUATION.md) measures one versus two allocated devices and three-replica process recovery separately.
-
-The earlier Thunder L40 measurement is retained in [historical application-level results](#gpu-application-level-results).
-
+## How it works
 
 An inference service receives independent requests, while a GPU benefits from larger batches. Waiting to fill a batch adds latency; padding unrelated sequence lengths wastes work; accepting every request can exhaust staging memory before the GPU catches up. This project makes those decisions explicit in a small, independently runnable execution subsystem.
 
@@ -130,7 +117,7 @@ A request can contain multiple samples. `max_batch` limits total samples in one 
 
 A bounded CPU router can send complete inference requests to matching model replicas on separate GPU hosts. Each worker retains its own batching queue and buffer ownership. Model fingerprints are checked before routing, and a failed connection can be retried on another replica while deadline budget remains. [Architecture, failure semantics and examples](docs/DISTRIBUTED.md).
 
-The [L40 evaluation](docs/MULTI_GPU_EVALUATION.md) covers compute-heavy one/two-device measurements on one host and a three-replica stop/restart across two hosts. The earlier [RTX 5090 evaluation](docs/RTX5090_EVALUATION.md) retains its same-GPU process experiment. The measured topology and transport are specified for each comparison.
+Each GPU holds a complete model replica. The router distributes independent requests, retries a transport failure within the remaining deadline, and reuses connections from a bounded per-replica pool. [Routing and failure semantics](docs/DISTRIBUTED.md).
 
 ## Two model adapters
 
@@ -211,105 +198,29 @@ docker run --rm --gpus 1 -p 127.0.0.1:8080:8080 gpu-inference-runtime:local
 kubectl apply -f deploy/kubernetes.yaml
 ```
 
-The deployment requests one GPU using `nvidia.com/gpu`, requires the NVIDIA device plugin, and gives the process 30 seconds to drain. Container and Kubernetes deployment validation are listed separately from local process tests in [validation status](#validation-status).
+The deployment requests one GPU using `nvidia.com/gpu`, requires the NVIDIA device plugin, and gives the process 30 seconds to drain. [Validation status](#reproduce-and-validate) records the deployment coverage.
 
-## Evaluation
+## Reproduce and validate
 
-The benchmark sends requests at planned open-loop arrival times, using the same seeded inputs for each configuration. It records goodput before the deadline, P50/P95/P99 completion latency, admission rejection, expiration, batch size, padding, staging allocation, stage durations and load-generator lag.
-
-```bash
-python benchmarks/run.py --device cpu --requests 300 --rps 500 \
-    --deadline-ms 100 --output results/cpu-smoke.json
-python benchmarks/run.py --device cuda --requests 5000 --rps 2000 \
-    --deadline-ms 50 --output results/gpu-steady.json
-python benchmarks/run.py --device cuda --requests 5000 --rps 2000 \
-    --deadline-ms 50 --burst --output results/gpu-burst.json
-```
-
-The configurations isolate execution choices:
-
-| Mode | Maximum batch | In-flight CUDA slots | Flush |
-|---|---:|---:|---|
-| `unbatched` | 1 sample | 1 | Immediate |
-| `sync` | 64 samples | 1 | Size / age / deadline |
-| `pipeline` | 64 samples | 2 | Size / age / deadline |
-
-On CPU, `sync` and `pipeline` both execute one batch at a time. CPU runs cannot demonstrate transfer/compute overlap. `--policy age` disables the deadline-based early flush; `--no-buckets` pads sequences to the registered maximum for an ablation. `--samples` selects samples per request (the unbatched baseline still executes one request at a time); `--features`, `--hidden`, and `--embedding` scale model work. `--burst` compresses each 200 ms arrival interval into its first 20 ms.
-
-The CUDA timeline records events against a shared origin. `measured_cross_batch_h2d_compute_overlap_ms` sums intersections between one batch's H2D interval and another batch's compute interval. On a platform with supported event/profiler semantics, a positive value provides event-level evidence of overlap; a speedup still requires throughput and latency comparisons. See [GPU evaluation procedure](docs/GPU_EVALUATION.md) for the prepared test matrix and trace instructions.
-
-### GPU application-level results
-
-The following table is the original Thunder L40 experiment. The newer local workstation evaluation is reported separately in [RTX 5090 results](docs/RTX5090_EVALUATION.md).
-
-![Original L40 deadline completion](docs/gpu-deadline-completion.svg)
-
-The GPU run used one Thunder Compute **NVIDIA L40 (48 GB class)** instance, six vCPUs, Python 3.12.13, PyTorch 2.12.1+cu130 and one PyTorch CPU thread. Both dense and sequence outputs passed the direct-model comparisons; all **25 tests passed**, including the CUDA tests. [Raw results and SHA-256 checks](results/gpu/) accompany the run.
-
-Each steady/burst configuration used 1,500 requests, three seeds (7, 17, 27), a nominal 1,000 requests/s arrival process and a 100 ms deadline. The table aggregates on-time counts; latency, goodput and generator lag are medians of the three per-run summaries. These are application-level results on a virtualized GPU, including host scheduling and framework overhead.
-
-| Traffic / model | Mode | On-time / 4,500 | Goodput (req/s) | P99 (ms) | Generator lag P99 (ms) |
-|---|---|---:|---:|---:|---:|
-| steady / dense | unbatched | 37 | 7.7 | 108.56 | 6.21 |
-| steady / dense | sync | 4,446 | 997.6 | 99.29 | 74.46 |
-| steady / dense | pipeline | 4,500 | 1022.1 | 27.87 | 6.03 |
-| steady / sequence | unbatched | 54 | 11.6 | 106.86 | 2.79 |
-| steady / sequence | sync | 4,305 | 958.4 | 127.22 | 81.32 |
-| steady / sequence | pipeline | 4,500 | 992.5 | 82.18 | 6.77 |
-| burst / dense | unbatched | 251 | 54.5 | 106.88 | 6.03 |
-| burst / dense | sync | 4,268 | 1034.0 | 99.68 | 71.54 |
-| burst / dense | pipeline | 4,500 | 1049.9 | 41.39 | 6.70 |
-| burst / sequence | unbatched | 406 | 86.0 | 105.81 | 8.45 |
-| burst / sequence | sync | 4,096 | 955.4 | 103.62 | 72.88 |
-| burst / sequence | pipeline | 4,466 | 1012.0 | 99.98 | 26.73 |
-
-Batching substantially increased the number of requests meeting this deadline compared with executing one request at a time. Two in-flight slots completed all 4,500 steady-traffic requests for each model; burst sequence traffic completed 4,466 / 4,500. The shared-process generator stalled more in several one-slot runs, so these comparisons include host-side scheduling effects and do not isolate a CUDA-overlap benefit.
-
-**Workload-dependent outcomes:** the single-run sequence ablation reduced padded token positions from 384,000 to 125,728 with buckets, while observed P99 increased from 33.47 to 79.36 ms. Reducing padding did not guarantee a latency improvement in this workload. In the larger dense exploratory run (4 samples/request, 4,096 features, hidden width 2,048, nominal 2,000 requests/s), two slots produced 431.5 deadline-goodput requests/s versus 525.3 with one slot; its generator lag P99 reached 123.25 ms. That run cannot establish the runtime's maximum sustainable throughput.
-
-**Profiling boundary:** Thunder [documents GPU virtualization](https://www.thundercompute.com/docs/legacy/prototyping-and-production-modes) and lists [GPU profilers as incompatible](https://www.thundercompute.com/docs/compatibility). The exported trace contains generic kernel names, stream ID 0 and zero-byte copy metadata. The event-based overlap counter reported 0 ms. This run does **not** establish physical transfer/compute overlap; validate that separately on a standard CUDA environment. The repository retains the trace as a diagnostic artifact.
-
-<details>
-<summary>Local CPU smoke results</summary>
-
-
-
-The checked-in [raw CPU smoke run](results/cpu-smoke.json) records 300 requests per model/mode, a nominal 500 requests/s arrival process, a 100 ms deadline and one PyTorch CPU thread. This is a functional and instrumentation check; it does not measure maximum sustainable throughput or GPU performance. Arrival randomness and generator scheduling affect this short run.
-
-| Model | Mode | Successful / offered | P50 (ms) | P99 (ms) |
-|---|---|---:|---:|---:|
-| dense | unbatched | 300 / 300 | 0.70 | 2.49 |
-| dense | sync | 300 / 300 | 2.92 | 5.75 |
-| dense | pipeline | 300 / 300 | 3.14 | 34.79 |
-| sequence | unbatched | 300 / 300 | 0.76 | 3.15 |
-| sequence | sync | 300 / 300 | 2.98 | 4.86 |
-| sequence | pipeline | 300 / 300 | 2.97 | 4.93 |
-
-The deterministic padding test uses four length-5 sequences and a configured maximum length of 128. Without buckets it prepares 512 token positions; bucket 8 prepares 32, with the same 20 useful tokens and matching outputs.
-
-</details>
-
-### Validation status
-
-| Check | Status |
-|---|---|
-| L40 multi-GPU evaluation | 33 tests passed on each GPU host; matched one/two-device compute test and three-replica stop/restart completed; [results and remaining failures](docs/MULTI_GPU_EVALUATION.md) |
-| Latest RTX 5090 installed-wheel suite | 31 passed, 1 Windows SIGTERM skip; all 3 CUDA cases passed |
-| RTX 5090 extended evaluation | 91 cells, both five-minute soaks, three-seed large-model stress, real profiler traces and same-GPU process stop/restart completed; [results](docs/RTX5090_EVALUATION.md) |
-| CPU scheduler/runtime/service tests | 22 passed locally; Linux Python 3.11 and 3.12 [CI passed](https://github.com/Zhang-Xin-Duke/gpu-inference-runtime/actions/runs/40509579725) |
-| CUDA scheduler/runtime tests | 25 total tests passed on Thunder L40; no CUDA skips |
-| Wheel build and normal installation | Passed locally |
-| Open-loop GPU benchmark | Steady/burst runs across 3 seeds, policy/padding ablations and larger-model exploratory run completed |
-| Physical CUDA stream overlap | Not observed: local RTX 5090 traces measured 0 µs copy/kernel intersections; earlier L40 provider limitations also retained |
-| Container image / GPU Kubernetes deployment | Example supplied; deployment unverified |
-| Google Borg deployment | Requires internal access; unverified |
-
-To regenerate the result summary and chart from saved runs:
+Start identical services on the dual-GPU host, one per device:
 
 ```bash
-python -m pip install matplotlib
-python benchmarks/summarize.py --root results/gpu --plot docs/gpu-deadline-completion.svg
+CUDA_VISIBLE_DEVICES=0 gpu-runtime-service --device cuda --hidden 32768 --max-batch 128 --port 8090
+CUDA_VISIBLE_DEVICES=1 gpu-runtime-service --device cuda --hidden 32768 --max-batch 128 --port 8091
 ```
+
+From another terminal on that host:
+
+```bash
+python benchmarks/compute_replicas.py \
+    --endpoints http://127.0.0.1:8090 http://127.0.0.1:8091 \
+    --rates 1000 --duration 10 --output-dir results/compute/sweep
+python benchmarks/summarize_replicas.py --root results/compute
+```
+
+Both GPU hosts passed **33 tests**, including the CUDA cases. Tests cover scheduling, admission, output parity, deadlines, cancellation, connection bounds, restart invalidation and shutdown. CPU-only execution skips CUDA tests. Container and Kubernetes deployment remain unverified.
+
+[Benchmark procedure](docs/GPU_EVALUATION.md) · [Recorded L40 experiment](docs/MULTI_GPU_EVALUATION.md) · [Earlier evaluations](docs/HISTORICAL_EVALUATION.md)
 
 ## Repository map
 
