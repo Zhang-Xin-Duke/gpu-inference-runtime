@@ -1,8 +1,10 @@
 # GPU Inference Runtime
 
-**Independent requests in. GPU batches out. Individual results back.**
+GPU Inference Runtime is a **C++20/PyTorch execution layer for stateless GPU inference**. It batches compatible requests, enforces admission and deadline policies, and routes independent requests across model replicas. Each caller receives an owned CPU tensor when its request completes.
 
-A C++20 / PyTorch runtime for services with many independent inference callers. It combines compatible requests into GPU batches, bounds accepted work, and returns a separate CPU tensor to each caller.
+[Quick start](#quick-start) · [Architecture](#architecture) · [L40 evaluation](#l40-evaluation) · [Distributed routing](docs/DISTRIBUTED.md)
+
+## Demonstration
 
 https://github.com/user-attachments/assets/2ab5fb82-63d8-4ec7-8c25-6c92ca5e4261
 
@@ -10,7 +12,7 @@ https://github.com/user-attachments/assets/2ab5fb82-63d8-4ec7-8c25-6c92ca5e4261
 
 ![Demo: independent CPU requests become one GPU batch and return individual results](docs/demo/runtime-demo.gif)
 
-**The demo in one sentence:** four `[1, 256]` inputs become one `[4, 256]` GPU forward, then four `[1, 32]` CPU results; a fifth request is rejected because the admission limit is four.
+**Example request flow:** four `[1, 256]` inputs form one `[4, 256]` GPU batch and return four `[1, 32]` CPU results. A fifth request exceeds the four-request admission limit and is rejected.
 
 1. **Admit:** reserve request and byte capacity before packing tensors.
 2. **Batch:** group compatible model versions and shapes; flush on size, age or deadline.
@@ -31,12 +33,12 @@ Use `--device cpu` to explore the same request lifecycle without a GPU. [Example
 
 ![One versus two L40 devices on a compute-heavy workload](results/three-l40-2026-10-28/fixed/host-0/results/compute/replica-sweep.svg)
 
-A **1.08B-parameter float32 model** runs on one or two L40 devices, with the generator and CPU router on the same host over local HTTP. Both configurations receive identical inputs at nominal 1,000 requests/s with a 1,000 ms deadline. Values below are medians of two 10-second runs with different seeds.
+A **1.08B-parameter float32 MLP** runs on one or two L40 devices, with the generator and CPU router on the same host over local HTTP. Both configurations receive identical inputs at nominal 1,000 requests/s with a 1,000 ms deadline. Throughput and P99 are medians of two 10-second runs with different seeds; request counts aggregate both runs.
 
 | Measurement | One GPU | Two GPUs |
 |---|---:|---:|
-| On-time throughput | 244.10 req/s | 519.85 req/s |
-| Completion P99 | 1,005.51 ms | 542.58 ms |
+| Deadline goodput | 244.10 req/s | 519.85 req/s |
+| Admitted-request P99 | 1,005.51 ms | 542.58 ms |
 | On-time requests / offered, both seeds | 4,882 / 20,244 | 10,397 / 20,244 |
 
 Two replicas deliver **2.13× deadline goodput** in this overloaded workload. Rejected, expired and failed requests remain in the [full results](docs/MULTI_GPU_EVALUATION.md).
@@ -47,9 +49,9 @@ In the same deployment, a three-replica stop/restart test spans two hosts. Healt
 
 [Conditions, failure analysis and reproduction](docs/MULTI_GPU_EVALUATION.md) · [Raw data and checksums](results/three-l40-2026-10-28/)
 
-## How it works
+## Architecture
 
-An inference service receives independent requests, while a GPU benefits from larger batches. Waiting to fill a batch adds latency; padding unrelated sequence lengths wastes work; accepting every request can exhaust staging memory before the GPU catches up. This project makes those decisions explicit in a small, independently runnable execution subsystem.
+The runtime balances batch size, queueing delay and staging memory. Compatible requests share a GPU execution batch; admission limits bound accepted work, and flush policies decide when a partial batch executes. Sequence-length buckets control padding overhead.
 
 A C++20 scheduler handles admission, compatible request grouping and queue deadlines. A PyTorch backend packs tensors, runs a model and restores each request's output. The CUDA path uses reusable pinned/device buffers and event dependencies between transfer and compute streams.
 
@@ -69,9 +71,9 @@ flowchart LR
     K --> E
 ```
 
-## Implemented optimizations
+## Design choices
 
-| Mechanism | What it changes | Why this choice matters |
+| Mechanism | Implementation | Purpose and trade-off |
 |---|---|---|
 | Early bounded admission | Reserves request count and estimated staging/output bytes before packing | Limits accepted work during bursts; excess work fails immediately instead of expanding queues indefinitely |
 | Compatible dynamic batching | Groups by immutable model version and input shape bucket | Amortizes model execution while keeping incompatible tensors and generations separate |
@@ -115,11 +117,9 @@ A request can contain multiple samples. `max_batch` limits total samples in one 
 
 ## Distributed request routing
 
-A bounded CPU router can send complete inference requests to matching model replicas on separate GPU hosts. Each worker retains its own batching queue and buffer ownership. Model fingerprints are checked before routing, and a failed connection can be retried on another replica while deadline budget remains. [Architecture, failure semantics and examples](docs/DISTRIBUTED.md).
+A bounded CPU router sends independent requests to GPU workers with matching model fingerprints. Each worker owns a complete model replica, a local batching queue and its staging buffers. The router leases connections from a bounded per-replica pool and can retry a transport failure on another worker within the remaining deadline. [Routing, failure semantics and examples](docs/DISTRIBUTED.md).
 
-Each GPU holds a complete model replica. The router distributes independent requests, retries a transport failure within the remaining deadline, and reuses connections from a bounded per-replica pool. [Routing and failure semantics](docs/DISTRIBUTED.md).
-
-## Two model adapters
+## Model interfaces
 
 | Adapter | Inputs | Output | Validation workload |
 |---|---|---|---|
@@ -159,9 +159,9 @@ The scheduler accounts for request reservations, while the staging pool separate
 
 A normal model exception fails the affected batch and returns its permits. A CUDA context failure closes admission and quarantines uncertain buffers; the process should be restarted. Normal shutdown closes admission, flushes accepted queued work and waits for completion. Process or machine crashes lose in-memory requests, so clients need bounded retry and application-specific idempotency rules.
 
-## Running under a cluster manager
+## Deployment
 
-The runtime can live inside a process managed by Borg or Kubernetes. The cluster manager places and restarts that process; request scheduling remains inside it. Google Borg itself is internal, so this repository includes a public Kubernetes deployment example and a local process-lifecycle test.
+The runtime operates inside a GPU worker process. A cluster manager places and restarts the process; admission and request scheduling remain inside the worker. The repository includes a Dockerfile, a Kubernetes deployment example and a local process-lifecycle test.
 
 ```mermaid
 flowchart TB
