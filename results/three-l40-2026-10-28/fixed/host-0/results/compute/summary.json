@@ -1,0 +1,22 @@
+[
+  {
+    "replicas": 1,
+    "offered_rps": 1000.0,
+    "runs": 2,
+    "offered": 20244,
+    "on_time": 4882,
+    "median_goodput_rps": 244.1,
+    "median_p99_ms": 1005.5141443228243,
+    "median_generator_p99_ms": 0.0813079861372098
+  },
+  {
+    "replicas": 2,
+    "offered_rps": 1000.0,
+    "runs": 2,
+    "offered": 20244,
+    "on_time": 10397,
+    "median_goodput_rps": 519.8499999999999,
+    "median_p99_ms": 542.579035940088,
+    "median_generator_p99_ms": 0.08220644220204784
+  }
+]

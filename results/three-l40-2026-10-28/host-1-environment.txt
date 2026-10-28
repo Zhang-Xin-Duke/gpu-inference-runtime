@@ -1,0 +1,5 @@
+Wed Oct 28 13:52:43 UTC 2026
+Linux instance-4ttef79k-main 6.17.0-35-generic #35~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue May 26 19:30:42 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+index, name, uuid, driver_version, utilization.gpu [%], memory.used [MiB]
+0, NVIDIA L40, GPU-8f501121-3ef7-557f-a1be-a000046a9824, 610.43.02, 0 %, 992 MiB
+2.12.1+cu130 13.0

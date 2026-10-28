@@ -1,0 +1,35 @@
+{
+  "offered": 7485,
+  "statuses": {
+    "ok": 6818,
+    "failed": 667
+  },
+  "p99_ms": 259.8252474997984,
+  "events": [
+    {
+      "t": 25.00671224994585,
+      "event": "stop_replica",
+      "returncode": 0,
+      "command_duration_s": 0.9190001671668142
+    },
+    {
+      "t": 50.00354225002229,
+      "event": "restart_replica",
+      "returncode": 0,
+      "command_duration_s": 0.8357213330455124
+    }
+  ],
+  "restart_first_observed_completion_s": 73.19218812510371,
+  "restart_to_observed_completion_s": 23.18864587508142,
+  "healthy_replica_completions_during_stop_interval": [
+    1148,
+    1187
+  ],
+  "maximum_observed_router_connections": 35,
+  "after_drain_active": 0,
+  "after_drain_open_connections": 0,
+  "gpu_utilization_peaks_percent": {
+    "0": 78.0,
+    "1": 84.0
+  }
+}

@@ -27,7 +27,19 @@ python examples/quick_demo.py --device cuda
 
 Use `--device cpu` to explore the same request lifecycle without a GPU. [Example source](examples/quick_demo.py) · [Architecture](docs/DESIGN.md) · [Quick start](#quick-start).
 
-## Measured behavior at a glance
+## Multi-GPU measurements
+
+![One versus two L40 devices on a compute-heavy workload](results/three-l40-2026-10-28/fixed/host-0/results/compute/replica-sweep.svg)
+
+On a **1.08B-parameter float32 model**, moving from one to two L40 devices increased on-time throughput from **244.1 to 519.85 requests/s (2.13×)** and reduced completion P99 from **1,005.51 to 542.58 ms**. The generator and CPU router run on the dual-GPU host over local HTTP. Both configurations receive identical inputs at nominal 1,000 requests/s with a 1,000 ms deadline; values are medians of two seeds. The workload is overloaded: one replica completes **4,882 / 20,244** requests on time, and two complete **10,397 / 20,244**, with admission rejections and other outcomes retained.
+
+![Three L40 replicas: recorded worker stop and restart](results/three-l40-2026-10-28/fixed/three-replica-recovery.gif)
+
+The three-replica recording spans two Thunder hosts. During a worker stop, its healthy peers continue serving; the restarted worker is observed completing requests again about **23.2 seconds** after the restart command. The 75-second run completes **6,818 / 7,485** requests on time and retains **667 failures**. Peak observed router connections are **35**; active requests and open connections return to zero after drain.
+
+The tests exposed excess idle sockets in per-thread caches. A bounded connection pool per replica now controls ownership across RPC threads; both GPU hosts passed **33 tests**, including CUDA cases. The report retains the failed recovery before this fix, the remaining recovery losses, allocation topology, worker compute counters and raw measurements. [Full multi-GPU evaluation](docs/MULTI_GPU_EVALUATION.md) · [Results and checksums](results/three-l40-2026-10-28/).
+
+## Single-GPU measurements
 
 **Measured on one local RTX 5090, Windows WDDM, FP32:**
 
@@ -45,7 +57,7 @@ The 91 extended cells include load, batch/slot, model-size, sequence-padding and
 
 ![Recorded process failover on one RTX 5090](results/rtx5090/local-process-replicas/process-failover.gif)
 
-Two local worker processes share one physical GPU in this recording. A controlled stop/restart exposed stale HTTP connections across RPC threads; connection invalidation now allows the restarted worker to rejoin. Both before/after recordings and deadline losses are retained. **Real two-GPU scaling remains unverified.**
+Two local worker processes share one physical GPU in this recording. A controlled stop/restart exposed stale HTTP connections across RPC threads; connection invalidation allows the restarted worker to rejoin. Both before/after recordings and deadline losses are retained. The newer [L40 evaluation](docs/MULTI_GPU_EVALUATION.md) measures one versus two allocated devices and three-replica process recovery separately.
 
 The earlier Thunder L40 measurement is retained in [historical application-level results](#gpu-application-level-results).
 
@@ -118,7 +130,7 @@ A request can contain multiple samples. `max_batch` limits total samples in one 
 
 A bounded CPU router can send complete inference requests to matching model replicas on separate GPU hosts. Each worker retains its own batching queue and buffer ownership. Model fingerprints are checked before routing, and a failed connection can be retried on another replica while deadline budget remains. [Architecture, failure semantics and examples](docs/DISTRIBUTED.md).
 
-The RTX 5090 single-worker sweeps and same-GPU process failover experiment are complete. The separate two-host/two-GPU scaling experiment remains pending; same-card replicas do not establish GPU scaling. [Measured conditions and recovery behavior](docs/RTX5090_EVALUATION.md).
+The [L40 evaluation](docs/MULTI_GPU_EVALUATION.md) covers compute-heavy one/two-device measurements on one host and a three-replica stop/restart across two hosts. The earlier [RTX 5090 evaluation](docs/RTX5090_EVALUATION.md) retains its same-GPU process experiment. The measured topology and transport are specified for each comparison.
 
 ## Two model adapters
 
@@ -281,6 +293,7 @@ The deterministic padding test uses four length-5 sequences and a configured max
 
 | Check | Status |
 |---|---|
+| L40 multi-GPU evaluation | 33 tests passed on each GPU host; matched one/two-device compute test and three-replica stop/restart completed; [results and remaining failures](docs/MULTI_GPU_EVALUATION.md) |
 | Latest RTX 5090 installed-wheel suite | 31 passed, 1 Windows SIGTERM skip; all 3 CUDA cases passed |
 | RTX 5090 extended evaluation | 91 cells, both five-minute soaks, three-seed large-model stress, real profiler traces and same-GPU process stop/restart completed; [results](docs/RTX5090_EVALUATION.md) |
 | CPU scheduler/runtime/service tests | 22 passed locally; Linux Python 3.11 and 3.12 [CI passed](https://github.com/Zhang-Xin-Duke/gpu-inference-runtime/actions/runs/40509579725) |

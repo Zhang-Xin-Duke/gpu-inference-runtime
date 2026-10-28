@@ -35,6 +35,9 @@ def main():
                         left=.08,right=.96,bottom=.17,top=.86)
     cards=[fig.add_subplot(gs[0,2*i:2*i+2]) for i in range(workers)]
     throughput=fig.add_subplot(gs[1,:]);latency=fig.add_subplot(gs[2,:workers]);queue=fig.add_subplot(gs[2,workers:])
+    left=latency.get_position();right=queue.get_position()
+    latency.set_position([left.x0,left.y0,left.width-.025,left.height])
+    queue.set_position([right.x0+.025,right.y0,right.width-.025,right.height])
     def draw(frame):
         end=frame+1;row=rows[frame]
         fig.suptitle(data.get('title','Recorded distributed inference run'),x=.08,ha='left',weight='bold',fontsize=16)

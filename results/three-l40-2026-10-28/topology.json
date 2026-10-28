@@ -1,0 +1,25 @@
+{
+  "source_commit": "8067a009090057f46c2f91d77c0b7cf7ddc154d5",
+  "workers": [
+    {
+      "worker": 0,
+      "host": 0,
+      "visible_device": 0,
+      "inventory": "0, NVIDIA L40, GPU-28ecf26b-886c-5912-6ec9-94d3bc3bdb24, 46068 MiB\n1, NVIDIA L40, GPU-9dc3f366-5875-c58f-b90b-f58719a59f3e, 46068 MiB\n"
+    },
+    {
+      "worker": 1,
+      "host": 0,
+      "visible_device": 1,
+      "inventory": "0, NVIDIA L40, GPU-ee6ae329-34eb-fd04-1dfb-35479c1c7e6a, 46068 MiB\n1, NVIDIA L40, GPU-cbd7bcf3-45cd-ab45-2186-590f3b988073, 46068 MiB\n"
+    },
+    {
+      "worker": 2,
+      "host": 1,
+      "visible_device": 0,
+      "inventory": "0, NVIDIA L40, GPU-8f501121-3ef7-557f-a1be-a000046a9824, 46068 MiB\n"
+    }
+  ],
+  "transport": "Mac CPU router; loopback HTTP over SSH forwards to two Thunder hosts",
+  "topology": "2 GPUs on host 0 and 1 GPU on host 1; request-level replicas"
+}

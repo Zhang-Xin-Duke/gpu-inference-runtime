@@ -1,0 +1,64 @@
+Processing /home/ubuntu/three-gpu-eval
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Installing backend dependencies: started
+  Installing backend dependencies: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: torch>=2.5 in /usr/local/lib/python3.12/dist-packages (from bounded-gpu-runtime==0.1.0) (2.12.1)
+Requirement already satisfied: numpy>=1.26 in /usr/local/lib/python3.12/dist-packages (from bounded-gpu-runtime==0.1.0) (2.5.0)
+Collecting pytest>=8 (from bounded-gpu-runtime==0.1.0)
+  Downloading pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting iniconfig>=2 (from pytest>=8->bounded-gpu-runtime==0.1.0)
+  Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+Requirement already satisfied: packaging>=24 in /usr/local/lib/python3.12/dist-packages (from pytest>=8->bounded-gpu-runtime==0.1.0) (26.2)
+Collecting pluggy<2,>=1.6 (from pytest>=8->bounded-gpu-runtime==0.1.0)
+  Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+Requirement already satisfied: pygments>=2.15 in /usr/local/lib/python3.12/dist-packages (from pytest>=8->bounded-gpu-runtime==0.1.0) (2.20.0)
+Requirement already satisfied: filelock in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (3.29.4)
+Requirement already satisfied: typing-extensions>=4.10.0 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (4.15.0)
+Requirement already satisfied: setuptools<82 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (81.0.0)
+Requirement already satisfied: sympy>=1.13.3 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (1.14.0)
+Requirement already satisfied: networkx>=2.5.1 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (3.6.1)
+Requirement already satisfied: jinja2 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (3.1.6)
+Requirement already satisfied: fsspec>=0.8.5 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (2026.6.0)
+Requirement already satisfied: cuda-toolkit==13.0.2 in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (13.0.2)
+Requirement already satisfied: nvidia-cublas<=13.1.1.3,>=13.1.0.3 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (13.1.1.3)
+Requirement already satisfied: cuda-bindings<14,>=13.0.3 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (13.3.1)
+Requirement already satisfied: nvidia-cudnn-cu13==9.20.0.48 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (9.20.0.48)
+Requirement already satisfied: nvidia-cusparselt-cu13==0.8.1 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (0.8.1)
+Requirement already satisfied: nvidia-nccl-cu13==2.29.7 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (2.29.7)
+Requirement already satisfied: nvidia-nvshmem-cu13==3.4.5 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (3.4.5)
+Requirement already satisfied: triton==3.7.1 in /usr/local/lib/python3.12/dist-packages (from torch>=2.5->bounded-gpu-runtime==0.1.0) (3.7.1)
+Requirement already satisfied: nvidia-cuda-runtime==13.0.96.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (13.0.96)
+Requirement already satisfied: nvidia-cufft==12.0.0.61.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (12.0.0.61)
+Requirement already satisfied: nvidia-cufile==1.15.1.6.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (1.15.1.6)
+Requirement already satisfied: nvidia-cuda-cupti==13.0.85.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (13.0.85)
+Requirement already satisfied: nvidia-curand==10.4.0.35.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (10.4.0.35)
+Requirement already satisfied: nvidia-cusolver==12.0.4.66.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (12.0.4.66)
+Requirement already satisfied: nvidia-cusparse==12.6.3.3.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (12.6.3.3)
+Requirement already satisfied: nvidia-nvjitlink==13.0.88.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (13.0.88)
+Requirement already satisfied: nvidia-cuda-nvrtc==13.0.88.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (13.0.88)
+Requirement already satisfied: nvidia-nvtx==13.0.85.* in /usr/local/lib/python3.12/dist-packages (from cuda-toolkit[cudart,cufft,cufile,cupti,curand,cusolver,cusparse,nvjitlink,nvrtc,nvtx]==13.0.2; platform_system == "Linux"->torch>=2.5->bounded-gpu-runtime==0.1.0) (13.0.85)
+Requirement already satisfied: cuda-pathfinder>=1.4.2 in /usr/local/lib/python3.12/dist-packages (from cuda-bindings<14,>=13.0.3->torch>=2.5->bounded-gpu-runtime==0.1.0) (1.5.6)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in /usr/local/lib/python3.12/dist-packages (from sympy>=1.13.3->torch>=2.5->bounded-gpu-runtime==0.1.0) (1.3.0)
+Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/dist-packages (from jinja2->torch>=2.5->bounded-gpu-runtime==0.1.0) (3.0.3)
+Downloading pytest-9.2.0-py3-none-any.whl (411 kB)
+Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+Building wheels for collected packages: bounded-gpu-runtime
+  Building wheel for bounded-gpu-runtime (pyproject.toml): started
+  Building wheel for bounded-gpu-runtime (pyproject.toml): finished with status 'done'
+  Created wheel for bounded-gpu-runtime: filename=bounded_gpu_runtime-0.1.0-cp312-cp312-linux_x86_64.whl size=128706 sha256=8a18f4d67437985f9f116584ba2bf7c2bb3496e371f00d60a0522845df9bd359
+  Stored in directory: /home/ubuntu/.cache/pip/wheels/c0/1a/bd/aed2f60c3f89df64ea82a2068f34ca6165007b85c3ae22ef96
+Successfully built bounded-gpu-runtime
+Installing collected packages: pluggy, iniconfig, pytest, bounded-gpu-runtime
+Successfully installed bounded-gpu-runtime-0.1.0 iniconfig-2.3.1 pluggy-1.7.0 pytest-9.2.0
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: python -m pip install --upgrade pip
+index, name, uuid, memory.total [MiB]
+0, NVIDIA L40, GPU-cbd7bcf3-45cd-ab45-2186-590f3b988073, 46068 MiB
+1, NVIDIA L40, GPU-28ecf26b-886c-5912-6ec9-94d3bc3bdb24, 46068 MiB

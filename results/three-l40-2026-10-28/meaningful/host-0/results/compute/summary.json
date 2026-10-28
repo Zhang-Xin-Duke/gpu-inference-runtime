@@ -1,0 +1,62 @@
+[
+  {
+    "replicas": 1,
+    "offered_rps": 200.0,
+    "runs": 2,
+    "offered": 3282,
+    "on_time": 3282,
+    "median_goodput_rps": 205.125,
+    "median_p99_ms": 79.51688684398074,
+    "median_generator_p99_ms": 0.09441941077429104
+  },
+  {
+    "replicas": 1,
+    "offered_rps": 600.0,
+    "runs": 2,
+    "offered": 9838,
+    "on_time": 3999,
+    "median_goodput_rps": 249.9375,
+    "median_p99_ms": 1005.5141443228243,
+    "median_generator_p99_ms": 0.08177924924388871
+  },
+  {
+    "replicas": 1,
+    "offered_rps": 1000.0,
+    "runs": 2,
+    "offered": 16233,
+    "on_time": 3774,
+    "median_goodput_rps": 235.875,
+    "median_p99_ms": 1010.5417150444384,
+    "median_generator_p99_ms": 0.0785338271122587
+  },
+  {
+    "replicas": 2,
+    "offered_rps": 200.0,
+    "runs": 2,
+    "offered": 3282,
+    "on_time": 3282,
+    "median_goodput_rps": 205.125,
+    "median_p99_ms": 42.4890786454985,
+    "median_generator_p99_ms": 0.08336523998347775
+  },
+  {
+    "replicas": 2,
+    "offered_rps": 600.0,
+    "runs": 2,
+    "offered": 9838,
+    "on_time": 6819,
+    "median_goodput_rps": 426.1875,
+    "median_p99_ms": 526.647937144972,
+    "median_generator_p99_ms": 0.08587428615281684
+  },
+  {
+    "replicas": 2,
+    "offered_rps": 1000.0,
+    "runs": 2,
+    "offered": 16233,
+    "on_time": 7355,
+    "median_goodput_rps": 459.6875,
+    "median_p99_ms": 531.993412403474,
+    "median_generator_p99_ms": 0.08292585529066457
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "transport": "compute sweep: router and generator on dual-GPU host, loopback HTTP; recovery: Mac router through SSH",
+  "assignments": [
+    [
+      0,
+      0,
+      8090
+    ],
+    [
+      0,
+      1,
+      8091
+    ],
+    [
+      1,
+      0,
+      8092
+    ]
+  ],
+  "hidden": 32768,
+  "features": 256,
+  "max_batch": 128,
+  "compute_samples": 32,
+  "provider": "Thunder L40, virtualized"
+}

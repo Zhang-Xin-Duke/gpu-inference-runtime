@@ -42,12 +42,23 @@ def summarize(root, title):
     (root/'summary.json').write_text(json.dumps(rows,indent=2)+'\n')
     fig,axes=plt.subplots(1,2,figsize=(11,4.2),layout='constrained')
     colors=['#3267aa','#168575','#b57924']
+    rates=sorted({r['offered_rps'] for r in rows})
     for i,count in enumerate(sorted({r['replicas'] for r in rows})):
         selected=[r for r in rows if r['replicas']==count]
         x=[r['offered_rps'] for r in selected]
         for ax,metric in zip(axes,['median_goodput_rps','median_p99_ms']):
-            ax.plot(x,[r[metric] for r in selected],marker='o',color=colors[i%len(colors)],label=f'{count} GPU replica'+('s' if count!=1 else ''))
-            ax.set_xlabel('Offered requests / s');ax.set_ylim(bottom=0);ax.grid(alpha=.2);ax.legend(frameon=False)
+            label=f'{count} GPU replica'+('s' if count!=1 else '')
+            if len(rates)==1:
+                value=selected[0][metric]
+                ax.bar(label,value,color=colors[i%len(colors)],width=.65)
+                ax.annotate(f'{value:.1f}',(label,value),ha='center',va='bottom')
+                ax.set_xlabel(f'Offered load: {rates[0]:g} requests / s')
+            else:
+                ax.plot(x,[r[metric] for r in selected],marker='o',color=colors[i%len(colors)],label=label)
+                ax.set_xlabel('Offered requests / s');ax.legend(frameon=False)
+            ax.set_ylim(bottom=0);ax.grid(axis='y',alpha=.2);ax.set_axisbelow(True)
+    for ax,metric in zip(axes,['median_goodput_rps','median_p99_ms']):
+        ax.set_ylim(0,max(r[metric] for r in rows)*1.12)
     axes[0].set_ylabel('On-time completions / s');axes[1].set_ylabel('P99 latency (ms)')
     fig.suptitle(title)
     fig.savefig(root/'replica-sweep.png',dpi=150);fig.savefig(root/'replica-sweep.svg');plt.close(fig)
