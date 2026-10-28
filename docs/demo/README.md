@@ -2,7 +2,7 @@
 
 ## Terminal walkthrough
 
-[![Terminal walkthrough: variable-length sequence batching](terminal-walkthrough.png)](terminal-walkthrough.mp4)
+https://github.com/user-attachments/assets/2ab5fb82-63d8-4ec7-8c25-6c92ca5e4261
 
 [Watch/download the MP4](terminal-walkthrough.mp4) · [Replayable terminal session](terminal-walkthrough.cast) · [Walkthrough source](../../examples/terminal_walkthrough.py)
 

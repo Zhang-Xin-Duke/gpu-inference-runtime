@@ -4,9 +4,11 @@
 
 A C++20 / PyTorch runtime for services with many independent inference callers. It combines compatible requests into GPU batches, bounds accepted work, and returns a separate CPU tensor to each caller.
 
-![Demo: independent CPU requests become one GPU batch and return individual results](docs/demo/runtime-demo.gif)
+https://github.com/user-attachments/assets/2ab5fb82-63d8-4ec7-8c25-6c92ca5e4261
 
-**[Watch/download the terminal walkthrough (MP4)](https://github.com/Zhang-Xin-Duke/gpu-inference-runtime/raw/refs/heads/main/docs/demo/terminal-walkthrough.mp4)** — real CUDA commands showing batching, overload rejection, sequence buckets, HTTP inference and a short load test. [Recording and replay instructions](docs/demo/README.md).
+**Recorded terminal walkthrough on an RTX 5090:** batching, overload rejection, sequence buckets, HTTP inference and a short load test. [Download the MP4](docs/demo/terminal-walkthrough.mp4) · [Recording and replay instructions](docs/demo/README.md).
+
+![Demo: independent CPU requests become one GPU batch and return individual results](docs/demo/runtime-demo.gif)
 
 **The demo in one sentence:** four `[1, 256]` inputs become one `[4, 256]` GPU forward, then four `[1, 32]` CPU results; a fifth request is rejected because the admission limit is four.
 
